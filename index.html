@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="uk" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUTOHUB — Офіційні Посилання</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0f1115', 
+                        cardBg: '#161920', 
+                        accentNeon: '#ff3b30', 
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .link-card {
+            opacity: 0;
+            animation: slideUp 0.4s ease-out forwards;
+        }
+        .auto-card {
+            background: #161920;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .auto-card:hover {
+            border-color: #ff3b30;
+            box-shadow: 0 0 15px rgba(255, 59, 48, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-gray-200 min-h-screen flex flex-col items-center antialiased font-sans relative pb-24">
+
+    <!-- Фіксована панель адміна (показується тільки в режимі редагування) -->
+    <div id="admin-bar" class="fixed top-0 inset-x-0 bg-neutral-900 border-b border-accentNeon z-40 px-4 py-3 flex justify-between items-center hidden shadow-2xl">
+        <div class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-white">
+            <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
+            Режим Адміна
+        </div>
+        <div class="flex gap-2">
+            <button onclick="exitAdminMode()" class="bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase text-gray-400 tracking-wider transition-colors">Вийти</button>
+            <button onclick="saveAndDownload()" class="bg-accentNeon hover:bg-red-600 px-4 py-1.5 rounded-lg text-[11px] font-bold uppercase text-white tracking-wider transition-all shadow-md shadow-accentNeon/20">Зберегти файл</button>
+        </div>
+    </div>
+
+    <main class="w-full max-w-md px-5 py-10 flex-grow flex flex-col mt-4">
+        
+        <!-- Верхня панель користувача -->
+        <div id="user-bar" class="flex justify-end w-full mb-6">
+            <button onclick="shareProfile()" class="w-10 h-10 rounded-xl auto-card flex items-center justify-center transition-all group">
+                <i class="fa-solid fa-share-nodes text-gray-400 group-hover:text-accentNeon transition-colors"></i>
+            </button>
+        </div>
+
+        <!-- Блок Профілю -->
+        <div class="flex flex-col items-center mb-8 text-center">
+            <div onclick="adminClick()" class="relative mb-4 group cursor-pointer" title="Клікни 3 рази для входу в адмінку">
+                <div class="absolute inset-0 bg-accentNeon/20 rounded-full blur-md group-hover:blur-lg transition-all"></div>
+                <img src="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png" alt="AUTOHUB" class="w-24 h-24 rounded-full object-cover border-2 border-accentNeon relative z-10 active:scale-95 transition-transform">
+                <div class="absolute bottom-0 right-1 w-4 h-4 bg-emerald-500 border-2 border-darkBg rounded-full z-20"></div>
+            </div>
+            <h1 class="text-2xl font-black tracking-wider uppercase text-white">AUTOHUB</h1>
+            <div class="h-0.5 w-12 bg-accentNeon my-2"></div>
+            <p class="text-gray-400 text-sm font-medium px-2">Огляди, корисні поради та автомобільні тренди 🚗🔥</p>
+        </div>
+
+        <!-- Блок відео з адмін-полем -->
+        <div class="link-card w-full mb-6 rounded-2xl overflow-hidden auto-card shadow-2xl" style="animation-delay: 0.1s;">
+            <div class="bg-[#1c2029] px-4 py-2.5 flex items-center gap-2 border-b border-white/5">
+                <i class="fa-solid fa-circle-play text-accentNeon animate-pulse"></i>
+                <span class="text-xs font-black uppercase tracking-widest text-gray-300">Останній випуск</span>
+            </div>
+            <div class="relative w-full aspect-video bg-black">
+                <iframe id="yt-player" class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/aC-owTGozPg" title="YouTube" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <!-- Поле адміна для відео -->
+            <div class="admin-field p-3 bg-neutral-900 border-t border-white/5 hidden">
+                <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">ID Відео YouTube (наприклад, aC-owTGozPg)</label>
+                <input type="text" id="edit-yt-id" value="aC-owTGozPg" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
+            </div>
+        </div>
+
+        <!-- Список посилань -->
+        <div class="w-full flex flex-col gap-3.5 mb-8">
+            
+            <!-- YouTube -->
+            <div class="link-card" style="animation-delay: 0.2s;">
+                <a id="link-yt" href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="auto-card group flex items-center p-3 rounded-xl transition-all duration-300">
+                    <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-youtube text-xl"></i></div>
+                    <div class="flex-grow">
+                        <h2 class="font-bold text-sm text-white uppercase tracking-wider">YouTube Канал</h2>
+                        <p class="text-xs text-gray-400">Головні автомобільні огляди</p>
+                    </div>
+                    <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
+                </a>
+                <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
+                    <input type="text" id="edit-link-yt" value="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
+                </div>
+            </div>
+
+            <!-- Telegram -->
+            <div class="link-card" style="animation-delay: 0.3s;">
+                <a id="link-tg" href="https://t.me/FoXNEWofficial" target="_blank" class="auto-card group flex items-center p-3 rounded-xl transition-all duration-300">
+                    <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-telegram text-xl"></i></div>
+                    <div class="flex-grow">
+                        <h2 class="font-bold text-sm text-white uppercase tracking-wider">Telegram Спільнота</h2>
+                        <p class="text-xs text-gray-400">Новини та бекстейдж у реальному часі</p>
+                    </div>
+                    <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
+                </a>
+                <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
+                    <input type="text" id="edit-link-tg" value="https://t.me/FoXNEWofficial" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
+                </div>
+            </div>
+
+            <!-- Instagram -->
+            <div class="link-card" style="animation-delay: 0.4s;">
+                <a id="link-ig" href="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" target="_blank" class="auto-card group flex items-center p-3 rounded-xl transition-all duration-300">
+                    <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-instagram text-xl"></i></div>
+                    <div class="flex-grow">
+                        <h2 class="font-bold text-sm text-white uppercase tracking-wider">Instagram</h2>
+                        <p class="text-xs text-gray-400">Естетика авто та швидкі сторіз</p>
+                    </div>
+                    <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
+                </a>
+                <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
+                    <input type="text" id="edit-link-ig" value="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
+                </div>
+            </div>
+
+            <!-- TikTok -->
+            <div class="link-card" style="animation-delay: 0.5s;">
+                <a id="link-tt" href="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" target="_blank" class="auto-card group flex items-center p-3 rounded-xl transition-all duration-300">
+                    <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-tiktok text-xl"></i></div>
+                    <div class="flex-grow">
+                        <h2 class="font-bold text-sm text-white uppercase tracking-wider">TikTok</h2>
+                        <p class="text-xs text-gray-400">Короткі автомобільні тренди</p>
+                    </div>
+                    <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
+                </a>
+                <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
+                    <input type="text" id="edit-link-tt" value="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
+                </div>
+            </div>
+
+            <!-- Співпраця -->
+            <div class="link-card" style="animation-delay: 0.6s;">
+                <a id="link-ads" href="https://t.me/Artd3l" target="_blank" class="auto-card group flex items-center p-3 rounded-xl transition-all duration-300">
+                    <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-solid fa-business-time text-lg"></i></div>
+                    <div class="flex-grow">
+                        <h2 class="font-bold text-sm text-white uppercase tracking-wider">Реклама & Співпраця</h2>
+                        <p class="text-xs text-gray-400">Зв'язатися з автором сторінки</p>
+                    </div>
+                    <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
+                </a>
+                <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
+                    <input type="text" id="edit-link-ads" value="https://t.me/Artd3l" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Модалка пароля -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-[#161920] border border-accentNeon/30 p-6 rounded-2xl w-full max-w-xs text-center shadow-2xl">
+            <i class="fa-solid fa-user-gear text-3xl text-accentNeon mb-3"></i>
+            <h3 class="text-white font-bold mb-4 uppercase tracking-wider text-sm">Адмін-панель</h3>
+            <input type="password" id="admin-pass" placeholder="Введіть пароль" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-2.5 text-center text-white focus:outline-none focus:border-accentNeon mb-4 tracking-widest text-sm">
+            <div class="flex gap-2">
+                <button onclick="closeAdmin()" class="flex-1 bg-white/5 hover:bg-white/10 text-gray-400 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors">Скасувати</button>
+                <button onclick="checkPassword()" class="flex-1 bg-accentNeon hover:bg-red-600 text-white py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all">Вхід</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer class="w-full pb-6 pt-2 flex justify-center mt-auto opacity-30">
+        <p class="text-[10px] font-bold tracking-widest uppercase text-gray-500">© 2026 AUTOHUB</p>
+    </footer>
+
+    <!-- Повідомлення Тост -->
+    <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-neutral-900 text-white px-5 py-2.5 rounded-xl shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2 border border-neutral-800 text-sm">
+        <i class="fa-solid fa-circle-check text-accentNeon"></i>
+        <span id="toast-text" class="font-medium">Посилання скопійовано</span>
+    </div>
+
+    <!-- ЛОГІКА АДМІН-ПАНЕЛІ -->
+    <script>
+        let clickCount = 0;
+        let clickTimeout;
+        const SECRET_PASSWORD = '1234'; // Твій пароль для входу
+
+        function adminClick() {
+            clickCount++;
+            clearTimeout(clickTimeout);
+            if (clickCount === 3) {
+                clickCount = 0;
+                openAdmin();
+            } else {
+                clickTimeout = setTimeout(() => { clickCount = 0; }, 1000);
+            }
+        }
+
+        function openAdmin() { document.getElementById('admin-modal').classList.remove('hidden'); document.getElementById('admin-pass').focus(); }
+        function closeAdmin() { document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('admin-pass').value = ''; }
+
+        function checkPassword() {
+            if (document.getElementById('admin-pass').value === SECRET_PASSWORD) {
+                closeAdmin();
+                enterAdminMode();
+            } else {
+                alert('Невірний пароль!');
+                closeAdmin();
+            }
+        }
+
+        function enterAdminMode() {
+            document.getElementById('admin-bar').classList.remove('hidden');
+            document.getElementById('user-bar').classList.add('hidden');
+            document.querySelectorAll('.admin-field').forEach(el => el.classList.remove('hidden'));
+            showToast('Вхід виконано! Редагуй поля.');
+        }
+
+        function exitAdminMode() {
+            document.getElementById('admin-bar').classList.add('hidden');
+            document.getElementById('user-bar').classList.remove('hidden');
+            document.querySelectorAll('.admin-field').forEach(el => el.classList.add('hidden'));
+        }
+
+        // Головна магія: зчитує нові поля, оновлює інтерфейс і завантажує новий готовий файл індексу
+        function saveAndDownload() {
+            // Оновлюємо значення в самому HTML коді перед скачуванням
+            const ytId = document.getElementById('edit-yt-id').value;
+            document.getElementById('yt-player').src = `https://www.youtube.com/embed/${ytId}`;
+            document.getElementById('edit-yt-id').setAttribute('value', ytId);
+
+            const links = ['yt', 'tg', 'ig', 'tt', 'ads'];
+            links.forEach(id => {
+                const val = document.getElementById(`edit-link-${id}`).value;
+                document.getElementById(`link-${id}`).href = val;
+                document.getElementById(`edit-link-${id}`).setAttribute('value', val);
+            });
+
+            exitAdminMode();
+
+            // Генеруємо чистий текст файлу сторінки
+            const currentHTML = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+            
+            // Створюємо завантаження файлу
+            const blob = new Blob([currentHTML], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            showToast('Файл збережено! Замініть ним старий.');
+        }
+
+        document.getElementById('admin-pass').addEventListener('keypress', function(e) { if (e.key === 'Enter') checkPassword(); });
+
+        function shareProfile() {
+            const url = window.location.href;
+            if (navigator.share) { navigator.share({ title: document.title, url: url }).catch(console.error); } 
+            else {
+                const tempInput = document.createElement('input'); tempInput.value = url; document.body.appendChild(tempInput); tempInput.select(); document.execCommand('copy'); document.body.removeChild(tempInput);
+                showToast('Посилання скопійовано');
+            }
+        }
+
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').innerText = text;
+            toast.classList.remove('opacity-0', 'pointer-events-none'); toast.classList.add('opacity-100');
+            setTimeout(() => { toast.classList.remove('opacity-100'); toast.classList.add('opacity-0', 'pointer-events-none'); }, 3000);
+        }
+    </script>
+</body>
+</html>
+```eof
+
+Це абсолютно автономна і безпечна адмінка без серверів. Працює прямо на телефоні чи комп'ютері! 😎
