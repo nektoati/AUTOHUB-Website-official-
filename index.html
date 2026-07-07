@@ -44,17 +44,17 @@
 </head>
 <body class="bg-darkBg text-gray-200 min-h-screen flex flex-col items-center antialiased font-sans relative pb-24">
 
-    <!-- Фіксована панель адміна з вбудованим лічильником переглядів -->
+    <!-- Фіксована панель адміна з точним лічильником для твого посилання -->
     <div id="admin-bar" class="fixed top-0 inset-x-0 bg-neutral-900 border-b border-accentNeon z-40 px-4 py-3 flex justify-between items-center hidden shadow-2xl">
         <div class="flex flex-col gap-0.5">
             <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-white">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
-                Режим Адміна
+                Режим Admin
             </div>
-            <!-- Прихований лічильник, який підтягує картинку-статистику -->
+            <!-- Посилання на лічильник повністю налаштоване під твою адресу -->
             <div class="mt-1 flex items-center gap-1.5 bg-black/40 px-2 py-0.5 rounded border border-white/5">
                 <i class="fa-solid fa-eye text-[10px] text-gray-400"></i>
-                <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fautohub.github.io&count_bg=%230F1115&title_bg=%23161920&icon=&icon_color=%23E7E7E7&title=views&edge_flat=true" alt="Views" class="h-4">
+                <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fnektoati.github.io%2FAUTOHUB-Website-official-%2F&count_bg=%230F1115&title_bg=%23161920&icon=&icon_color=%23E7E7E7&title=views&edge_flat=true" alt="Views" class="h-4">
             </div>
         </div>
         <div class="flex gap-2">
@@ -207,7 +207,7 @@
     <script>
         let clickCount = 0;
         let clickTimeout;
-        const SECRET_PASSWORD = '1234'; // Твій пароль
+        const SECRET_PASSWORD = '1234';
 
         function adminClick() {
             clickCount++;
@@ -291,4 +291,5 @@
         }
     </script>
 </body>
-</html>
+                        </html>
+    
