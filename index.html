@@ -42,20 +42,13 @@
         }
     </style>
 </head>
-<body class="bg-darkBg text-gray-200 min-h-screen flex flex-col items-center antialiased font-sans relative pb-24">
+<body class="bg-darkBg text-gray-200 min-h-screen flex flex-col items-center antialiased font-sans relative pb-12">
 
-    <!-- Фіксована панель адміна з точним лічильником для твого посилання -->
+    <!-- Фіксована панель адміна (без лічильника, він тепер внизу для всіх) -->
     <div id="admin-bar" class="fixed top-0 inset-x-0 bg-neutral-900 border-b border-accentNeon z-40 px-4 py-3 flex justify-between items-center hidden shadow-2xl">
-        <div class="flex flex-col gap-0.5">
-            <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-white">
-                <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
-                Режим Admin
-            </div>
-            <!-- Посилання на лічильник повністю налаштоване під твою адресу -->
-            <div class="mt-1 flex items-center gap-1.5 bg-black/40 px-2 py-0.5 rounded border border-white/5">
-                <i class="fa-solid fa-eye text-[10px] text-gray-400"></i>
-                <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fnektoati.github.io%2FAUTOHUB-Website-official-%2F&count_bg=%230F1115&title_bg=%23161920&icon=&icon_color=%23E7E7E7&title=views&edge_flat=true" alt="Views" class="h-4">
-            </div>
+        <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-white">
+            <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
+            Режим Admin
         </div>
         <div class="flex gap-2">
             <button onclick="exitAdminMode()" class="bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase text-gray-400 tracking-wider transition-colors">Вийти</button>
@@ -63,7 +56,8 @@
         </div>
     </div>
 
-    <main class="w-full max-w-md px-5 py-10 flex-grow flex flex-col mt-4">
+    <!-- Основний контейнер: тепер адаптивний (на ПК розширюється, контент стає у два ряди) -->
+    <main class="w-full max-w-5xl px-4 md:px-8 py-6 md:py-12 flex-grow flex flex-col mt-4">
         
         <!-- Верхня панель користувача -->
         <div id="user-bar" class="flex justify-end w-full mb-6">
@@ -73,108 +67,113 @@
         </div>
 
         <!-- Блок Профілю -->
-        <div class="flex flex-col items-center mb-8 text-center">
+        <div class="flex flex-col items-center mb-8 md:mb-12 text-center">
             <div onclick="adminClick()" class="relative mb-4 group cursor-pointer" title="Клікни 3 рази для входу в адмінку">
                 <div class="absolute inset-0 bg-accentNeon/20 rounded-full blur-md group-hover:blur-lg transition-all"></div>
                 <img src="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png" alt="AUTOHUB" class="w-24 h-24 rounded-full object-cover border-2 border-accentNeon relative z-10 active:scale-95 transition-transform">
                 <div class="absolute bottom-0 right-1 w-4 h-4 bg-emerald-500 border-2 border-darkBg rounded-full z-20"></div>
             </div>
-            <h1 class="text-2xl font-black tracking-wider uppercase text-white">AUTOHUB</h1>
-            <div class="h-0.5 w-12 bg-accentNeon my-2"></div>
-            <p class="text-gray-400 text-sm font-medium px-2">Огляди, корисні поради та автомобільні тренди 🚗🔥</p>
+            <h1 class="text-2xl md:text-4xl font-black tracking-wider uppercase text-white">AUTOHUB</h1>
+            <div class="h-0.5 w-16 bg-accentNeon my-3"></div>
+            <p class="text-gray-400 text-sm md:text-base font-medium max-w-md px-2">Огляди, корисні поради та автомобільні тренди 🚗🔥</p>
         </div>
 
-        <!-- Блок відео з адмін-полем -->
-        <div class="link-card w-full mb-6 rounded-2xl overflow-hidden auto-card shadow-2xl" style="animation-delay: 0.1s;">
-            <div class="bg-[#1c2029] px-4 py-2.5 flex items-center gap-2 border-b border-white/5">
-                <i class="fa-solid fa-circle-play text-accentNeon animate-pulse"></i>
-                <span class="text-xs font-black uppercase tracking-widest text-gray-300">Останній випуск</span>
-            </div>
-            <div class="relative w-full aspect-video bg-black">
-                <iframe id="yt-player" class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/aC-owTGozPg" title="YouTube" frameborder="0" allowfullscreen></iframe>
-            </div>
-            <div class="admin-field p-3 bg-neutral-900 border-t border-white/5 hidden">
-                <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">ID Відео YouTube (наприклад, aC-owTGozPg)</label>
-                <input type="text" id="edit-yt-id" value="aC-owTGozPg" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
-            </div>
-        </div>
-
-        <!-- Список посилань -->
-        <div class="w-full flex flex-col gap-3.5 mb-8">
+        <!-- СІТКА КОНТЕНТУ: На ПК ділиться на 2 колонки (Відео зліва, Кнопки справа) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-start w-full">
             
-            <!-- YouTube -->
-            <div class="link-card" style="animation-delay: 0.2s;">
-                <a id="link-yt" href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="auto-card group flex items-center p-3 rounded-xl transition-all duration-300">
-                    <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-youtube text-xl"></i></div>
-                    <div class="flex-grow">
-                        <h2 class="font-bold text-sm text-white uppercase tracking-wider">YouTube Канал</h2>
-                        <p class="text-xs text-gray-400">Головні автомобільні огляди</p>
-                    </div>
-                    <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
-                </a>
-                <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
-                    <input type="text" id="edit-link-yt" value="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
+            <!-- ЛІВА КОЛОНКА: Відео (На ПК воно велике і солідне) -->
+            <div class="link-card w-full rounded-2xl overflow-hidden auto-card shadow-2xl" style="animation-delay: 0.1s;">
+                <div class="bg-[#1c2029] px-4 py-2.5 flex items-center gap-2 border-b border-white/5">
+                    <i class="fa-solid fa-circle-play text-accentNeon animate-pulse"></i>
+                    <span class="text-xs font-black uppercase tracking-widest text-gray-300">Останній випуск</span>
+                </div>
+                <div class="relative w-full aspect-video bg-black">
+                    <iframe id="yt-player" class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/aC-owTGozPg" title="YouTube" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="admin-field p-3 bg-neutral-900 border-t border-white/5 hidden">
+                    <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">ID Відео YouTube</label>
+                    <input type="text" id="edit-yt-id" value="aC-owTGozPg" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                 </div>
             </div>
 
-            <!-- Telegram -->
-            <div class="link-card" style="animation-delay: 0.3s;">
-                <a id="link-tg" href="https://t.me/FoXNEWofficial" target="_blank" class="auto-card group flex items-center p-3 rounded-xl transition-all duration-300">
-                    <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-telegram text-xl"></i></div>
-                    <div class="flex-grow">
-                        <h2 class="font-bold text-sm text-white uppercase tracking-wider">Telegram Спільнота</h2>
-                        <p class="text-xs text-gray-400">Новини та бекстейдж у реальному часі</p>
+            <!-- ПРАВА КОЛОНКА: Всі кнопки посилань -->
+            <div class="w-full flex flex-col gap-3.5">
+                
+                <!-- YouTube -->
+                <div class="link-card" style="animation-delay: 0.2s;">
+                    <a id="link-yt" href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl transition-all duration-300">
+                        <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-youtube text-xl"></i></div>
+                        <div class="flex-grow">
+                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">YouTube Канал</h2>
+                            <p class="text-xs text-gray-400">Головні автомобільні огляди</p>
+                        </div>
+                        <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
+                    </a>
+                    <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
+                        <input type="text" id="edit-link-yt" value="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                     </div>
-                    <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
-                </a>
-                <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
-                    <input type="text" id="edit-link-tg" value="https://t.me/FoXNEWofficial" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                 </div>
-            </div>
 
-            <!-- Instagram -->
-            <div class="link-card" style="animation-delay: 0.4s;">
-                <a id="link-ig" href="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" target="_blank" class="auto-card group flex items-center p-3 rounded-xl transition-all duration-300">
-                    <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-instagram text-xl"></i></div>
-                    <div class="flex-grow">
-                        <h2 class="font-bold text-sm text-white uppercase tracking-wider">Instagram</h2>
-                        <p class="text-xs text-gray-400">Естетика авто та швидкі сторіз</p>
+                <!-- Telegram -->
+                <div class="link-card" style="animation-delay: 0.3s;">
+                    <a id="link-tg" href="https://t.me/FoXNEWofficial" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl transition-all duration-300">
+                        <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-telegram text-xl"></i></div>
+                        <div class="flex-grow">
+                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">Telegram Спільнота</h2>
+                            <p class="text-xs text-gray-400">Новини та бекстейдж у реальному часі</p>
+                        </div>
+                        <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
+                    </a>
+                    <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
+                        <input type="text" id="edit-link-tg" value="https://t.me/FoXNEWofficial" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                     </div>
-                    <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
-                </a>
-                <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
-                    <input type="text" id="edit-link-ig" value="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                 </div>
-            </div>
 
-            <!-- TikTok -->
-            <div class="link-card" style="animation-delay: 0.5s;">
-                <a id="link-tt" href="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" target="_blank" class="auto-card group flex items-center p-3 rounded-xl transition-all duration-300">
-                    <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-tiktok text-xl"></i></div>
-                    <div class="flex-grow">
-                        <h2 class="font-bold text-sm text-white uppercase tracking-wider">TikTok</h2>
-                        <p class="text-xs text-gray-400">Короткі автомобільні тренди</p>
+                <!-- Instagram -->
+                <div class="link-card" style="animation-delay: 0.4s;">
+                    <a id="link-ig" href="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl transition-all duration-300">
+                        <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-instagram text-xl"></i></div>
+                        <div class="flex-grow">
+                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">Instagram</h2>
+                            <p class="text-xs text-gray-400">Естетика авто та швидкі сторіз</p>
+                        </div>
+                        <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
+                    </a>
+                    <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
+                        <input type="text" id="edit-link-ig" value="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                     </div>
-                    <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
-                </a>
-                <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
-                    <input type="text" id="edit-link-tt" value="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                 </div>
-            </div>
 
-            <!-- Співпраця -->
-            <div class="link-card" style="animation-delay: 0.6s;">
-                <a id="link-ads" href="https://t.me/Artd3l" target="_blank" class="auto-card group flex items-center p-3 rounded-xl transition-all duration-300">
-                    <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-solid fa-business-time text-lg"></i></div>
-                    <div class="flex-grow">
-                        <h2 class="font-bold text-sm text-white uppercase tracking-wider">Реклама & Співпраця</h2>
-                        <p class="text-xs text-gray-400">Зв'язатися з автором сторінки</p>
+                <!-- TikTok -->
+                <div class="link-card" style="animation-delay: 0.5s;">
+                    <a id="link-tt" href="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl transition-all duration-300">
+                        <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-tiktok text-xl"></i></div>
+                        <div class="flex-grow">
+                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">TikTok</h2>
+                            <p class="text-xs text-gray-400">Короткі автомобільні тренди</p>
+                        </div>
+                        <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
+                    </a>
+                    <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
+                        <input type="text" id="edit-link-tt" value="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                     </div>
-                    <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
-                </a>
-                <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
-                    <input type="text" id="edit-link-ads" value="https://t.me/Artd3l" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                 </div>
+
+                <!-- Співпраця -->
+                <div class="link-card" style="animation-delay: 0.6s;">
+                    <a id="link-ads" href="https://t.me/Artd3l" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl transition-all duration-300">
+                        <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-solid fa-business-time text-lg"></i></div>
+                        <div class="flex-grow">
+                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">Реклама & Співпраця</h2>
+                            <p class="text-xs text-gray-400">Зв'язатися з автором сторінки</p>
+                        </div>
+                        <i class="fa-solid fa-angle-right text-gray-600 group-hover:text-accentNeon transition-colors pr-2 text-sm"></i>
+                    </a>
+                    <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
+                        <input type="text" id="edit-link-ads" value="https://t.me/Artd3l" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
+                    </div>
+                </div>
+
             </div>
         </div>
     </main>
@@ -192,9 +191,15 @@
         </div>
     </div>
 
-    <!-- Футер -->
-    <footer class="w-full pb-6 pt-2 flex justify-center mt-auto opacity-30">
-        <p class="text-[10px] font-bold tracking-widest uppercase text-gray-500">© 2026 AUTOHUB</p>
+    <!-- Новий публічний ФУТЕР із загальним лічильником для всіх -->
+    <footer class="w-full pt-12 pb-6 flex flex-col items-center justify-center gap-3">
+        <!-- Стабільний лічильник відвідувань у вигляді віджета, який працює ВСЮДИ і видно кожному -->
+        <div class="flex items-center gap-2 bg-neutral-900/60 border border-white/5 rounded-full px-4 py-1.5 text-xs shadow-inner">
+            <i class="fa-solid fa-users text-gray-500 mr-1 text-[11px]"></i>
+            <span class="text-gray-400 font-medium">Відвідувань:</span>
+            <img src="https://counter9.optistats.ovh/private/freecounterstat.php?c=lnslshye5wypf4h4sc3m76fajuzmlwyh" border="0" title="Counter" alt="Counter" class="h-4 saturate-150">
+        </div>
+        <p class="text-[10px] font-bold tracking-widest uppercase text-gray-600 opacity-50">© 2026 AUTOHUB</p>
     </footer>
 
     <!-- Повідомлення Тост -->
@@ -237,7 +242,7 @@
             document.getElementById('admin-bar').classList.remove('hidden');
             document.getElementById('user-bar').classList.add('hidden');
             document.querySelectorAll('.admin-field').forEach(el => el.classList.remove('hidden'));
-            showToast('Вхід виконано! Статистика зверху.');
+            showToast('Вхід в адмінку виконано!');
         }
 
         function exitAdminMode() {
@@ -291,5 +296,5 @@
         }
     </script>
 </body>
-                        </html>
+    </html>
     
