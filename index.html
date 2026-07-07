@@ -44,11 +44,18 @@
 </head>
 <body class="bg-darkBg text-gray-200 min-h-screen flex flex-col items-center antialiased font-sans relative pb-24">
 
-    <!-- Фіксована панель адміна (показується тільки в режимі редагування) -->
+    <!-- Фіксована панель адміна з вбудованим лічильником переглядів -->
     <div id="admin-bar" class="fixed top-0 inset-x-0 bg-neutral-900 border-b border-accentNeon z-40 px-4 py-3 flex justify-between items-center hidden shadow-2xl">
-        <div class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-white">
-            <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
-            Режим Адміна
+        <div class="flex flex-col gap-0.5">
+            <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-white">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
+                Режим Адміна
+            </div>
+            <!-- Прихований лічильник, який підтягує картинку-статистику -->
+            <div class="mt-1 flex items-center gap-1.5 bg-black/40 px-2 py-0.5 rounded border border-white/5">
+                <i class="fa-solid fa-eye text-[10px] text-gray-400"></i>
+                <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fautohub.github.io&count_bg=%230F1115&title_bg=%23161920&icon=&icon_color=%23E7E7E7&title=views&edge_flat=true" alt="Views" class="h-4">
+            </div>
         </div>
         <div class="flex gap-2">
             <button onclick="exitAdminMode()" class="bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase text-gray-400 tracking-wider transition-colors">Вийти</button>
@@ -86,7 +93,6 @@
             <div class="relative w-full aspect-video bg-black">
                 <iframe id="yt-player" class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/aC-owTGozPg" title="YouTube" frameborder="0" allowfullscreen></iframe>
             </div>
-            <!-- Поле адміна для відео -->
             <div class="admin-field p-3 bg-neutral-900 border-t border-white/5 hidden">
                 <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">ID Відео YouTube (наприклад, aC-owTGozPg)</label>
                 <input type="text" id="edit-yt-id" value="aC-owTGozPg" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
@@ -197,11 +203,11 @@
         <span id="toast-text" class="font-medium">Посилання скопійовано</span>
     </div>
 
-    <!-- ЛОГІКА АДМІН-ПАНЕЛІ -->
+    <!-- СКРИПТИ -->
     <script>
         let clickCount = 0;
         let clickTimeout;
-        const SECRET_PASSWORD = '1234'; // Твій пароль для входу
+        const SECRET_PASSWORD = '1234'; // Твій пароль
 
         function adminClick() {
             clickCount++;
@@ -231,7 +237,7 @@
             document.getElementById('admin-bar').classList.remove('hidden');
             document.getElementById('user-bar').classList.add('hidden');
             document.querySelectorAll('.admin-field').forEach(el => el.classList.remove('hidden'));
-            showToast('Вхід виконано! Редагуй поля.');
+            showToast('Вхід виконано! Статистика зверху.');
         }
 
         function exitAdminMode() {
@@ -240,9 +246,7 @@
             document.querySelectorAll('.admin-field').forEach(el => el.classList.add('hidden'));
         }
 
-        // Головна магія: зчитує нові поля, оновлює інтерфейс і завантажує новий готовий файл індексу
         function saveAndDownload() {
-            // Оновлюємо значення в самому HTML коді перед скачуванням
             const ytId = document.getElementById('edit-yt-id').value;
             document.getElementById('yt-player').src = `https://www.youtube.com/embed/${ytId}`;
             document.getElementById('edit-yt-id').setAttribute('value', ytId);
@@ -256,10 +260,7 @@
 
             exitAdminMode();
 
-            // Генеруємо чистий текст файлу сторінки
             const currentHTML = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-            
-            // Створюємо завантаження файлу
             const blob = new Blob([currentHTML], { type: 'text/html' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
