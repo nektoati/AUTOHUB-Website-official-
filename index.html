@@ -33,18 +33,46 @@
             animation: slideUp 0.4s ease-out forwards;
         }
         .auto-card {
-            background: #161920;
+            background: rgba(22, 25, 32, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .auto-card:hover {
             border-color: #ff3b30;
             box-shadow: 0 0 15px rgba(255, 59, 48, 0.2);
         }
+        
+        /* Стилі для різних задніх фонів */
+        .bg-theme-neon {
+            background: radial-gradient(circle at top right, rgba(255, 59, 48, 0.15), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(255, 59, 48, 0.1), transparent 40%),
+                        #0f1115;
+            background-attachment: fixed;
+        }
+        .bg-theme-car {
+            background: linear-gradient(rgba(15, 17, 21, 0.85), rgba(15, 17, 21, 0.92)), 
+                        url('https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=60&w=1200') no-repeat center center;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+        .bg-theme-carbon {
+            background: linear-gradient(rgba(15, 17, 21, 0.8), rgba(15, 17, 21, 0.85)), 
+                        url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=60&w=1200') no-repeat center center;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+        .bg-theme-asphalt {
+            background: linear-gradient(rgba(15, 17, 21, 0.85), rgba(15, 17, 21, 0.9)), 
+                        url('https://images.unsplash.com/photo-1533158326339-7f3cf2404354?auto=format&fit=crop&q=60&w=1200') no-repeat center center;
+            background-size: cover;
+            background-attachment: fixed;
+        }
     </style>
 </head>
-<body class="bg-darkBg text-gray-200 min-h-screen flex flex-col items-center antialiased font-sans relative pb-12">
+<body id="main-body" class="bg-theme-neon text-gray-200 min-h-screen flex flex-col items-center antialiased font-sans relative pb-12 transition-all duration-500">
 
-    <!-- Фіксована панель адміна (без лічильника, він тепер внизу для всіх) -->
+    <!-- Фіксована панель адміна -->
     <div id="admin-bar" class="fixed top-0 inset-x-0 bg-neutral-900 border-b border-accentNeon z-40 px-4 py-3 flex justify-between items-center hidden shadow-2xl">
         <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-white">
             <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
@@ -56,17 +84,32 @@
         </div>
     </div>
 
-    <!-- Основний контейнер: тепер адаптивний (на ПК розширюється, контент стає у два ряди) -->
-    <main class="w-full max-w-5xl px-4 md:px-8 py-6 md:py-12 flex-grow flex flex-col mt-4">
+    <!-- Основний контент сторінки -->
+    <main class="w-full max-w-5xl px-4 md:px-8 py-6 md:py-12 flex-grow flex flex-col mt-4 relative z-10">
         
-        <!-- Верхня панель користувача -->
-        <div id="user-bar" class="flex justify-end w-full mb-6">
+        <!-- Upper user bar with customization buttons -->
+        <div id="user-bar" class="flex justify-end w-full gap-2 mb-6">
+            <!-- Theme select button -->
+            <div class="relative">
+                <button onclick="toggleThemeMenu()" class="w-10 h-10 rounded-xl auto-card flex items-center justify-center transition-all group">
+                    <i class="fa-solid fa-palette text-gray-400 group-hover:text-accentNeon transition-colors"></i>
+                </button>
+                <!-- Themes dropdown menu -->
+                <div id="theme-menu" class="absolute right-0 mt-2 w-48 auto-card rounded-xl shadow-2xl p-2 hidden flex flex-col gap-1 z-50 animate-slideUp">
+                    <div class="text-[10px] uppercase font-black tracking-widest text-gray-500 px-2 py-1 border-b border-white/5 mb-1">Змінити фон:</div>
+                    <button onclick="changeTheme('neon')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-circle text-[8px] text-accentNeon"></i> Нічний Неон</button>
+                    <button onclick="changeTheme('car')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-car-side text-[10px]"></i> Нічний Спорткар</button>
+                    <button onclick="changeTheme('carbon')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-border-all text-[10px]"></i> Карбонове волокно</button>
+                    <button onclick="changeTheme('asphalt')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-road text-[10px]"></i> Темний Асфальт</button>
+                </div>
+            </div>
+            
             <button onclick="shareProfile()" class="w-10 h-10 rounded-xl auto-card flex items-center justify-center transition-all group">
                 <i class="fa-solid fa-share-nodes text-gray-400 group-hover:text-accentNeon transition-colors"></i>
             </button>
         </div>
 
-        <!-- Блок Профілю -->
+        <!-- Profile card -->
         <div class="flex flex-col items-center mb-8 md:mb-12 text-center">
             <div onclick="adminClick()" class="relative mb-4 group cursor-pointer" title="Клікни 3 рази для входу в адмінку">
                 <div class="absolute inset-0 bg-accentNeon/20 rounded-full blur-md group-hover:blur-lg transition-all"></div>
@@ -78,12 +121,12 @@
             <p class="text-gray-400 text-sm md:text-base font-medium max-w-md px-2">Огляди, корисні поради та автомобільні тренди 🚗🔥</p>
         </div>
 
-        <!-- СІТКА КОНТЕНТУ: На ПК ділиться на 2 колонки (Відео зліва, Кнопки справа) -->
+        <!-- Content grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-start w-full">
             
-            <!-- ЛІВА КОЛОНКА: Відео (На ПК воно велике і солідне) -->
+            <!-- Left column: Video player -->
             <div class="link-card w-full rounded-2xl overflow-hidden auto-card shadow-2xl" style="animation-delay: 0.1s;">
-                <div class="bg-[#1c2029] px-4 py-2.5 flex items-center gap-2 border-b border-white/5">
+                <div class="bg-[#1c2029]/90 px-4 py-2.5 flex items-center gap-2 border-b border-white/5">
                     <i class="fa-solid fa-circle-play text-accentNeon animate-pulse"></i>
                     <span class="text-xs font-black uppercase tracking-widest text-gray-300">Останній випуск</span>
                 </div>
@@ -96,7 +139,7 @@
                 </div>
             </div>
 
-            <!-- ПРАВА КОЛОНКА: Всі кнопки посилань -->
+            <!-- Right column: Link buttons -->
             <div class="w-full flex flex-col gap-3.5">
                 
                 <!-- YouTube -->
@@ -159,7 +202,7 @@
                     </div>
                 </div>
 
-                <!-- Співпраця -->
+                <!-- Partnership -->
                 <div class="link-card" style="animation-delay: 0.6s;">
                     <a id="link-ads" href="https://t.me/Artd3l" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl transition-all duration-300">
                         <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-solid fa-business-time text-lg"></i></div>
@@ -178,7 +221,7 @@
         </div>
     </main>
 
-    <!-- Модалка пароля -->
+    <!-- Password Modal -->
     <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="bg-[#161920] border border-accentNeon/30 p-6 rounded-2xl w-full max-w-xs text-center shadow-2xl">
             <i class="fa-solid fa-user-gear text-3xl text-accentNeon mb-3"></i>
@@ -191,28 +234,62 @@
         </div>
     </div>
 
-    <!-- Новий публічний ФУТЕР із загальним лічильником для всіх -->
-    <footer class="w-full pt-12 pb-6 flex flex-col items-center justify-center gap-3">
-        <!-- Стабільний лічильник відвідувань у вигляді віджета, який працює ВСЮДИ і видно кожному -->
-        <div class="flex items-center gap-2 bg-neutral-900/60 border border-white/5 rounded-full px-4 py-1.5 text-xs shadow-inner">
+    <!-- Public footer with counter -->
+    <footer class="w-full pt-12 pb-6 flex flex-col items-center justify-center gap-3 relative z-10">
+        <div class="flex items-center gap-2 bg-neutral-900/80 border border-white/5 rounded-full px-4 py-1.5 text-xs shadow-inner backdrop-blur-md">
             <i class="fa-solid fa-users text-gray-500 mr-1 text-[11px]"></i>
             <span class="text-gray-400 font-medium">Відвідувань:</span>
+            <!-- Visitor counter statistics widget -->
             <img src="https://counter9.optistats.ovh/private/freecounterstat.php?c=lnslshye5wypf4h4sc3m76fajuzmlwyh" border="0" title="Counter" alt="Counter" class="h-4 saturate-150">
         </div>
         <p class="text-[10px] font-bold tracking-widest uppercase text-gray-600 opacity-50">© 2026 AUTOHUB</p>
     </footer>
 
-    <!-- Повідомлення Тост -->
+    <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-neutral-900 text-white px-5 py-2.5 rounded-xl shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2 border border-neutral-800 text-sm">
         <i class="fa-solid fa-circle-check text-accentNeon"></i>
         <span id="toast-text" class="font-medium">Посилання скопійовано</span>
     </div>
 
-    <!-- СКРИПТИ -->
+    <!-- SCRIPTS -->
     <script>
         let clickCount = 0;
         let clickTimeout;
         const SECRET_PASSWORD = '1234';
+
+        // Function to change theme and save to localStorage
+        function changeTheme(themeName) {
+            const body = document.getElementById('main-body');
+            body.className = "text-gray-200 min-h-screen flex flex-col items-center antialiased font-sans relative pb-12 transition-all duration-500";
+            
+            body.classList.add('bg-theme-' + themeName);
+            localStorage.setItem('autohub-theme', themeName);
+            
+            // Hide menu after selection
+            const themeMenu = document.getElementById('theme-menu');
+            if (themeMenu) themeMenu.classList.add('hidden');
+        }
+
+        // Load saved theme on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('autohub-theme') || 'neon';
+            changeTheme(savedTheme);
+        });
+
+        function toggleThemeMenu() {
+            document.getElementById('theme-menu').classList.toggle('hidden');
+        }
+
+        // Close menu on outside click
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('theme-menu');
+            if (menu) {
+                const btn = menu.previousElementSibling;
+                if (btn && !menu.contains(event.target) && !btn.contains(event.target)) {
+                    menu.classList.add('hidden');
+                }
+            }
+        });
 
         function adminClick() {
             clickCount++;
@@ -233,7 +310,7 @@
                 closeAdmin();
                 enterAdminMode();
             } else {
-                alert('Невірний пароль!');
+                showToast('Невірний пароль!');
                 closeAdmin();
             }
         }
@@ -296,5 +373,4 @@
         }
     </script>
 </body>
-    </html>
-    
+</html>
