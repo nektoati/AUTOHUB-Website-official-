@@ -4,7 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AUTOHUB — Офіційні Посилання</title>
+
+    <!-- SEO та професійне прев'ю в Телеграмі / соцмережах -->
+    <meta name="title" content="AUTOHUB — Офіційні Посилання">
+    <meta name="description" content="Огляди, корисні поради та автомобільні тренди 🚗🔥">
     
+    <!-- Open Graph (для відображення картки в Telegram, Viber, Facebook) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nektoati.github.io/AUTOHUB-Website-official-/">
+    <meta property="og:title" content="AUTOHUB — Офіційні Посилання">
+    <meta property="og:description" content="Огляди, корисні поради та автомобільні тренди 🚗🔥">
+    <meta property="og:image" content="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png">
+
+    <!-- Twitter Previews -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://nektoati.github.io/AUTOHUB-Website-official-/">
+    <meta property="twitter:title" content="AUTOHUB — Офіційні Посилання">
+    <meta property="twitter:description" content="Огляди, корисні поради та автомобільні тренди 🚗🔥">
+    <meta property="twitter:image" content="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png">
+
+    <!-- Фавікон (Аватарка AUTOHUB на вкладці браузера) -->
+    <link rel="icon" type="image/png" href="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png">
+    <link rel="apple-touch-icon" href="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -132,6 +154,7 @@
         </div>
     </div>
 
+    <!-- Основний контент сторінки -->
     <main class="w-full max-w-5xl px-4 md:px-8 py-6 md:py-12 flex-grow flex flex-col mt-4 relative z-10">
         
         <!-- Верхня панель користувача з кнопками кастомізації -->
@@ -161,6 +184,7 @@
             </button>
         </div>
 
+        <!-- Блок Профілю -->
         <div class="flex flex-col items-center mb-8 md:mb-12 text-center launch-anim" style="animation-delay: 0.1s;">
             <div onclick="adminClick()" class="relative mb-4 group cursor-pointer" title="Клікни 3 рази для входу в адмінку">
                 <div class="absolute inset-0 bg-accentNeon/20 rounded-full blur-md group-hover:blur-lg transition-all"></div>
@@ -172,6 +196,7 @@
             <p class="text-gray-400 text-sm md:text-base font-medium max-w-md px-2">Огляди, корисні поради та автомобільні тренди 🚗🔥</p>
         </div>
 
+        <!-- СІТКА КОНТЕНТУ -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-start w-full">
             
             <!-- ЛІВА КОЛОНКА: Відео -->
@@ -252,7 +277,7 @@
                     </div>
                 </div>
 
-                <!-- Кнопка форми "Пропозиції" (Повнорозмірна, на місці реклами) -->
+                <!-- Кнопка форми "Пропозиції" (Повнорозмірна) -->
                 <div class="launch-anim" style="animation-delay: 0.7s;">
                     <button onclick="openSuggestionModal()" class="w-full auto-card group flex items-center p-3.5 rounded-xl text-left">
                         <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-solid fa-lightbulb text-xl"></i></div>
@@ -514,7 +539,7 @@
             document.getElementById('yt-player').src = `https://www.youtube.com/embed/${ytId}`;
             document.getElementById('edit-yt-id').setAttribute('value', ytId);
 
-            // Посилання (без реклами)
+            // Посилання
             const links = ['yt', 'tg', 'ig', 'tt'];
             links.forEach(id => {
                 const val = document.getElementById(`edit-link-${id}`).value;
@@ -561,3 +586,11 @@
     </script>
 </body>
 </html>
+```
+eof
+
+### Що ми оновили:
+1. **Іконка вкладки (Favicon):** У код прописані теги `<link rel="icon">`, які посилаються на твій логотип. Тепер замість порожнього значка або логотипу GitHub у браузері буде твій фірмовий кружок!
+2. **Офіційні прев'ю (SEO та Open Graph):** Прописано мета-налаштування для Telegram, Viber, Facebook, iMessage та інших месенджерів. Коли ти надішлеш посилання, одразу згенериться стильна велика картка з логотипом, назвою AUTOHUB та описом твого блогу.
+
+Оновлюй репозиторій на GitHub, почекай приблизно хвилинку, щоб сервери оновили кеш, і твоя офіційна візитка AUTOHUB вийде на новий рівень! 🏎️🔥🏷️
