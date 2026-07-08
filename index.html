@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUTOHUB — Офіційні Посилання</title>
-
-    <!-- SEO та професійне прев'ю в Телеграмі / соцмережах -->
-    <meta name="title" content="AUTOHUB — Офіційні Посилання">
-    <meta name="description" content="Огляди, корисні поради та автомобільні тренди 🚗🔥">
     
-    <!-- Open Graph (для відображення картки в Telegram, Viber, Facebook) -->
+    <!-- ТИТУЛКА ТА ОПИС ДЛЯ ВКЛАДОК -->
+    <title>AUTOHUB — Офіційні Посилання</title>
+    <meta name="description" content="Офіційні посилання автомобільного каналу AUTOHUB. Огляди, корисні поради та автомобільні тренди 🚗🔥">
+
+    <!-- КЛЮЧОВІ МЕТА-ТЕГИ ДЛЯ ТЕЛЕГРАМУ ТА СОЦМЕРЕЖ (Open Graph) -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://nektoati.github.io/AUTOHUB-Website-official-/">
     <meta property="og:title" content="AUTOHUB — Офіційні Посилання">
-    <meta property="og:description" content="Огляди, корисні поради та автомобільні тренди 🚗🔥">
+    <meta property="og:description" content="Огляди, корисні поради та автомобільні тренди від AUTOHUB. Всі соціальні мережі в одному місці! 🚗🔥">
     <meta property="og:image" content="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
 
-    <!-- Twitter Previews -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://nektoati.github.io/AUTOHUB-Website-official-/">
-    <meta property="twitter:title" content="AUTOHUB — Офіційні Посилання">
-    <meta property="twitter:description" content="Огляди, корисні поради та автомобільні тренди 🚗🔥">
-    <meta property="twitter:image" content="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png">
+    <!-- МЕТА-ТЕГИ ДЛЯ TWITTER -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AUTOHUB — Офіційні Посилання">
+    <meta name="twitter:description" content="Огляди, корисні поради та автомобільні тренди від AUTOHUB. Всі соціальні мережі в одному місці! 🚗🔥">
+    <meta name="twitter:image" content="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png">
 
-    <!-- Фавікон (Аватарка AUTOHUB на вкладці браузера) -->
+    <!-- ФАВІКОН (Маленька іконка AUTOHUB на вкладці браузера) -->
     <link rel="icon" type="image/png" href="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png">
     <link rel="apple-touch-icon" href="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png">
-
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -46,7 +46,7 @@
     </script>
     
     <style>
-        /* Анімація появи елементів */
+        /* Анімація каскадної появи елементів із розмиттям */
         @keyframes raceLaunch {
             from { 
                 opacity: 0; 
@@ -79,7 +79,7 @@
             transform: translateY(-2px);
         }
 
-        /* Анімація спідометра при наведенні */
+        /* Анімація стрілки-спідометра при наведенні */
         .group:hover .gauge-arrow {
             transform: translate(4px, -2px) rotate(15deg);
             color: #ff3b30;
@@ -114,26 +114,26 @@
             background-attachment: fixed;
         }
 
-        /* ПРАВИЛА ОПТИМІЗАЦІЇ ДЛЯ СЛАБКИХ ПК ТА ТЕЛЕФОНІВ (Lite Mode) */
-        .performance-mode {
-            background-image: none !important;
-            background: #0d0e12 !important;
-        }
-        .performance-mode .auto-card {
+        /* Полегшений режим (без важких ефектів) */
+        .lite-mode {
+            background: #0f1115 !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
-            background: #15181f !important;
-            box-shadow: none !important;
-            transform: none !important;
-            transition: none !important;
         }
-        .performance-mode .launch-anim {
+        .lite-mode .launch-anim {
             animation: none !important;
             opacity: 1 !important;
             filter: none !important;
         }
-        .performance-mode .gauge-arrow {
+        .lite-mode .auto-card {
+            background: #161920 !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
             transition: none !important;
+        }
+        .lite-mode .auto-card:hover {
+            transform: none !important;
+            box-shadow: none !important;
         }
     </style>
 </head>
@@ -159,14 +159,14 @@
         
         <!-- Верхня панель користувача з кнопками кастомізації -->
         <div id="user-bar" class="flex justify-end w-full gap-2 mb-6 relative z-30">
-            <!-- Кнопка оптимізації (Lite Mode) -->
-            <button id="optimize-btn" onclick="toggleOptimization()" class="w-10 h-10 rounded-xl auto-card flex items-center justify-center transition-all group" title="Режим оптимізації (для слабких ПК/телефонів)">
-                <i id="optimize-icon" class="fa-solid fa-bolt text-gray-400 group-hover:text-amber-400 transition-colors"></i>
+            <!-- Кнопка полегшеного режиму (Lite Mode) -->
+            <button id="lite-btn" onclick="toggleLiteMode()" class="w-10 h-10 rounded-xl auto-card flex items-center justify-center transition-all group" title="Режим енергозбереження">
+                <i id="lite-icon" class="fa-solid fa-bolt text-gray-400 group-hover:text-amber-400 transition-colors"></i>
             </button>
 
             <!-- Кнопка вибору теми та випадаюче меню в одному контейнері -->
             <div class="relative inline-block text-left">
-                <button id="palette-btn" onclick="toggleThemeMenu()" class="w-10 h-10 rounded-xl auto-card flex items-center justify-center transition-all group" title="Змінити задній фон">
+                <button id="palette-btn" onclick="toggleThemeMenu()" class="w-10 h-10 rounded-xl auto-card flex items-center justify-center transition-all group" title="Змінити задній font">
                     <i class="fa-solid fa-palette text-gray-400 group-hover:text-accentNeon transition-colors"></i>
                 </button>
                 <!-- Випадаюче меню тем -->
@@ -179,7 +179,7 @@
                 </div>
             </div>
             
-            <button onclick="shareProfile()" class="w-10 h-10 rounded-xl auto-card flex items-center justify-center transition-all group" title="Поділитися сайтом">
+            <button onclick="shareProfile()" class="w-10 h-10 rounded-xl auto-card flex items-center justify-center transition-all group">
                 <i class="fa-solid fa-share-nodes text-gray-400 group-hover:text-accentNeon transition-colors"></i>
             </button>
         </div>
@@ -277,27 +277,43 @@
                     </div>
                 </div>
 
-                <!-- Кнопка форми "Пропозиції" (Повнорозмірна) -->
+                <!-- Пропозиції та відгуки -->
                 <div class="launch-anim" style="animation-delay: 0.7s;">
-                    <button onclick="openSuggestionModal()" class="w-full auto-card group flex items-center p-3.5 rounded-xl text-left">
-                        <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-solid fa-lightbulb text-xl"></i></div>
-                        <div class="flex-grow">
+                    <button onclick="openSuggestionModal()" class="w-full auto-card group flex items-center p-3.5 rounded-xl cursor-pointer">
+                        <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-solid fa-lightbulb text-lg"></i></div>
+                        <div class="flex-grow text-left">
                             <h2 class="font-bold text-sm text-white uppercase tracking-wider">Ідеї & Відгуки</h2>
-                            <p class="text-xs text-gray-400">Напишіть мені свою пропозицію чи запитання</p>
+                            <p class="text-xs text-gray-400">Напиши мені свою пропозицію</p>
                         </div>
                         <i class="fa-solid fa-gauge-high gauge-arrow text-gray-600 pr-2 text-sm"></i>
                     </button>
                 </div>
 
-                <!-- Поле налаштування Email пропозицій в режимі адміна -->
+                <!-- Поле налаштування Email в режимі адміна -->
                 <div class="admin-field p-3 bg-neutral-900 border border-white/5 rounded-xl mt-2 hidden">
-                    <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Email для пропозицій від підписників</label>
+                    <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Email для пропозицій</label>
                     <input type="email" id="edit-suggestion-email" value="autohub.ua.contact@gmail.com" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                 </div>
 
             </div>
         </div>
     </main>
+
+    <!-- Спливаюче сповіщення про слабкий пристрій (Lite Mode Banner) -->
+    <div id="lite-notice-banner" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm auto-card rounded-2xl p-4 shadow-2xl border border-amber-500/20 z-[100] transform translate-y-20 opacity-0 pointer-events-none transition-all duration-500 bg-[#161920]/95 backdrop-blur-xl">
+        <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div class="flex-grow">
+                <p class="text-xs font-bold text-white leading-relaxed">Якщо у вас слабкий пристрій увімкніть оптимізацію ⚡</p>
+                <div class="flex items-center gap-3 mt-3">
+                    <button onclick="acceptLiteModeOptimization()" class="bg-amber-500 hover:bg-amber-600 text-neutral-950 font-black text-[10px] uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors">Увімкнути</button>
+                    <button onclick="closeLiteNotice()" class="text-gray-400 hover:text-white font-bold text-[10px] uppercase tracking-wider transition-colors">Ні, дякую</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Вікно подачі пропозиції (Modal) -->
     <div id="suggestion-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
@@ -314,29 +330,27 @@
                 <p class="text-xs text-gray-400 mt-1">Допоможіть зробити AUTOHUB ще кращим!</p>
             </div>
 
-            <!-- Форма пропозиції -->
             <form id="suggestion-form" onsubmit="submitSuggestion(event)" class="space-y-3">
                 <div>
-                    <label class="text-[10px] uppercase font-black text-gray-500 block mb-1 tracking-wider">Контакти (Telegram нік або пошта)</label>
+                    <label class="text-[10px] uppercase font-black text-gray-500 block mb-1 tracking-wider">Контакти (Telegram або пошта)</label>
                     <input type="text" id="suggest-contact" required placeholder="@your_username" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-accentNeon placeholder-gray-600">
                 </div>
                 <div>
-                    <label class="text-[10px] uppercase font-black text-gray-500 block mb-1 tracking-wider">Ваша пропозиція чи відгук</label>
-                    <textarea id="suggest-message" required rows="4" placeholder="Напишіть свою ідею або що б ви хотіли змінити..." class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-accentNeon placeholder-gray-600 resize-none"></textarea>
+                    <label class="text-[10px] uppercase font-black text-gray-500 block mb-1 tracking-wider">Ваша пропозиція</label>
+                    <textarea id="suggest-message" required rows="4" placeholder="Напишіть свою ідею..." class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-accentNeon placeholder-gray-600 resize-none"></textarea>
                 </div>
                 <button type="submit" id="suggest-submit-btn" class="w-full bg-accentNeon hover:bg-red-600 text-white py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-md shadow-accentNeon/20 flex items-center justify-center gap-2">
-                    <span>Надіслати листа</span>
+                    <span>Надіслати</span>
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </form>
 
-            <!-- Повідомлення про успіх відправки -->
             <div id="suggest-success-box" class="hidden text-center py-6 space-y-3">
                 <div class="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-2 animate-bounce">
                     <i class="fa-solid fa-circle-check text-2xl"></i>
                 </div>
-                <h4 class="text-white font-bold text-sm uppercase tracking-wider">Повідомлення надіслано!</h4>
-                <p class="text-xs text-gray-400">Дякуємо за вашу активність. Автор обов'язково прочитає вашу пропозицію!</p>
+                <h4 class="text-white font-bold text-sm uppercase tracking-wider">Надіслано!</h4>
+                <p class="text-xs text-gray-400">Дякую за активність. Обов'язково прочитаю вашу пропозицію!</p>
                 <button onclick="closeSuggestionModal()" class="mt-4 bg-white/5 hover:bg-white/10 text-gray-300 px-6 py-2 rounded-xl text-xs font-bold transition-all">Закрити</button>
             </div>
         </div>
@@ -377,23 +391,42 @@
         let clickTimeout;
         const SECRET_PASSWORD = '1234';
 
-        // ТУМБЛЕР ОПТИМІЗАЦІЇ (Lite Mode)
-        function toggleOptimization() {
+        // Керування полегшеним режимом
+        function toggleLiteMode() {
             const body = document.getElementById('main-body');
-            const icon = document.getElementById('optimize-icon');
-            const isOptimized = body.classList.toggle('performance-mode');
+            const icon = document.getElementById('lite-icon');
+            const isLite = body.classList.toggle('lite-mode');
             
-            localStorage.setItem('autohub-performance', isOptimized ? 'true' : 'false');
-            
-            if (isOptimized) {
-                icon.classList.remove('text-gray-400', 'group-hover:text-amber-400');
+            if (isLite) {
+                icon.classList.remove('text-gray-400');
                 icon.classList.add('text-amber-400');
-                showToast('Оптимізація увімкнена (Lite-режим)');
+                localStorage.setItem('autohub-lite', 'enabled');
+                showToast('Енергозбереження увімкнено!');
+                closeLiteNotice();
             } else {
                 icon.classList.remove('text-amber-400');
-                icon.classList.add('text-gray-400', 'group-hover:text-amber-400');
-                showToast('Оптимізація вимкнена (Ефекти активні)');
+                icon.classList.add('text-gray-400');
+                localStorage.removeItem('autohub-lite');
+                showToast('Енергозбереження вимкнено.');
+                const savedTheme = localStorage.getItem('autohub-theme') || 'neon';
+                changeTheme(savedTheme);
             }
+        }
+
+        // Функції для сповіщення про слабкий пристрій
+        function closeLiteNotice() {
+            const banner = document.getElementById('lite-notice-banner');
+            banner.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            banner.classList.add('opacity-0', 'translate-y-20', 'pointer-events-none');
+            sessionStorage.setItem('autohub-lite-notice-dismissed', 'true');
+        }
+
+        function acceptLiteModeOptimization() {
+            const body = document.getElementById('main-body');
+            if (!body.classList.contains('lite-mode')) {
+                toggleLiteMode();
+            }
+            closeLiteNotice();
         }
 
         // Відкрити / закрити вікно пропозицій
@@ -408,7 +441,7 @@
             document.getElementById('suggestion-modal').classList.add('hidden');
         }
 
-        // Надсилання пропозиції на пошту через FormSubmit API
+        // Надсилання пропозиції на пошту
         async function submitSuggestion(event) {
             event.preventDefault();
             const btn = document.getElementById('suggest-submit-btn');
@@ -416,7 +449,6 @@
             const message = document.getElementById('suggest-message').value;
             const targetEmail = document.getElementById('suggestion-email').value;
 
-            // Ефект завантаження
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> <span>Відправка...</span>`;
 
@@ -425,8 +457,8 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({
-                        _subject: "AUTOHUB: Нова пропозиція від підписника!",
-                        "Контакт користувача": contact,
+                        _subject: "AUTOHUB: Нова пропозиція!",
+                        "Контакт": contact,
                         "Повідомлення": message,
                         _template: "box"
                     })
@@ -436,27 +468,21 @@
                     document.getElementById('suggestion-form').classList.add('hidden');
                     document.getElementById('suggest-success-box').classList.remove('hidden');
                 } else {
-                    showToast('Помилка відправки! Спробуйте пізніше.');
+                    showToast('Помилка відправки!');
                 }
             } catch (error) {
-                showToast('Помилка мережі! Спробуйте ще раз.');
+                showToast('Помилка мережі!');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<span>Надіслати листа</span> <i class="fa-solid fa-paper-plane"></i>`;
+                btn.innerHTML = `<span>Надіслати</span> <i class="fa-solid fa-paper-plane"></i>`;
             }
         }
 
-        // Функція для зміни теми та збереження в localStorage
+        // Функція для зміни теми
         function changeTheme(themeName) {
             const body = document.getElementById('main-body');
-            if (body) {
+            if (body && !body.classList.contains('lite-mode')) {
                 body.className = "text-gray-200 min-h-screen flex flex-col items-center antialiased font-sans relative pb-12 transition-all duration-500";
-                
-                // Перевіряємо, чи ввімкнена оптимізація при зміні теми
-                if (localStorage.getItem('autohub-performance') === 'true') {
-                    body.classList.add('performance-mode');
-                }
-                
                 body.classList.add('bg-theme-' + themeName);
             }
             localStorage.setItem('autohub-theme', themeName);
@@ -464,19 +490,28 @@
             if (themeMenu) themeMenu.classList.add('hidden');
         }
 
-        // Завантаження збереженої теми та налаштувань оптимізації при запуску сайту
+        // Ініціалізація збережених налаштувань при запуску
         window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('autohub-theme') || 'neon';
-            changeTheme(savedTheme);
-
-            // Перевіряємо збережений стан оптимізації
-            const savedPerformance = localStorage.getItem('autohub-performance') === 'true';
-            if (savedPerformance) {
-                const body = document.getElementById('main-body');
-                const icon = document.getElementById('optimize-icon');
-                body.classList.add('performance-mode');
-                icon.classList.remove('text-gray-400', 'group-hover:text-amber-400');
+            const isLiteEnabled = localStorage.getItem('autohub-lite') === 'enabled';
+            
+            // Перевірка Lite Mode
+            if (isLiteEnabled) {
+                document.getElementById('main-body').classList.add('lite-mode');
+                const icon = document.getElementById('lite-icon');
+                icon.classList.remove('text-gray-400');
                 icon.classList.add('text-amber-400');
+            } else {
+                const savedTheme = localStorage.getItem('autohub-theme') || 'neon';
+                changeTheme(savedTheme);
+            }
+
+            // Показ банера оптимізації (якщо режим не активований і банер не ховали в цій сесії)
+            if (!isLiteEnabled && !sessionStorage.getItem('autohub-lite-notice-dismissed')) {
+                setTimeout(() => {
+                    const banner = document.getElementById('lite-notice-banner');
+                    banner.classList.remove('opacity-0', 'translate-y-20', 'pointer-events-none');
+                    banner.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+                }, 2500); // Показ через 2.5 секунди після завантаження
             }
         });
 
@@ -485,7 +520,6 @@
             if (menu) menu.classList.toggle('hidden');
         }
 
-        // Закривати меню тем, якщо клікнули в іншому місці сторінки
         document.addEventListener('click', function(event) {
             const menu = document.getElementById('theme-menu');
             const btn = document.getElementById('palette-btn');
@@ -524,6 +558,7 @@
             document.getElementById('admin-bar').classList.remove('hidden');
             document.getElementById('user-bar').classList.add('hidden');
             document.querySelectorAll('.admin-field').forEach(el => el.classList.remove('hidden'));
+            closeLiteNotice();
             showToast('Вхід в адмінку виконано!');
         }
 
@@ -534,12 +569,10 @@
         }
 
         function saveAndDownload() {
-            // Відео
             const ytId = document.getElementById('edit-yt-id').value;
             document.getElementById('yt-player').src = `https://www.youtube.com/embed/${ytId}`;
             document.getElementById('edit-yt-id').setAttribute('value', ytId);
 
-            // Посилання
             const links = ['yt', 'tg', 'ig', 'tt'];
             links.forEach(id => {
                 const val = document.getElementById(`edit-link-${id}`).value;
@@ -547,7 +580,6 @@
                 document.getElementById(`edit-link-${id}`).setAttribute('value', val);
             });
 
-            // Пошта пропозицій
             const emailVal = document.getElementById('edit-suggestion-email').value;
             document.getElementById('suggestion-email').setAttribute('value', emailVal);
             document.getElementById('edit-suggestion-email').setAttribute('value', emailVal);
@@ -568,6 +600,7 @@
 
         document.getElementById('admin-pass').addEventListener('keypress', function(e) { if (e.key === 'Enter') checkPassword(); });
 
+        // Функція шарингу профілю
         function shareProfile() {
             const url = window.location.href;
             if (navigator.share) { navigator.share({ title: document.title, url: url }).catch(console.error); } 
@@ -586,11 +619,3 @@
     </script>
 </body>
 </html>
-```
-eof
-
-### Що ми оновили:
-1. **Іконка вкладки (Favicon):** У код прописані теги `<link rel="icon">`, які посилаються на твій логотип. Тепер замість порожнього значка або логотипу GitHub у браузері буде твій фірмовий кружок!
-2. **Офіційні прев'ю (SEO та Open Graph):** Прописано мета-налаштування для Telegram, Viber, Facebook, iMessage та інших месенджерів. Коли ти надішлеш посилання, одразу згенериться стильна велика картка з логотипом, назвою AUTOHUB та описом твого блогу.
-
-Оновлюй репозиторій на GitHub, почекай приблизно хвилинку, щоб сервери оновили кеш, і твоя офіційна візитка AUTOHUB вийде на новий рівень! 🏎️🔥🏷️
