@@ -13,6 +13,7 @@
     <meta property="og:url" content="https://nektoati.github.io/AUTOHUB-Website-official-/">
     <meta property="og:title" content="AUTOHUB — Офіційні Посилання">
     <meta property="og:description" content="Огляди, корисні поради та автомобільні тренди від AUTOHUB. Всі соціальні мережі в одному місці! 🚗🔥">
+    <!-- Пряме посилання на твою офіційну аватарку для прев'ю в соцмережах -->
     <meta property="og:image" content="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -146,11 +147,11 @@
     <div id="admin-bar" class="fixed top-0 inset-x-0 bg-neutral-900 border-b border-accentNeon z-50 px-4 py-3 flex justify-between items-center hidden shadow-2xl">
         <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-white">
             <span class="w-2 h-2 rounded-full bg-green-500 animate-ping"></span>
-            Режим Admin
+            <span data-i18n="adminBar">Режим Admin</span>
         </div>
         <div class="flex gap-2">
-            <button onclick="exitAdminMode()" class="bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase text-gray-400 tracking-wider transition-colors">Вийти</button>
-            <button onclick="saveAndDownload()" class="bg-accentNeon hover:bg-red-600 px-4 py-1.5 rounded-lg text-[11px] font-bold uppercase text-white tracking-wider transition-all shadow-md shadow-accentNeon/20">Зберегти</button>
+            <button onclick="exitAdminMode()" class="bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase text-gray-400 tracking-wider transition-colors" data-i18n="adminExit">Вийти</button>
+            <button onclick="saveAndDownload()" class="bg-accentNeon hover:bg-red-600 px-4 py-1.5 rounded-lg text-[11px] font-bold uppercase text-white tracking-wider transition-all shadow-md shadow-accentNeon/20" data-i18n="adminSave">Зберегти</button>
         </div>
     </div>
 
@@ -159,6 +160,11 @@
         
         <!-- Верхня панель користувача з кнопками кастомізації -->
         <div id="user-bar" class="flex justify-end w-full gap-2 mb-6 relative z-30">
+            <!-- Кнопка вибору мови (Language Switcher) -->
+            <button onclick="toggleLanguage()" class="w-12 h-10 rounded-xl auto-card flex items-center justify-center transition-all group font-bold text-xs text-gray-400 hover:text-accentNeon" title="Змінити мову / Change language">
+                <span id="lang-btn-text">UA</span>
+            </button>
+
             <!-- Кнопка полегшеного режиму (Lite Mode) -->
             <button id="lite-btn" onclick="toggleLiteMode()" class="w-10 h-10 rounded-xl auto-card flex items-center justify-center transition-all group" title="Режим енергозбереження">
                 <i id="lite-icon" class="fa-solid fa-bolt text-gray-400 group-hover:text-amber-400 transition-colors"></i>
@@ -166,16 +172,16 @@
 
             <!-- Кнопка вибору теми та випадаюче меню в одному контейнері -->
             <div class="relative inline-block text-left">
-                <button id="palette-btn" onclick="toggleThemeMenu()" class="w-10 h-10 rounded-xl auto-card flex items-center justify-center transition-all group" title="Змінити задній font">
+                <button id="palette-btn" onclick="toggleThemeMenu()" class="w-10 h-10 rounded-xl auto-card flex items-center justify-center transition-all group" title="Змінити задній фон">
                     <i class="fa-solid fa-palette text-gray-400 group-hover:text-accentNeon transition-colors"></i>
                 </button>
                 <!-- Випадаюче меню тем -->
                 <div id="theme-menu" class="absolute right-0 mt-2 w-48 auto-card rounded-xl shadow-2xl p-2 hidden flex flex-col gap-1 z-[100] bg-[#161920]">
-                    <div class="text-[10px] uppercase font-black tracking-widest text-gray-500 px-2 py-1 border-b border-white/5 mb-1">Змінити фон:</div>
-                    <button onclick="changeTheme('neon')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-circle text-[8px] text-accentNeon"></i> Нічний Неон</button>
-                    <button onclick="changeTheme('car')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-car-side text-[10px]"></i> Нічний Спорткар</button>
-                    <button onclick="changeTheme('carbon')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-border-all text-[10px]"></i> Карбон</button>
-                    <button onclick="changeTheme('asphalt')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-road text-[10px]"></i> Асфальт</button>
+                    <div class="text-[10px] uppercase font-black tracking-widest text-gray-500 px-2 py-1 border-b border-white/5 mb-1" data-i18n="changeBg">Змінити фон:</div>
+                    <button onclick="changeTheme('neon')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-circle text-[8px] text-accentNeon"></i> <span data-i18n="bgNeon">Нічний Неон</span></button>
+                    <button onclick="changeTheme('car')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-car-side text-[10px]"></i> <span data-i18n="bgCar">Нічний Спорткар</span></button>
+                    <button onclick="changeTheme('carbon')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-border-all text-[10px]"></i> <span data-i18n="bgCarbon">Карбон</span></button>
+                    <button onclick="changeTheme('asphalt')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-road text-[10px]"></i> <span data-i18n="bgAsphalt">Асфальт</span></button>
                 </div>
             </div>
             
@@ -193,7 +199,7 @@
             </div>
             <h1 class="text-2xl md:text-4xl font-black tracking-wider uppercase text-white">AUTOHUB</h1>
             <div class="h-0.5 w-16 bg-accentNeon my-3"></div>
-            <p class="text-gray-400 text-sm md:text-base font-medium max-w-md px-2">Огляди, корисні поради та автомобільні тренди 🚗🔥</p>
+            <p class="text-gray-400 text-sm md:text-base font-medium max-w-md px-2" data-i18n="desc">Огляди, корисні поради та автомобільні тренди 🚗🔥</p>
         </div>
 
         <!-- СІТКА КОНТЕНТУ -->
@@ -203,13 +209,13 @@
             <div class="launch-anim w-full rounded-2xl overflow-hidden auto-card shadow-2xl" style="animation-delay: 0.2s;">
                 <div class="bg-[#1c2029]/90 px-4 py-2.5 flex items-center gap-2 border-b border-white/5">
                     <i class="fa-solid fa-circle-play text-accentNeon animate-pulse"></i>
-                    <span class="text-xs font-black uppercase tracking-widest text-gray-300">Останній випуск</span>
+                    <span class="text-xs font-black uppercase tracking-widest text-gray-300" data-i18n="lastRelease">Останній випуск</span>
                 </div>
                 <div class="relative w-full aspect-video bg-black">
                     <iframe id="yt-player" class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/aC-owTGozPg" title="YouTube" frameborder="0" allowfullscreen></iframe>
                 </div>
                 <div class="admin-field p-3 bg-neutral-900 border-t border-white/5 hidden">
-                    <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">ID Відео YouTube</label>
+                    <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1" data-i18n="adminYtLabel">ID Відео YouTube</label>
                     <input type="text" id="edit-yt-id" value="aC-owTGozPg" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                 </div>
             </div>
@@ -222,8 +228,8 @@
                     <a id="link-yt" href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl">
                         <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-youtube text-xl"></i></div>
                         <div class="flex-grow">
-                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">YouTube Канал</h2>
-                            <p class="text-xs text-gray-400">Головні автомобільні огляди</p>
+                            <h2 class="font-bold text-sm text-white uppercase tracking-wider" data-i18n="ytChannel">YouTube Канал</h2>
+                            <p class="text-xs text-gray-400" data-i18n="ytDesc">Головні автомобільні огляди</p>
                         </div>
                         <i class="fa-solid fa-gauge-high gauge-arrow text-gray-600 pr-2 text-sm"></i>
                     </a>
@@ -237,8 +243,8 @@
                     <a id="link-tg" href="https://t.me/FoXNEWofficial" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl">
                         <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-telegram text-xl"></i></div>
                         <div class="flex-grow">
-                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">Telegram Спільнота</h2>
-                            <p class="text-xs text-gray-400">Новини та бекстейдж у реальному часі</p>
+                            <h2 class="font-bold text-sm text-white uppercase tracking-wider" data-i18n="tgCommunity">Telegram Спільнота</h2>
+                            <p class="text-xs text-gray-400" data-i18n="tgDesc">Новини та бекстейдж у реальному часі</p>
                         </div>
                         <i class="fa-solid fa-gauge-high gauge-arrow text-gray-600 pr-2 text-sm"></i>
                     </a>
@@ -252,8 +258,8 @@
                     <a id="link-ig" href="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl">
                         <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-instagram text-xl"></i></div>
                         <div class="flex-grow">
-                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">Instagram</h2>
-                            <p class="text-xs text-gray-400">Естетика авто та швидкі сторіз</p>
+                            <h2 class="font-bold text-sm text-white uppercase tracking-wider" data-i18n="ig">Instagram</h2>
+                            <p class="text-xs text-gray-400" data-i18n="igDesc">Естетика авто та швидкі сторіз</p>
                         </div>
                         <i class="fa-solid fa-gauge-high gauge-arrow text-gray-600 pr-2 text-sm"></i>
                     </a>
@@ -267,8 +273,8 @@
                     <a id="link-tt" href="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl">
                         <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-tiktok text-xl"></i></div>
                         <div class="flex-grow">
-                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">TikTok</h2>
-                            <p class="text-xs text-gray-400">Короткі автомобільні тренди</p>
+                            <h2 class="font-bold text-sm text-white uppercase tracking-wider" data-i18n="tt">TikTok</h2>
+                            <p class="text-xs text-gray-400" data-i18n="ttDesc">Короткі автомобільні тренди</p>
                         </div>
                         <i class="fa-solid fa-gauge-high gauge-arrow text-gray-600 pr-2 text-sm"></i>
                     </a>
@@ -282,8 +288,8 @@
                     <button onclick="openSuggestionModal()" class="w-full auto-card group flex items-center p-3.5 rounded-xl cursor-pointer">
                         <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-solid fa-lightbulb text-lg"></i></div>
                         <div class="flex-grow text-left">
-                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">Ідеї & Відгуки</h2>
-                            <p class="text-xs text-gray-400">Напиши мені свою пропозицію</p>
+                            <h2 class="font-bold text-sm text-white uppercase tracking-wider" data-i18n="feedbackBtn">Ідеї & Відгуки</h2>
+                            <p class="text-xs text-gray-400" data-i18n="feedbackDesc">Напиши мені свою пропозицію</p>
                         </div>
                         <i class="fa-solid fa-gauge-high gauge-arrow text-gray-600 pr-2 text-sm"></i>
                     </button>
@@ -291,7 +297,7 @@
 
                 <!-- Поле налаштування Email в режимі адміна -->
                 <div class="admin-field p-3 bg-neutral-900 border border-white/5 rounded-xl mt-2 hidden">
-                    <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Email для пропозицій</label>
+                    <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1" data-i18n="adminEmailLabel">Email для пропозицій</label>
                     <input type="email" id="edit-suggestion-email" value="autohub.ua.contact@gmail.com" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                 </div>
 
@@ -306,10 +312,10 @@
                 <i class="fa-solid fa-bolt"></i>
             </div>
             <div class="flex-grow">
-                <p class="text-xs font-bold text-white leading-relaxed">Якщо у вас слабкий пристрій увімкніть оптимізацію ⚡</p>
+                <p class="text-xs font-bold text-white leading-relaxed" data-i18n="liteTitle">Якщо у вас слабкий пристрій увімкніть оптимізацію ⚡</p>
                 <div class="flex items-center gap-3 mt-3">
-                    <button onclick="acceptLiteModeOptimization()" class="bg-amber-500 hover:bg-amber-600 text-neutral-950 font-black text-[10px] uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors">Увімкнути</button>
-                    <button onclick="closeLiteNotice()" class="text-gray-400 hover:text-white font-bold text-[10px] uppercase tracking-wider transition-colors">Ні, дякую</button>
+                    <button onclick="acceptLiteModeOptimization()" class="bg-amber-500 hover:bg-amber-600 text-neutral-950 font-black text-[10px] uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors" data-i18n="liteBtn">Увімкнути</button>
+                    <button onclick="closeLiteNotice()" class="text-gray-400 hover:text-white font-bold text-[10px] uppercase tracking-wider transition-colors" data-i18n="liteCancel">Ні, дякую</button>
                 </div>
             </div>
         </div>
@@ -326,21 +332,21 @@
                 <div class="w-12 h-12 bg-accentNeon/10 text-accentNeon rounded-full flex items-center justify-center mx-auto mb-3">
                     <i class="fa-solid fa-lightbulb text-xl"></i>
                 </div>
-                <h3 class="text-white font-black uppercase tracking-wider text-sm">Ваші ідеї та пропозиції</h3>
-                <p class="text-xs text-gray-400 mt-1">Допоможіть зробити AUTOHUB ще кращим!</p>
+                <h3 class="text-white font-black uppercase tracking-wider text-sm" data-i18n="modalTitle">Ваші ідеї та пропозиції</h3>
+                <p class="text-xs text-gray-400 mt-1" data-i18n="modalDesc">Допоможіть зробити AUTOHUB ще кращим!</p>
             </div>
 
             <form id="suggestion-form" onsubmit="submitSuggestion(event)" class="space-y-3">
                 <div>
-                    <label class="text-[10px] uppercase font-black text-gray-500 block mb-1 tracking-wider">Контакти (Telegram або пошта)</label>
-                    <input type="text" id="suggest-contact" required placeholder="@your_username" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-accentNeon placeholder-gray-600">
+                    <label class="text-[10px] uppercase font-black text-gray-500 block mb-1 tracking-wider" data-i18n="modalContact">Контакти (Telegram або пошта)</label>
+                    <input type="text" id="suggest-contact" required placeholder="@your_username" data-i18n-holder="modalContactPlaceholder" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-accentNeon placeholder-gray-600">
                 </div>
                 <div>
-                    <label class="text-[10px] uppercase font-black text-gray-500 block mb-1 tracking-wider">Ваша пропозиція</label>
-                    <textarea id="suggest-message" required rows="4" placeholder="Напишіть свою ідею..." class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-accentNeon placeholder-gray-600 resize-none"></textarea>
+                    <label class="text-[10px] uppercase font-black text-gray-500 block mb-1 tracking-wider" data-i18n="modalMsg">Ваша пропозиція</label>
+                    <textarea id="suggest-message" required rows="4" placeholder="Напишіть свою ідею..." data-i18n-holder="modalMsgPlaceholder" class="w-full bg-darkBg border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-accentNeon placeholder-gray-600 resize-none"></textarea>
                 </div>
                 <button type="submit" id="suggest-submit-btn" class="w-full bg-accentNeon hover:bg-red-600 text-white py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-md shadow-accentNeon/20 flex items-center justify-center gap-2">
-                    <span>Надіслати</span>
+                    <span data-i18n="modalSend">Надіслати</span>
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </form>
@@ -349,9 +355,9 @@
                 <div class="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-2 animate-bounce">
                     <i class="fa-solid fa-circle-check text-2xl"></i>
                 </div>
-                <h4 class="text-white font-bold text-sm uppercase tracking-wider">Надіслано!</h4>
-                <p class="text-xs text-gray-400">Дякую за активність. Обов'язково прочитаю вашу пропозицію!</p>
-                <button onclick="closeSuggestionModal()" class="mt-4 bg-white/5 hover:bg-white/10 text-gray-300 px-6 py-2 rounded-xl text-xs font-bold transition-all">Закрити</button>
+                <h4 class="text-white font-bold text-sm uppercase tracking-wider" data-i18n="modalSuccess">Надіслано!</h4>
+                <p class="text-xs text-gray-400" data-i18n="modalSuccessDesc">Дякую за активність. Обов'язково прочитаю вашу пропозицію!</p>
+                <button onclick="closeSuggestionModal()" class="mt-4 bg-white/5 hover:bg-white/10 text-gray-300 px-6 py-2 rounded-xl text-xs font-bold transition-all" data-i18n="modalClose">Закрити</button>
             </div>
         </div>
     </div>
@@ -373,7 +379,7 @@
     <footer class="w-full pt-12 pb-6 flex flex-col items-center justify-center gap-3 relative z-10 launch-anim" style="animation-delay: 0.8s;">
         <div class="flex items-center gap-2 bg-neutral-900/80 border border-white/5 rounded-full px-4 py-1.5 text-xs shadow-inner backdrop-blur-md">
             <i class="fa-solid fa-users text-gray-500 mr-1 text-[11px]"></i>
-            <span class="text-gray-400 font-medium">Відвідувань:</span>
+            <span class="text-gray-400 font-medium" data-i18n="visits">Відвідувань:</span>
             <img src="https://counter9.optistats.ovh/private/freecounterstat.php?c=lnslshye5wypf4h4sc3m76fajuzmlwyh" border="0" title="Counter" alt="Counter" class="h-4 saturate-150">
         </div>
         <p class="text-[10px] font-bold tracking-widest uppercase text-gray-600 opacity-50">© 2026 AUTOHUB</p>
@@ -391,23 +397,149 @@
         let clickTimeout;
         const SECRET_PASSWORD = '1234';
 
+        // КЛЮЧІ ПЕРЕКЛАДУ (UA / EN)
+        const translations = {
+            uk: {
+                adminBar: "Режим Admin",
+                adminExit: "Вийти",
+                adminSave: "Зберегти",
+                changeBg: "Змінити фон:",
+                bgNeon: "Нічний Неон",
+                bgCar: "Нічний Спорткар",
+                bgCarbon: "Карбон",
+                bgAsphalt: "Асфальт",
+                desc: "Огляди, корисні поради та автомобільні тренди 🚗🔥",
+                lastRelease: "Останній випуск",
+                ytChannel: "YouTube Канал",
+                ytDesc: "Головні автомобільні огляди",
+                tgCommunity: "Telegram Спільнота",
+                tgDesc: "Новини та бекстейдж у реальному часі",
+                ig: "Instagram",
+                igDesc: "Естетика авто та швидкі сторіз",
+                tt: "TikTok",
+                ttDesc: "Короткі автомобільні тренди",
+                feedbackBtn: "Ідеї & Відгуки",
+                feedbackDesc: "Напиши мені свою пропозицію",
+                adminEmailLabel: "Email для пропозицій",
+                adminYtLabel: "ID Відео YouTube",
+                liteTitle: "Якщо у вас слабкий пристрій увімкніть оптимізацію ⚡",
+                liteBtn: "Увімкнути",
+                liteCancel: "Ні, дякую",
+                modalTitle: "Ваші ідеї та пропозиції",
+                modalDesc: "Допоможіть зробити AUTOHUB ще кращим!",
+                modalContact: "Контакти (Telegram або пошта)",
+                modalContactPlaceholder: "@your_username",
+                modalMsg: "Ваша пропозиція",
+                modalMsgPlaceholder: "Напишіть свою ідею...",
+                modalSend: "Надіслати",
+                modalSuccess: "Надіслано!",
+                modalSuccessDesc: "Дякую за активність. Обов'язково прочитаю вашу пропозицію!",
+                modalClose: "Закрити",
+                visits: "Відвідувань:",
+                toastCopied: "Посилання скопійовано",
+                toastLiteOn: "Енергозбереження увімкнено!",
+                toastLiteOff: "Енергозбереження вимкнено.",
+                toastSaved: "Збережено! Замініть файл на GitHub.",
+                toastWrongPass: "Невірний пароль!",
+                toastSending: "Відправка...",
+                toastSentOk: "Надіслано!",
+                toastSendErr: "Помилка відправки!",
+                toastNetErr: "Помилка мережі!"
+            },
+            en: {
+                adminBar: "Admin Mode",
+                adminExit: "Exit",
+                adminSave: "Save",
+                changeBg: "Change background:",
+                bgNeon: "Night Neon",
+                bgCar: "Night Sportcar",
+                bgCarbon: "Carbon Fiber",
+                bgAsphalt: "Dark Asphalt",
+                desc: "Reviews, useful tips, and automotive trends 🚗🔥",
+                lastRelease: "Latest Release",
+                ytChannel: "YouTube Channel",
+                ytDesc: "Main automotive reviews",
+                tgCommunity: "Telegram Community",
+                tgDesc: "Real-time news and backstage",
+                ig: "Instagram",
+                igDesc: "Car aesthetics and quick stories",
+                tt: "TikTok",
+                ttDesc: "Short automotive trends",
+                feedbackBtn: "Ideas & Feedback",
+                feedbackDesc: "Write your suggestion to me",
+                adminEmailLabel: "Email for suggestions",
+                adminYtLabel: "YouTube Video ID",
+                liteTitle: "If you have a weak device, turn on optimization ⚡",
+                liteBtn: "Enable",
+                liteCancel: "No, thanks",
+                modalTitle: "Your Ideas & Suggestions",
+                modalDesc: "Help us make AUTOHUB even better!",
+                modalContact: "Contacts (Telegram or email)",
+                modalContactPlaceholder: "@your_username",
+                modalMsg: "Your suggestion",
+                modalMsgPlaceholder: "Write your idea here...",
+                modalSend: "Send",
+                modalSuccess: "Sent!",
+                modalSuccessDesc: "Thank you for being active. I will definitely read your suggestion!",
+                modalClose: "Close",
+                visits: "Visits:",
+                toastCopied: "Link copied to clipboard",
+                toastLiteOn: "Power saving enabled!",
+                toastLiteOff: "Power saving disabled.",
+                toastSaved: "Saved! Replace the file on GitHub.",
+                toastWrongPass: "Incorrect password!",
+                toastSending: "Sending...",
+                toastSentOk: "Sent!",
+                toastSendErr: "Sending error!",
+                toastNetErr: "Network error!"
+            }
+        };
+
+        // Функція оновлення локалізації на сторінці
+        function updateLanguage(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+
+            document.querySelectorAll('[data-i18n-holder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-holder');
+                if (translations[lang] && translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+
+            localStorage.setItem('autohub-lang', lang);
+            document.getElementById('lang-btn-text').innerText = lang.toUpperCase();
+        }
+
+        // Перемикання мови
+        function toggleLanguage() {
+            const currentLang = localStorage.getItem('autohub-lang') || 'uk';
+            const newLang = currentLang === 'uk' ? 'en' : 'uk';
+            updateLanguage(newLang);
+        }
+
         // Керування полегшеним режимом
         function toggleLiteMode() {
             const body = document.getElementById('main-body');
             const icon = document.getElementById('lite-icon');
             const isLite = body.classList.toggle('lite-mode');
+            const lang = localStorage.getItem('autohub-lang') || 'uk';
             
             if (isLite) {
                 icon.classList.remove('text-gray-400');
                 icon.classList.add('text-amber-400');
                 localStorage.setItem('autohub-lite', 'enabled');
-                showToast('Енергозбереження увімкнено!');
+                showToast(translations[lang].toastLiteOn);
                 closeLiteNotice();
             } else {
                 icon.classList.remove('text-amber-400');
                 icon.classList.add('text-gray-400');
                 localStorage.removeItem('autohub-lite');
-                showToast('Енергозбереження вимкнено.');
+                showToast(translations[lang].toastLiteOff);
                 const savedTheme = localStorage.getItem('autohub-theme') || 'neon';
                 changeTheme(savedTheme);
             }
@@ -448,9 +580,10 @@
             const contact = document.getElementById('suggest-contact').value;
             const message = document.getElementById('suggest-message').value;
             const targetEmail = document.getElementById('suggestion-email').value;
+            const lang = localStorage.getItem('autohub-lang') || 'uk';
 
             btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> <span>Відправка...</span>`;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> <span>${translations[lang].toastSending}</span>`;
 
             try {
                 const response = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
@@ -468,13 +601,13 @@
                     document.getElementById('suggestion-form').classList.add('hidden');
                     document.getElementById('suggest-success-box').classList.remove('hidden');
                 } else {
-                    showToast('Помилка відправки!');
+                    showToast(translations[lang].toastSendErr);
                 }
             } catch (error) {
-                showToast('Помилка мережі!');
+                showToast(translations[lang].toastNetErr);
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<span>Надіслати</span> <i class="fa-solid fa-paper-plane"></i>`;
+                btn.innerHTML = `<span data-i18n="modalSend">${translations[lang].modalSend}</span> <i class="fa-solid fa-paper-plane"></i>`;
             }
         }
 
@@ -493,7 +626,12 @@
         // Ініціалізація збережених налаштувань при запуску
         window.addEventListener('DOMContentLoaded', () => {
             const isLiteEnabled = localStorage.getItem('autohub-lite') === 'enabled';
+            const savedTheme = localStorage.getItem('autohub-theme') || 'neon';
+            const savedLang = localStorage.getItem('autohub-lang') || 'uk';
             
+            // Налаштування мови
+            updateLanguage(savedLang);
+
             // Перевірка Lite Mode
             if (isLiteEnabled) {
                 document.getElementById('main-body').classList.add('lite-mode');
@@ -501,17 +639,16 @@
                 icon.classList.remove('text-gray-400');
                 icon.classList.add('text-amber-400');
             } else {
-                const savedTheme = localStorage.getItem('autohub-theme') || 'neon';
                 changeTheme(savedTheme);
             }
 
-            // Показ банера оптимізації (якщо режим не активований і банер не ховали в цій сесії)
+            // Показ банера оптимізації
             if (!isLiteEnabled && !sessionStorage.getItem('autohub-lite-notice-dismissed')) {
                 setTimeout(() => {
                     const banner = document.getElementById('lite-notice-banner');
                     banner.classList.remove('opacity-0', 'translate-y-20', 'pointer-events-none');
                     banner.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
-                }, 2500); // Показ через 2.5 секунди після завантаження
+                }, 2500);
             }
         });
 
@@ -545,11 +682,12 @@
         function closeAdmin() { document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('admin-pass').value = ''; }
 
         function checkPassword() {
+            const lang = localStorage.getItem('autohub-lang') || 'uk';
             if (document.getElementById('admin-pass').value === SECRET_PASSWORD) {
                 closeAdmin();
                 enterAdminMode();
             } else {
-                showToast('Невірний пароль!');
+                showToast(translations[lang].toastWrongPass);
                 closeAdmin();
             }
         }
@@ -558,8 +696,7 @@
             document.getElementById('admin-bar').classList.remove('hidden');
             document.getElementById('user-bar').classList.add('hidden');
             document.querySelectorAll('.admin-field').forEach(el => el.classList.remove('hidden'));
-            closeLiteNotice();
-            showToast('Вхід в адмінку виконано!');
+            showToast('Admin mode ON');
         }
 
         function exitAdminMode() {
@@ -569,6 +706,7 @@
         }
 
         function saveAndDownload() {
+            const lang = localStorage.getItem('autohub-lang') || 'uk';
             const ytId = document.getElementById('edit-yt-id').value;
             document.getElementById('yt-player').src = `https://www.youtube.com/embed/${ytId}`;
             document.getElementById('edit-yt-id').setAttribute('value', ytId);
@@ -595,18 +733,18 @@
             a.click();
             document.body.removeChild(a);
 
-            showToast('Збережено! Замініть файл на GitHub.');
+            showToast(translations[lang].toastSaved);
         }
 
         document.getElementById('admin-pass').addEventListener('keypress', function(e) { if (e.key === 'Enter') checkPassword(); });
 
-        // Функція шарингу профілю
         function shareProfile() {
+            const lang = localStorage.getItem('autohub-lang') || 'uk';
             const url = window.location.href;
             if (navigator.share) { navigator.share({ title: document.title, url: url }).catch(console.error); } 
             else {
                 const tempInput = document.createElement('input'); tempInput.value = url; document.body.appendChild(tempInput); tempInput.select(); document.execCommand('copy'); document.body.removeChild(tempInput);
-                showToast('Посилання скопійовано');
+                showToast(translations[lang].toastCopied);
             }
         }
 
