@@ -58,7 +58,6 @@
                 transition: width 0.15s, height 0.15s, background-color 0.15s;
             }
             
-            /* Спортивний приціл навколо курсору */
             #custom-cursor-outline {
                 width: 32px;
                 height: 32px;
@@ -74,7 +73,6 @@
                 box-shadow: 0 0 8px rgba(255, 59, 48, 0.1);
             }
             
-            /* Ефект при наведенні на активні елементи */
             .hover-active #custom-cursor {
                 width: 4px;
                 height: 4px;
@@ -84,13 +82,13 @@
                 width: 48px;
                 height: 48px;
                 border: 2px solid #ff3b30;
-                border-style: double; /* Створює подвійне кільце */
-                transform: translate(-50%, -50%) rotate(45deg); /* Повертається при наведенні */
+                border-style: double;
+                transform: translate(-50%, -50%) rotate(45deg);
                 background: rgba(255, 59, 48, 0.05);
             }
         }
 
-        /* НЕОНОВИЙ СПАЛАХ ПРИ ТОРКАННІ (Ефект для мобільних та кліків ПК) */
+        /* НЕОНОВИЙ СПАЛАХ ПРИ ТОРКАННІ */
         .tap-ripple {
             position: fixed;
             width: 10px;
@@ -106,20 +104,11 @@
         }
 
         @keyframes touchShockwave {
-            0% {
-                width: 10px;
-                height: 10px;
-                opacity: 1;
-            }
-            100% {
-                width: 130px;
-                height: 130px;
-                opacity: 0;
-                border-width: 1px;
-            }
+            0% { width: 10px; height: 10px; opacity: 1; }
+            100% { width: 130px; height: 130px; opacity: 0; border-width: 1px; }
         }
 
-        /* Інші анімації інтерфейсу */
+        /* Анімації появи */
         @keyframes raceLaunch {
             from { opacity: 0; transform: translateY(25px); filter: blur(6px); }
             to { opacity: 1; transform: translateY(0); filter: blur(0); }
@@ -148,24 +137,25 @@
         }
         .gauge-arrow { transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), color 0.3s ease; }
         
+        /* НОВІ ПРЕМІУМ ТЕМИ ОФОРМЛЕННЯ */
         .bg-theme-neon {
             background: radial-gradient(circle at top right, rgba(255, 59, 48, 0.15), transparent 40%),
                         radial-gradient(circle at bottom left, rgba(255, 59, 48, 0.1), transparent 40%), #0f1115;
             background-attachment: fixed;
         }
         .bg-theme-car {
-            background: linear-gradient(rgba(15, 17, 21, 0.88), rgba(15, 17, 21, 0.94)), 
-                        #12141a url('https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=60&w=1200') no-repeat center center;
+            background: linear-gradient(rgba(15, 17, 21, 0.82), rgba(15, 17, 21, 0.9)), 
+                        #101216 url('https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=60&w=1200') no-repeat center center;
             background-size: cover; background-attachment: fixed;
         }
         .bg-theme-carbon {
-            background: linear-gradient(rgba(15, 17, 21, 0.82), rgba(15, 17, 21, 0.88)), 
+            background: linear-gradient(rgba(15, 17, 21, 0.8), rgba(15, 17, 21, 0.86)), 
                         #1a1c23 url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=60&w=1200') no-repeat center center;
             background-size: cover; background-attachment: fixed;
         }
         .bg-theme-asphalt {
-            background: linear-gradient(rgba(15, 17, 21, 0.88), rgba(15, 17, 21, 0.92)), 
-                        #0d0e12 url('https://images.unsplash.com/photo-1533158326339-7f3cf2404354?auto=format&fit=crop&q=60&w=1200') no-repeat center center;
+            background: linear-gradient(rgba(15, 17, 21, 0.88), rgba(15, 17, 21, 0.94)), 
+                        #0d0e12 url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=60&w=1200') no-repeat center center;
             background-size: cover; background-attachment: fixed;
         }
 
@@ -181,7 +171,7 @@
     <div id="custom-cursor" class="hidden md:block"></div>
     <div id="custom-cursor-outline" class="hidden md:block"></div>
 
-    <!-- Системні поля -->
+    <!-- Системні поля (Особистий Email зафіксовано за замовчуванням) -->
     <input type="hidden" id="suggestion-email" value="artemmasanov993@gmail.com">
     <input type="hidden" id="yt-api-key" value="">
     <input type="hidden" id="yt-channel-id" value="UC_v3_your_channel_id_here">
@@ -211,10 +201,10 @@
                 </button>
                 <div id="theme-menu" class="absolute right-0 mt-2 w-48 auto-card rounded-xl shadow-2xl p-2 hidden flex flex-col gap-1 z-[100] bg-[#161920]">
                     <div class="text-[10px] uppercase font-black tracking-widest text-gray-500 px-2 py-1 border-b border-white/5 mb-1">Змінити фон:</div>
-                    <button onclick="changeTheme('neon')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-circle text-[8px] text-accentNeon"></i> Нічний Неон</button>
-                    <button onclick="changeTheme('car')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-car-side text-[10px]"></i> Нічний Спорткар</button>
-                    <button onclick="changeTheme('carbon')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-border-all text-[10px]"></i> Карбон</button>
-                    <button onclick="changeTheme('asphalt')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-road text-[10px]"></i> Асфальт</button>
+                    <button onclick="changeTheme('neon')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-circle text-[8px] text-accentNeon"></i> Нічний Кокпіт</button>
+                    <button onclick="changeTheme('car')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-car-side text-[10px]"></i> Стелс Спорткар</button>
+                    <button onclick="changeTheme('carbon')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-border-all text-[10px]"></i> Кіберпанк JDM</button>
+                    <button onclick="changeTheme('asphalt')" class="flex items-center gap-2 text-left text-xs font-bold px-2 py-2 rounded-lg hover:bg-accentNeon/10 hover:text-white transition-colors text-gray-300"><i class="fa-solid fa-road text-[10px]"></i> Нічна Траса</button>
                 </div>
             </div>
             
@@ -223,7 +213,8 @@
             </button>
         </div>
 
-        <div class="flex flex-col items-center mb-6 text-center launch-anim" style="animation-delay: 0.1s;">
+        <!-- Профіль каналу -->
+        <div class="flex flex-col items-center mb-8 text-center launch-anim" style="animation-delay: 0.1s;">
             <div onclick="adminClick()" class="relative mb-4 group cursor-pointer" title="Клікни 3 рази для входу в адмінку">
                 <div class="absolute inset-0 bg-accentNeon/20 rounded-full blur-md group-hover:blur-lg transition-all"></div>
                 <img src="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png" alt="AUTOHUB" class="w-24 h-24 rounded-full object-cover border-2 border-accentNeon relative z-10 active:scale-95 transition-transform">
@@ -233,7 +224,7 @@
             <div class="h-0.5 w-16 bg-accentNeon my-3"></div>
             <p class="text-gray-400 text-sm md:text-base font-medium max-w-md px-2 mb-4">Огляди, корисні поради та автомобільні тренди 🚗🔥</p>
 
-            <!-- СЕКЦІЯ СТАТИСТИКИ (ПІДПИСНИКИ) -->
+            <!-- СЕКЦІЯ СТАТИСТИКИ -->
             <div class="flex items-center justify-center gap-3 w-full max-w-sm mt-2">
                 <div class="flex-1 auto-card py-2 px-3 rounded-xl border border-white/5 flex flex-col items-center justify-center">
                     <span id="stat-yt-val" class="text-sm font-black text-white tracking-wide">10K+</span>
@@ -250,8 +241,10 @@
             </div>
         </div>
 
+        <!-- СІТКА КОНТЕНТУ -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-start w-full">
             
+            <!-- ЛІВА КОЛОНКА: Відеопрогравач -->
             <div class="launch-anim w-full rounded-2xl overflow-hidden auto-card shadow-2xl" style="animation-delay: 0.2s;">
                 <div class="bg-[#1c2029]/90 px-4 py-2.5 flex items-center gap-2 border-b border-white/5">
                     <i class="fa-solid fa-circle-play text-accentNeon animate-pulse"></i>
@@ -262,7 +255,7 @@
                 </div>
                 <div class="admin-field p-3 bg-neutral-900 border-t border-white/5 hidden space-y-3">
                     <div>
-                        <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Резервний ID Відео (якщо API вимкнено)</label>
+                        <label class="text-[10px] uppercase font-bold text-gray-500 block mb-1">Резервний ID Відео</label>
                         <input type="text" id="edit-yt-id" value="aC-owTGozPg" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                     </div>
                     <div class="grid grid-cols-2 gap-2">
@@ -278,10 +271,12 @@
                 </div>
             </div>
 
+            <!-- ПРАВА КОЛОНКА: Оновлена структура кнопок -->
             <div class="w-full flex flex-col gap-3.5">
                 
+                <!-- YouTube (Велике головне посилання) -->
                 <div class="launch-anim" style="animation-delay: 0.3s;">
-                    <a id="link-yt" href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl">
+                    <a id="link-yt" href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl border-l-4 border-l-accentNeon">
                         <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-youtube text-xl"></i></div>
                         <div class="flex-grow">
                             <h2 class="font-bold text-sm text-white uppercase tracking-wider">YouTube Канал</h2>
@@ -294,9 +289,10 @@
                     </div>
                 </div>
 
+                <!-- Telegram (Велике головне посилання) -->
                 <div class="launch-anim" style="animation-delay: 0.4s;">
-                    <a id="link-tg" href="https://t.me/FoXNEWofficial" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl">
-                        <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-telegram text-xl"></i></div>
+                    <a id="link-tg" href="https://t.me/FoXNEWofficial" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl border-l-4 border-l-sky-500">
+                        <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-sky-400 group-hover:bg-sky-500/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-telegram text-xl"></i></div>
                         <div class="flex-grow">
                             <h2 class="font-bold text-sm text-white uppercase tracking-wider">Telegram Спільнота</h2>
                             <p class="text-xs text-gray-400">Новини та бекстейдж у реальному часі</p>
@@ -308,45 +304,48 @@
                     </div>
                 </div>
 
-                <div class="launch-anim" style="animation-delay: 0.5s;">
-                    <a id="link-ig" href="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl">
-                        <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-instagram text-xl"></i></div>
-                        <div class="flex-grow">
-                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">Instagram</h2>
-                            <p class="text-xs text-gray-400">Естетика авто та швидкі сторіз</p>
+                <!-- Instagram & TikTok (КОМПАКТНИЙ ГОРИЗОНТАЛЬНИЙ РЯД З ДВОХ КОЛОНОК) -->
+                <div class="grid grid-cols-2 gap-3">
+                    
+                    <!-- Instagram -->
+                    <div class="launch-anim" style="animation-delay: 0.5s;">
+                        <a id="link-ig" href="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" target="_blank" class="auto-card group flex flex-col items-center justify-center p-3 rounded-xl h-full text-center">
+                            <div class="w-10 h-10 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-pink-500 group-hover:bg-pink-500/10 rounded-lg mb-2 transition-all"><i class="fa-brands fa-instagram text-lg"></i></div>
+                            <h2 class="font-bold text-xs text-white uppercase tracking-wider">Instagram</h2>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Естетика та Сторіз</p>
+                        </a>
+                        <div class="admin-field p-2 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
+                            <input type="text" id="edit-link-ig" value="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" class="w-full bg-darkBg border border-white/10 rounded-lg px-2 py-1 text-[11px] text-white focus:outline-none">
                         </div>
-                        <i class="fa-solid fa-gauge-high gauge-arrow text-gray-600 pr-2 text-sm"></i>
-                    </a>
-                    <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
-                        <input type="text" id="edit-link-ig" value="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
                     </div>
+
+                    <!-- TikTok -->
+                    <div class="launch-anim" style="animation-delay: 0.6s;">
+                        <a id="link-tt" href="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" target="_blank" class="auto-card group flex flex-col items-center justify-center p-3 rounded-xl h-full text-center">
+                            <div class="w-10 h-10 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-teal-400 group-hover:bg-teal-400/10 rounded-lg mb-2 transition-all"><i class="fa-brands fa-tiktok text-lg"></i></div>
+                            <h2 class="font-bold text-xs text-white uppercase tracking-wider">TikTok</h2>
+                            <p class="text-[10px] text-gray-400 mt-0.5">Короткі Тренди</p>
+                        </a>
+                        <div class="admin-field p-2 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
+                            <input type="text" id="edit-link-tt" value="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" class="w-full bg-darkBg border border-white/10 rounded-lg px-2 py-1 text-[11px] text-white focus:outline-none">
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="launch-anim" style="animation-delay: 0.6s;">
-                    <a id="link-tt" href="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl">
-                        <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-brands fa-tiktok text-xl"></i></div>
-                        <div class="flex-grow">
-                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">TikTok</h2>
-                            <p class="text-xs text-gray-400">Короткі автомобільні тренди</p>
-                        </div>
-                        <i class="fa-solid fa-gauge-high gauge-arrow text-gray-600 pr-2 text-sm"></i>
-                    </a>
-                    <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
-                        <input type="text" id="edit-link-tt" value="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
-                    </div>
-                </div>
-
-                <div class="launch-anim" style="animation-delay: 0.7s;">
-                    <button onclick="openSuggestionModal()" class="w-full auto-card group flex items-center p-3.5 rounded-xl cursor-pointer">
-                        <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-accentNeon group-hover:bg-accentNeon/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-solid fa-lightbulb text-lg"></i></div>
+                <!-- Ідеї та Відгуки (Акцентна нижня кнопка з легким червоним неоновим контуром) -->
+                <div class="launch-anim mt-1" style="animation-delay: 0.7s;">
+                    <button onclick="openSuggestionModal()" class="w-full auto-card group flex items-center p-3.5 rounded-xl cursor-pointer border border-accentNeon/30 hover:border-accentNeon bg-gradient-to-r from-accentNeon/5 to-transparent">
+                        <div class="w-11 h-11 flex items-center justify-center bg-accentNeon/10 text-accentNeon rounded-lg mr-4"><i class="fa-solid fa-lightbulb text-lg"></i></div>
                         <div class="flex-grow text-left">
-                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">Ідеї & Відгуки</h2>
-                            <p class="text-xs text-gray-400">Напиши мені свою пропозицію</p>
+                            <h2 class="font-bold text-sm text-white uppercase tracking-wider flex items-center gap-1.5">Ідеї & Відгуки <span class="text-[10px] bg-accentNeon text-white font-black px-1.5 py-0.5 rounded uppercase tracking-widest animate-pulse">new</span></h2>
+                            <p class="text-xs text-gray-400">Поділіться своєю ідеєю чи пропозицією</p>
                         </div>
-                        <i class="fa-solid fa-gauge-high gauge-arrow text-gray-600 pr-2 text-sm"></i>
+                        <i class="fa-solid fa-gauge-high gauge-arrow text-accentNeon pr-2 text-sm"></i>
                     </button>
                 </div>
 
+                <!-- Поля налаштування статистики та Email в режимі адміна -->
                 <div class="admin-field p-4 bg-neutral-900 border border-white/5 rounded-xl mt-2 hidden space-y-3">
                     <div class="grid grid-cols-3 gap-2">
                         <div>
@@ -446,49 +445,37 @@
     <script>
         let clickCount = 0; let clickTimeout; const SECRET_PASSWORD = '1234';
 
-        // 1. ЛОГІКА СПОРТИВНОГО КУРСОРУ ТА КЛІК-РІПЛІВ (Для ПК та Телефонів)
+        // 1. ЛОГІКА КУРСОРУ ТА КЛІКІВ (ПК та Мобільні)
         const dot = document.getElementById('custom-cursor');
         const outline = document.getElementById('custom-cursor-outline');
         
-        // Рух курсору (тільки ПК)
         if (dot && outline) {
             document.addEventListener('mousemove', (e) => {
                 dot.style.left = e.clientX + 'px'; 
                 dot.style.top = e.clientY + 'px';
-                
-                // Outline слідує із плавною затримкою за допомогою анімації
                 outline.animate(
                     { left: e.clientX + 'px', top: e.clientY + 'px' }, 
                     { duration: 180, fill: 'forwards' }
                 );
             });
 
-            // Збільшення прицілу при наведенні
             document.querySelectorAll('a, button, .cursor-pointer, input, textarea, [onclick]').forEach(el => {
                 el.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
                 el.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
             });
         }
 
-        // Ефект «Неонового вибуху» при дотику (Для телефонів і кліків на ПК)
+        // Спалах при торканні
         document.addEventListener('pointerdown', (e) => {
-            // Створюємо елемент хвилі
             const ripple = document.createElement('span');
             ripple.className = 'tap-ripple';
-            
-            // Встановлюємо координати кліку/тачу
             ripple.style.left = e.clientX + 'px';
             ripple.style.top = e.clientY + 'px';
-            
             document.body.appendChild(ripple);
-            
-            // Видаляємо елемент після завершення анімації
-            setTimeout(() => {
-                ripple.remove();
-            }, 500);
+            setTimeout(() => { ripple.remove(); }, 500);
         });
 
-        // 2. АВТОМАТИЧНЕ ЗАВАНТАЖЕННЯ ОСТАННЬОГО ВІДЕО ЧЕРЕЗ API
+        // 2. АВТОЗАВАНТАЖЕННЯ ОСТАННЬОГО ВІДЕО ЧЕРЕЗ API
         async function loadLatestYouTubeVideo() {
             const apiKey = document.getElementById('yt-api-key').value;
             const channelId = document.getElementById('yt-channel-id').value;
@@ -571,7 +558,6 @@
                     banner.classList.remove('opacity-0', 'translate-y-20', 'pointer-events-none'); banner.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
                 }, 2500);
             }
-            // Спроба завантажити останнє відео
             loadLatestYouTubeVideo();
         });
 
@@ -593,7 +579,6 @@
         function exitAdminMode() { document.getElementById('admin-bar').classList.add('hidden'); document.getElementById('user-bar').classList.remove('hidden'); document.querySelectorAll('.admin-field').forEach(el => el.classList.add('hidden')); }
 
         function saveAndDownload() {
-            // Збереження API полів
             const apiVal = document.getElementById('edit-yt-api').value;
             const chanVal = document.getElementById('edit-yt-channel').value;
             document.getElementById('yt-api-key').setAttribute('value', apiVal);
@@ -601,19 +586,16 @@
             document.getElementById('yt-channel-id').setAttribute('value', chanVal);
             document.getElementById('edit-yt-channel').setAttribute('value', chanVal);
 
-            // Збереження відео
             const ytId = document.getElementById('edit-yt-id').value;
             document.getElementById('yt-player').src = `https://www.youtube.com/embed/${ytId}`;
             document.getElementById('edit-yt-id').setAttribute('value', ytId);
 
-            // Збереження посилань
             ['yt', 'tg', 'ig', 'tt'].forEach(id => {
                 const val = document.getElementById(`edit-link-${id}`).value;
                 document.getElementById(`link-${id}`).href = val;
                 document.getElementById(`edit-link-${id}`).setAttribute('value', val);
             });
 
-            // Збереження статистики
             ['yt', 'tg', 'tt'].forEach(id => {
                 const val = document.getElementById(`edit-stat-${id}`).value;
                 document.getElementById(`stat-${id}-val`).innerText = val;
