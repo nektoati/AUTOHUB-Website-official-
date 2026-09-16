@@ -623,3 +623,44 @@
 
 <span class="tap-ripple" style="left: 278.75px; top: 28.75px;"></span>
 <span class="tap-ripple" style="left: 285.25px; top: 25.875px;"></span></body></html>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Знаходимо форму на сторінці (перевір, щоб id вашої форми відповідало 'contactForm')
+  const form = document.getElementById('contactForm');
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault(); // Запобігаємо перезавантаженню сторінки
+
+      // Збираємо дані з полів (перевір id своїх input-полів)
+      const data = {
+        chat_id: 123456789, // ⚠️ ЗАМІНИ на свій Telegram ID (дізнатися можна через @userinfobot)
+        name: document.getElementById('name')?.value || 'АРТ',
+        phone: document.getElementById('phone')?.value || 'впвпвп',
+        message: document.getElementById('message')?.value || 'впвпвпвп'
+      };
+
+      try {
+        // Надсилаємо POST-запит на локальний сервер бота
+        const response = await fetch('http://localhost:8080/send-lead', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          alert('Дякуємо! Заявку успішно відправлено.');
+          form.reset();
+        } else {
+          alert('Помилка при відправці заявки.');
+        }
+      } catch (error) {
+        console.error('Помилка:', error);
+        alert('Не вдалося зв’язатися з сервером бота. Перевірте, чи запущений bot.py');
+      }
+    });
+  }
+});
+</script>
