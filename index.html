@@ -303,6 +303,22 @@
                     </div>
                 </div>
 
+                <!-- Написати особисто (НОВА КНОПКА ДЛЯ ПРЯМОГО ЗВ'ЯЗКУ) -->
+                <div class="launch-anim" style="animation-delay: 0.45s;">
+                    <a id="link-chat" href="https://t.me/FoXNEWofficial" target="_blank" class="auto-card group flex items-center p-3.5 rounded-xl border-l-4 border-l-indigo-500">
+                        <div class="w-11 h-11 flex items-center justify-center bg-white/5 text-gray-300 group-hover:text-indigo-400 group-hover:bg-indigo-500/10 rounded-lg mr-4 transition-all shrink-0"><i class="fa-solid fa-paper-plane text-lg"></i></div>
+                        <div class="flex-grow">
+                            <h2 class="font-bold text-sm text-white uppercase tracking-wider">Написати особисто</h2>
+                            <p class="text-xs text-gray-400">Задати питання або запропонувати співпрацю</p>
+                        </div>
+                        <i class="fa-solid fa-gauge-high gauge-arrow text-gray-600 pr-2 text-sm"></i>
+                    </a>
+                    <div class="admin-field p-3 bg-neutral-900 border-x border-b border-white/5 rounded-b-xl -mt-1 hidden">
+                        <label class="text-[9px] uppercase font-bold text-gray-500 block mb-1">Посилання для особистих повідомлень</label>
+                        <input type="text" id="edit-link-chat" value="https://t.me/FoXNEWofficial" class="w-full bg-darkBg border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentNeon">
+                    </div>
+                </div>
+
                 <!-- Instagram & TikTok (КОМПАКТНИЙ ГОРИЗОНТАЛЬНИЙ РЯД З ДВОХ КОЛОНОК) -->
                 <div class="grid grid-cols-2 gap-3">
                     
@@ -589,10 +605,13 @@
             document.getElementById('yt-player').src = `https://www.youtube.com/embed/${ytId}`;
             document.getElementById('edit-yt-id').setAttribute('value', ytId);
 
-            ['yt', 'tg', 'ig', 'tt'].forEach(id => {
-                const val = document.getElementById(`edit-link-${id}`).value;
-                document.getElementById(`link-${id}`).href = val;
-                document.getElementById(`edit-link-${id}`).setAttribute('value', val);
+            ['yt', 'tg', 'chat', 'ig', 'tt'].forEach(id => {
+                const el = document.getElementById(`edit-link-${id}`);
+                if (el) {
+                    const val = el.value;
+                    document.getElementById(`link-${id}`).href = val;
+                    el.setAttribute('value', val);
+                }
             });
 
             ['yt', 'tg', 'tt'].forEach(id => {
