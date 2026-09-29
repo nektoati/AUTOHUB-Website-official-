@@ -348,8 +348,20 @@
 
                 </div>
 
+                <!-- Міні-гра "Вгадай авто по фото" -->
+                <div class="launch-anim mt-1" style="animation-delay: 0.65s;">
+                    <button onclick="openCarGameModal()" class="w-full auto-card group flex items-center p-3.5 rounded-xl cursor-pointer border border-emerald-500/30 hover:border-emerald-500 bg-gradient-to-r from-emerald-500/5 to-transparent">
+                        <div class="w-11 h-11 flex items-center justify-center bg-emerald-500/10 text-emerald-400 rounded-lg mr-4 transition-all group-hover:scale-110"><i class="fa-solid fa-gamepad text-lg"></i></div>
+                        <div class="flex-grow text-left">
+                            <h2 class="font-bold text-sm text-white uppercase tracking-wider flex items-center gap-1.5">Міні-гра: Вгадай авто <span class="text-[10px] bg-emerald-500 text-black font-black px-1.5 py-0.5 rounded uppercase tracking-widest animate-pulse">Грати</span></h2>
+                            <p class="text-xs text-gray-400">Перевір свої знання автомобільних легенд</p>
+                        </div>
+                        <i class="fa-solid fa-gauge-high gauge-arrow text-emerald-400 pr-2 text-sm"></i>
+                    </button>
+                </div>
+
                 <!-- Ідеї та Відгуки (Акцентна нижня кнопка з легким червоним неоновим контуром) -->
-                <div class="launch-anim mt-1" style="animation-delay: 0.7s;">
+                <div class="launch-anim" style="animation-delay: 0.7s;">
                     <button onclick="openSuggestionModal()" class="w-full auto-card group flex items-center p-3.5 rounded-xl cursor-pointer border border-accentNeon/30 hover:border-accentNeon bg-gradient-to-r from-accentNeon/5 to-transparent">
                         <div class="w-11 h-11 flex items-center justify-center bg-accentNeon/10 text-accentNeon rounded-lg mr-4"><i class="fa-solid fa-lightbulb text-lg"></i></div>
                         <div class="flex-grow text-left">
@@ -395,6 +407,52 @@
                 <div class="flex items-center gap-3 mt-3">
                     <button onclick="acceptLiteModeOptimization()" class="bg-amber-500 hover:bg-amber-600 text-neutral-950 font-black text-[10px] uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors">Увімкнути</button>
                     <button onclick="closeLiteNotice()" class="text-gray-400 hover:text-white font-bold text-[10px] uppercase tracking-wider transition-colors">Ні, дякую</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка гри "Вгадай авто" -->
+    <div id="car-game-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 overflow-y-auto">
+        <div class="bg-[#161920] border border-emerald-500/30 p-5 md:p-6 rounded-2xl w-full max-w-md shadow-2xl relative">
+            <button onclick="closeCarGameModal()" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
+            
+            <!-- Шапка гри -->
+            <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-gamepad text-emerald-400 text-lg"></i>
+                    <h3 class="text-white font-black uppercase tracking-wider text-sm">Вгадай Авто</h3>
+                </div>
+                <div class="flex items-center gap-3 text-xs font-bold">
+                    <span class="text-gray-400">Питання: <span id="game-progress" class="text-white">1/5</span></span>
+                    <span class="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">Бали: <span id="game-score">0</span></span>
+                </div>
+            </div>
+
+            <!-- Ігровий екран -->
+            <div id="game-screen" class="space-y-4">
+                <div class="relative w-full h-48 md:h-56 bg-black/50 rounded-xl overflow-hidden border border-white/10">
+                    <img id="game-car-img" src="" alt="Car to guess" class="w-full h-full object-cover transition-all duration-300">
+                    <div id="game-feedback-overlay" class="absolute inset-0 flex items-center justify-center font-black text-sm md:text-base uppercase tracking-widest hidden transition-all p-3 text-center"></div>
+                </div>
+
+                <p class="text-center text-xs text-gray-300 font-medium">Яка модель зображена на фото?</p>
+
+                <div id="game-options" class="grid grid-cols-1 gap-2.5">
+                    <!-- Варіанти генеруються динамічно -->
+                </div>
+            </div>
+
+            <!-- Екран фінішу -->
+            <div id="game-result-screen" class="hidden text-center py-6 space-y-4">
+                <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-3xl animate-bounce border border-emerald-500/30">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h4 class="text-white font-black text-lg uppercase tracking-wider">Гру завершено!</h4>
+                <p id="game-final-score-text" class="text-xs md:text-sm text-gray-300 leading-relaxed"></p>
+                <div class="pt-2 flex gap-3">
+                    <button onclick="restartCarGame()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-black py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all shadow-md shadow-emerald-500/20">Грати знову</button>
+                    <button onclick="closeCarGameModal()" class="bg-white/5 hover:bg-white/10 text-gray-300 px-4 py-2.5 rounded-xl text-xs font-bold transition-all">Закрити</button>
                 </div>
             </div>
         </div>
@@ -558,6 +616,136 @@
             }
             localStorage.setItem('autohub-theme', themeName);
             if (document.getElementById('theme-menu')) document.getElementById('theme-menu').classList.add('hidden');
+        }
+
+        // 3. ЛОГІКА МІНІ-ГРИ "ВГАДАЙ АВТОМОБІЛЬ"
+        const carGameData = [
+            {
+                img: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=800&q=80',
+                options: ['BMW M5 F90', 'Audi RS6 Avant', 'Mercedes-AMG E63s', 'Porsche Panamera Turbo'],
+                correct: 0
+            },
+            {
+                img: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&w=800&q=80',
+                options: ['Nissan GT-R R35', 'Porsche 911 GT3 RS', 'Toyota Supra MK5', 'Chevrolet Corvette C8'],
+                correct: 1
+            },
+            {
+                img: 'https://images.unsplash.com/photo-1544829099-b9a0c07fad1a?auto=format&fit=crop&w=800&q=80',
+                options: ['Ford Mustang GT', 'Dodge Challenger SRT', 'Chevrolet Camaro SS', 'Shelby GT500'],
+                correct: 0
+            },
+            {
+                img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80',
+                options: ['Ferrari 488 GTB', 'Porsche 911 Carrera', 'Lamborghini Huracan', 'McLaren 720S'],
+                correct: 1
+            },
+            {
+                img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80',
+                options: ['Chevrolet Corvette Stingray', 'Audi R8 V10', 'Ford GT', 'Aston Martin Vantage'],
+                correct: 0
+            }
+        ];
+
+        let currentQuestion = 0;
+        let gameScore = 0;
+        let isAnswerLocked = false;
+
+        function openCarGameModal() {
+            document.getElementById('car-game-modal').classList.remove('hidden');
+            restartCarGame();
+        }
+
+        function closeCarGameModal() {
+            document.getElementById('car-game-modal').classList.add('hidden');
+        }
+
+        function restartCarGame() {
+            currentQuestion = 0;
+            gameScore = 0;
+            isAnswerLocked = false;
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('game-result-screen').classList.add('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isAnswerLocked = false;
+            const q = carGameData[currentQuestion];
+            document.getElementById('game-progress').innerText = `${currentQuestion + 1}/${carGameData.length}`;
+            document.getElementById('game-score').innerText = gameScore;
+            document.getElementById('game-car-img').src = q.img;
+            
+            const feedback = document.getElementById('game-feedback-overlay');
+            feedback.classList.add('hidden');
+            feedback.className = 'absolute inset-0 flex items-center justify-center font-black text-sm md:text-base uppercase tracking-widest hidden transition-all p-3 text-center';
+
+            const container = document.getElementById('game-options');
+            container.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full auto-card py-2.5 px-4 rounded-xl text-xs font-bold text-gray-200 hover:text-white hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all text-left flex items-center justify-between';
+                btn.innerHTML = `<span>${opt}</span><i class="fa-regular fa-circle text-gray-500 text-[10px]"></i>`;
+                btn.onclick = () => selectAnswer(idx, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(selectedIdx, btnEl) {
+            if (isAnswerLocked) return;
+            isAnswerLocked = true;
+
+            const q = carGameData[currentQuestion];
+            const feedback = document.getElementById('game-feedback-overlay');
+            const allButtons = document.getElementById('game-options').children;
+
+            if (selectedIdx === q.correct) {
+                gameScore += 20;
+                document.getElementById('game-score').innerText = gameScore;
+                btnEl.className = 'w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-emerald-500/20 border border-emerald-500 flex items-center justify-between';
+                btnEl.querySelector('i').className = 'fa-solid fa-circle-check text-emerald-400 text-sm';
+                
+                feedback.innerText = 'Правильно! +20 балів 🏎️';
+                feedback.classList.remove('hidden');
+                feedback.classList.add('bg-emerald-950/90', 'text-emerald-400');
+            } else {
+                btnEl.className = 'w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-red-500/20 border border-red-500 flex items-center justify-between';
+                btnEl.querySelector('i').className = 'fa-solid fa-circle-xmark text-red-400 text-sm';
+
+                // Показати правильний варіант
+                allButtons[q.correct].className = 'w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-emerald-500/20 border border-emerald-500 flex items-center justify-between';
+                allButtons[q.correct].querySelector('i').className = 'fa-solid fa-circle-check text-emerald-400 text-sm';
+
+                feedback.innerText = `Невірно! Це ${q.options[q.correct]}`;
+                feedback.classList.remove('hidden');
+                feedback.classList.add('bg-red-950/90', 'text-red-400');
+            }
+
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < carGameData.length) {
+                    loadQuestion();
+                } else {
+                    showGameResult();
+                }
+            }, 1400);
+        }
+
+        function showGameResult() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('game-result-screen').classList.remove('hidden');
+            
+            let resultText = `Ви набрали ${gameScore} зі 100 балів! `;
+            if (gameScore === 100) {
+                resultText += '🏆 Справжній автомобільний знавець!';
+            } else if (gameScore >= 60) {
+                resultText += '⚡ Чудовий результат! Добре знаєте авто.';
+            } else {
+                resultText += '🏎️ Непогано, але можна краще. Спробуйте ще раз!';
+            }
+            
+            document.getElementById('game-final-score-text').innerText = resultText;
         }
 
         window.addEventListener('DOMContentLoaded', () => {
