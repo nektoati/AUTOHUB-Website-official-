@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="uk"><head><style>body {transition: opacity ease-in 0.2s; } 
+body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
+</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUTOHUB — Огляди, поради та автомобільні тренди</title>
+    <link rel="icon" type="image/png" href="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d0f12;
+            color: #e5e7eb;
+            /* Динамічний фоновий малюнок із затемненням */
+            background-image: linear-gradient(to bottom, rgba(13, 15, 18, 0.85), rgba(13, 15, 18, 0.95)), url('https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* Clean Card Style with backdrop blur */
+        .card {
+            background-color: rgba(26, 29, 36, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.25s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(249, 115, 22, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .modal-bg {
+            background-color: rgba(10, 12, 16, 0.85);
+            backdrop-filter: blur(8px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #121418;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2e37;
+            border-radius: 3px;
+        }
+    </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.left-0{left:0px}.right-0{right:0px}.top-0{top:0px}.bottom-4{bottom:1rem}.right-4{right:1rem}.top-4{top:1rem}.z-40{z-index:40}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.mb-10{margin-bottom:2.5rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mt-5{margin-top:1.25rem}.mb-0\.5{margin-bottom:0.125rem}.mb-1{margin-bottom:0.25rem}.mb-1\.5{margin-bottom:0.375rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-3{margin-top:0.75rem}.block{display:block}.inline-block{display:inline-block}.inline{display:inline}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.aspect-video{aspect-ratio:16 / 9}.h-14{height:3.5rem}.h-20{height:5rem}.h-3\.5{height:0.875rem}.h-4{height:1rem}.h-7{height:1.75rem}.h-full{height:100%}.h-1{height:0.25rem}.h-10{height:2.5rem}.h-44{height:11rem}.h-5{height:1.25rem}.h-9{height:2.25rem}.max-h-\[90vh\]{max-height:90vh}.min-h-screen{min-height:100vh}.w-14{width:3.5rem}.w-20{width:5rem}.w-3\.5{width:0.875rem}.w-4{width:1rem}.w-7{width:1.75rem}.w-full{width:100%}.w-10{width:2.5rem}.w-5{width:1.25rem}.w-9{width:2.25rem}.min-w-0{min-width:0px}.max-w-3xl{max-width:48rem}.max-w-md{max-width:28rem}.max-w-\[320px\]{max-width:320px}.shrink-0{flex-shrink:0}.flex-grow{flex-grow:1}@keyframes spin{to{transform:rotate(360deg)}}.animate-spin{animation:spin 1s linear infinite}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;user-select:none}.resize-none{resize:none}.appearance-none{-webkit-appearance:none;appearance:none}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-4{gap:1rem}.gap-3{gap:0.75rem}.gap-3\.5{gap:0.875rem}.space-y-2\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse))}.space-y-3\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.875rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.875rem * var(--tw-space-y-reverse))}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-l-4{border-left-width:4px}.border-t{border-top-width:1px}.border-amber-500\/30{border-color:rgb(245 158 11 / 0.3)}.border-orange-500\/20{border-color:rgb(249 115 22 / 0.2)}.border-orange-500\/30{border-color:rgb(249 115 22 / 0.3)}.border-white\/10{border-color:rgb(255 255 255 / 0.1)}.border-white\/5{border-color:rgb(255 255 255 / 0.05)}.border-amber-500\/20{border-color:rgb(245 158 11 / 0.2)}.border-amber-500\/40{border-color:rgb(245 158 11 / 0.4)}.border-red-500\/20{border-color:rgb(239 68 68 / 0.2)}.border-l-orange-500{--tw-border-opacity:1;border-left-color:rgb(249 115 22 / var(--tw-border-opacity, 1))}.bg-amber-500\/20{background-color:rgb(245 158 11 / 0.2)}.bg-orange-500{--tw-bg-opacity:1;background-color:rgb(249 115 22 / var(--tw-bg-opacity, 1))}.bg-orange-500\/10{background-color:rgb(249 115 22 / 0.1)}.bg-white\/5{background-color:rgb(255 255 255 / 0.05)}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11 / var(--tw-bg-opacity, 1))}.bg-amber-500\/10{background-color:rgb(245 158 11 / 0.1)}.bg-black\/20{background-color:rgb(0 0 0 / 0.2)}.bg-black\/40{background-color:rgb(0 0 0 / 0.4)}.bg-blue-500\/10{background-color:rgb(59 130 246 / 0.1)}.bg-emerald-500\/10{background-color:rgb(16 185 129 / 0.1)}.bg-emerald-600{--tw-bg-opacity:1;background-color:rgb(5 150 105 / var(--tw-bg-opacity, 1))}.bg-orange-500\/20{background-color:rgb(249 115 22 / 0.2)}.bg-pink-500\/10{background-color:rgb(236 72 153 / 0.1)}.bg-purple-500\/10{background-color:rgb(168 85 247 / 0.1)}.bg-red-500\/10{background-color:rgb(239 68 68 / 0.1)}.bg-red-500\/20{background-color:rgb(239 68 68 / 0.2)}.bg-red-600{--tw-bg-opacity:1;background-color:rgb(220 38 38 / var(--tw-bg-opacity, 1))}.bg-sky-500\/10{background-color:rgb(14 165 233 / 0.1)}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-slate-900\/95{background-color:rgb(15 23 42 / 0.95)}.bg-white\/10{background-color:rgb(255 255 255 / 0.1)}.object-cover{object-fit:cover}.p-4{padding:1rem}.p-6{padding:1.5rem}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-5{padding:1.25rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.px-4{padding-left:1rem;padding-right:1rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-10{padding-top:2.5rem;padding-bottom:2.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.pb-4{padding-bottom:1rem}.pr-1{padding-right:0.25rem}.pt-1{padding-top:0.25rem}.pt-2{padding-top:0.5rem}.text-left{text-align:left}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-relaxed{line-height:1.625}.tracking-tight{letter-spacing:-0.025em}.tracking-wider{letter-spacing:0.05em}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77 / var(--tw-text-opacity, 1))}.text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-orange-400{--tw-text-opacity:1;color:rgb(251 146 60 / var(--tw-text-opacity, 1))}.text-orange-500{--tw-text-opacity:1;color:rgb(249 115 22 / var(--tw-text-opacity, 1))}.text-pink-400{--tw-text-opacity:1;color:rgb(244 114 182 / var(--tw-text-opacity, 1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-sky-400{--tw-text-opacity:1;color:rgb(56 189 248 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36 / var(--tw-text-opacity, 1))}.text-black{--tw-text-opacity:1;color:rgb(0 0 0 / var(--tw-text-opacity, 1))}.text-blue-400{--tw-text-opacity:1;color:rgb(96 165 250 / var(--tw-text-opacity, 1))}.text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-purple-400{--tw-text-opacity:1;color:rgb(192 132 252 / var(--tw-text-opacity, 1))}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113 / var(--tw-text-opacity, 1))}.placeholder-gray-500::placeholder{--tw-placeholder-opacity:1;color:rgb(107 114 128 / var(--tw-placeholder-opacity, 1))}.accent-orange-500{accent-color:#f97316}.opacity-70{opacity:0.7}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-md{--tw-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-orange-500\/20{--tw-shadow-color:rgb(249 115 22 / 0.2);--tw-shadow:var(--tw-shadow-colored)}.shadow-emerald-600\/20{--tw-shadow-color:rgb(5 150 105 / 0.2);--tw-shadow:var(--tw-shadow-colored)}.backdrop-blur-xl{--tw-backdrop-blur:blur(24px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.selection\:bg-orange-500 *::selection{--tw-bg-opacity:1;background-color:rgb(249 115 22 / var(--tw-bg-opacity, 1))}.selection\:text-white *::selection{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.selection\:bg-orange-500::selection{--tw-bg-opacity:1;background-color:rgb(249 115 22 / var(--tw-bg-opacity, 1))}.selection\:text-white::selection{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:bg-orange-600:hover{--tw-bg-opacity:1;background-color:rgb(234 88 12 / var(--tw-bg-opacity, 1))}.hover\:bg-white\/10:hover{background-color:rgb(255 255 255 / 0.1)}.hover\:bg-amber-600:hover{--tw-bg-opacity:1;background-color:rgb(217 119 6 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-500:hover{--tw-bg-opacity:1;background-color:rgb(16 185 129 / var(--tw-bg-opacity, 1))}.hover\:bg-red-500:hover{--tw-bg-opacity:1;background-color:rgb(239 68 68 / var(--tw-bg-opacity, 1))}.hover\:bg-red-500\/30:hover{background-color:rgb(239 68 68 / 0.3)}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:text-orange-300:hover{--tw-text-opacity:1;color:rgb(253 186 116 / var(--tw-text-opacity, 1))}.focus\:border-orange-500:focus{--tw-border-opacity:1;border-color:rgb(249 115 22 / var(--tw-border-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.group:hover .group-hover\:text-amber-400{--tw-text-opacity:1;color:rgb(251 191 36 / var(--tw-text-opacity, 1))}.group:hover .group-hover\:text-blue-400{--tw-text-opacity:1;color:rgb(96 165 250 / var(--tw-text-opacity, 1))}.group:hover .group-hover\:text-emerald-400{--tw-text-opacity:1;color:rgb(52 211 153 / var(--tw-text-opacity, 1))}.group:hover .group-hover\:text-orange-400{--tw-text-opacity:1;color:rgb(251 146 60 / var(--tw-text-opacity, 1))}.group:hover .group-hover\:text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}@media (min-width: 640px){.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}}@media (min-width: 768px){.md\:h-24{height:6rem}.md\:w-24{width:6rem}.md\:p-5{padding:1.25rem}.md\:py-16{padding-top:4rem;padding-bottom:4rem}.md\:text-4xl{font-size:2.25rem;line-height:2.5rem}.md\:text-base{font-size:1rem;line-height:1.5rem}}</style></head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-orange-500 selection:text-white">
+
+    <!-- WELCOME / NEW DESIGN ANNOUNCEMENT MODAL -->
+    <div id="welcomeModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg transition-opacity duration-300 hidden">
+        <div class="card w-full max-w-md rounded-2xl p-6 text-center relative shadow-2xl border-orange-500/30">
+            <div class="w-14 h-14 bg-orange-500/10 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-orange-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="sparkles" aria-hidden="true" class="lucide lucide-sparkles w-7 h-7"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle></svg>
+            </div>
+            
+            <h3 class="text-xl font-bold text-white mb-2">Ми оновили дизайн сайту! 🎉</h3>
+            <p class="text-gray-300 text-sm leading-relaxed mb-6">
+                Ласкаво просимо до оновленого <span class="text-orange-400 font-semibold">AUTOHUB</span>! Ми зробили інтерфейс простішим, сучаснішим та ще зручнішим для вас. Переглядайте контент, грайте в інтерактив та вмикайте авто-вайб! 🚗🔥
+            </p>
+
+            <div class="space-y-2.5">
+                <button onclick="closeWelcomeModal(true)" class="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="music" aria-hidden="true" class="lucide lucide-music w-4 h-4"><path d="M21 16V3a1 1 0 0 0-1.28-.96l-10 2.917a1 1 0 0 0-.72.96V19"></path><circle cx="18" cy="16" r="3"></circle><circle cx="6" cy="19" r="3"></circle></svg>
+                    <span>Погнали з музикою! 🎵</span>
+                </button>
+                <button onclick="closeWelcomeModal(false)" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white text-xs font-medium transition">
+                    Продовжити без музики
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Indicator Banner (Hidden by default) -->
+    <div id="adminBanner" class="fixed top-0 left-0 right-0 z-40 bg-amber-500/20 border-b border-amber-500/30 text-amber-300 text-xs text-center py-1.5 px-4 flex items-center justify-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield-alert" aria-hidden="true" class="lucide lucide-shield-alert w-4 h-4"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
+        <span>Режим Admin Активовано</span>
+    </div>
+
+    <!-- MAIN WRAPPER -->
+    <div class="max-w-3xl mx-auto px-4 py-10 md:py-16 w-full flex-grow flex flex-col justify-center">
+        
+        <!-- HEADER -->
+        <header class="text-center mb-10">
+            <div class="relative inline-block cursor-pointer mb-3 select-none" id="logoContainer" title="Клікни 3 рази для входу в адмінку">
+                <img src="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png" alt="AUTOHUB Logo" class="w-20 h-20 md:w-24 md:h-24 rounded-2xl object-cover mx-auto border border-white/10 shadow-lg pointer-events-none">
+            </div>
+
+            <h1 id="headerTitleText" class="text-3xl md:text-4xl font-bold tracking-tight text-white">
+                AUTOHUB
+            </h1>
+            <p id="headerSubtitleText" class="text-gray-400 text-sm md:text-base mt-2">
+                Огляди, корисні поради та автомобільні тренди 🚗🔥
+            </p>
+
+            <!-- MUSIC TOGGLE BUTTON IN HEADER -->
+            <div class="mt-4 inline-flex items-center">
+                <button id="headerAudioBtn" onclick="toggleAudio()" class="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white transition flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="disc" aria-hidden="true" id="headerAudioIcon" class="lucide lucide-disc w-3.5 h-3.5 text-orange-400"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                    <span id="headerAudioText">Авто-вайб: ON</span>
+                </button>
+            </div>
+
+            <!-- STATS COUNTERS -->
+            <div class="flex flex-wrap items-center justify-center gap-4 mt-5 text-xs text-gray-400">
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5">
+                    <i data-lucide="youtube" class="w-4 h-4 text-red-500"></i>
+                    <span id="statYoutube" class="text-white font-semibold">тест</span> YouTube
+                </div>
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="send" aria-hidden="true" class="lucide lucide-send w-4 h-4 text-sky-400"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"></path><path d="m21.854 2.147-10.94 10.939"></path></svg>
+                    <span id="statTelegram" class="text-white font-semibold">тест</span> Telegram
+                </div>
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="music-2" aria-hidden="true" class="lucide lucide-music-2 w-4 h-4 text-pink-400"><path d="m19 6-5.2-3.9a.5.5 0 0 0-.8.4V18"></path><circle cx="9" cy="18" r="4"></circle></svg>
+                    <span id="statTiktok" class="text-white font-semibold">тест</span> TikTok
+                </div>
+            </div>
+        </header>
+
+        <!-- LINKS & CONTENT SECTION -->
+        <main class="space-y-3.5">
+
+            <!-- LATEST VIDEO BANNER WITH YOUTUBE EMBED / PREVIEW -->
+            <div class="card rounded-2xl p-4 md:p-5 border-l-4 border-l-orange-500 overflow-hidden">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-orange-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="flame" aria-hidden="true" class="lucide lucide-flame w-4 h-4"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"></path></svg>
+                        <span>ОСТАННІЙ ВИПУСК НА YOUTUBE</span>
+                    </div>
+                    <a id="mainYoutubeLinkHeader" href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="text-xs text-gray-400 hover:text-white flex items-center gap-1 transition">
+                        <span>На канал</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="external-link" aria-hidden="true" class="lucide lucide-external-link w-3.5 h-3.5"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                    </a>
+                </div>
+
+                <!-- YouTube Video Embed Preview -->
+                <div class="relative w-full aspect-video rounded-xl overflow-hidden border border-white/10 mb-3 shadow-lg group">
+                    <iframe id="youtubeIframe" class="w-full h-full" src="https://www.youtube.com/embed?listType=playlist&amp;list=UUo_i2rV7yEQu0Md1o" title="AUTOHUB Останнє відео" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="">
+                    </iframe>
+                </div>
+
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-base font-bold text-white">Новий огляд та тести авто 🚗🔥</h2>
+                        <p class="text-xs text-gray-400 mt-0.5">Дивіться найновіший контент на нашому каналі</p>
+                    </div>
+                    <a id="mainYoutubeLinkBtn" href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="shrink-0 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-medium text-xs transition flex items-center gap-2 shadow-md">
+                        <i data-lucide="youtube" class="w-4 h-4"></i> Дивитись
+                    </a>
+                </div>
+            </div>
+
+            <!-- YOUTUBE CHANNEL -->
+            <a id="linkYoutube" href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">
+                        <i data-lucide="youtube" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-white group-hover:text-orange-400 transition">YouTube Канал</h3>
+                        <p class="text-xs text-gray-400">Головні автомобільні огляди</p>
+                    </div>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-right" aria-hidden="true" class="lucide lucide-chevron-right w-5 h-5 text-gray-500 group-hover:text-white transition"><path d="m9 18 6-6-6-6"></path></svg>
+            </a>
+
+            <!-- TELEGRAM COMMUNITY -->
+            <a id="linkTelegram" href="https://t.me/FoXNEWofficial" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="send" aria-hidden="true" class="lucide lucide-send w-5 h-5"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"></path><path d="m21.854 2.147-10.94 10.939"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-white group-hover:text-orange-400 transition">Telegram Спільнота</h3>
+                        <p class="text-xs text-gray-400">Новини та бекстейдж у реальному часі</p>
+                    </div>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-right" aria-hidden="true" class="lucide lucide-chevron-right w-5 h-5 text-gray-500 group-hover:text-white transition"><path d="m9 18 6-6-6-6"></path></svg>
+            </a>
+
+            <!-- TWO COLUMNS: INSTAGRAM & TIKTOK -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <a href="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0">
+                            <i data-lucide="instagram" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white group-hover:text-orange-400 transition">Instagram</h3>
+                            <p class="text-xs text-gray-400">Естетика та Сторіз</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.tiktok.com/@automhub?_r=1&amp;_t=ZS-97ocjEaQUVN" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-pink-500/10 text-pink-400 flex items-center justify-center shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="music-2" aria-hidden="true" class="lucide lucide-music-2 w-4 h-4"><path d="m19 6-5.2-3.9a.5.5 0 0 0-.8.4V18"></path><circle cx="9" cy="18" r="4"></circle></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white group-hover:text-orange-400 transition">TikTok</h3>
+                            <p class="text-xs text-gray-400">Короткі Тренди</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- TWO COLUMNS: GAME & FEEDBACK -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div onclick="openGameModal()" class="card rounded-2xl p-4 flex items-center justify-between cursor-pointer group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="gamepad-2" aria-hidden="true" class="lucide lucide-gamepad-2 w-4 h-4"><line x1="6" x2="10" y1="11" y2="11"></line><line x1="8" x2="8" y1="9" y2="13"></line><line x1="15" x2="15.01" y1="12" y2="12"></line><line x1="18" x2="18.01" y1="10" y2="10"></line><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white group-hover:text-amber-400 transition">Вгадай Авто</h3>
+                            <p class="text-xs text-gray-400">Мінігра на знання</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div onclick="openFeedbackModal()" class="card rounded-2xl p-4 flex items-center justify-between cursor-pointer group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="message-square-plus" aria-hidden="true" class="lucide lucide-message-square-plus w-4 h-4"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"></path><path d="M12 8v6"></path><path d="M9 11h6"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white group-hover:text-blue-400 transition">Ваші Ідеї</h3>
+                            <p class="text-xs text-gray-400">Запропонувати ідею</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTACT -->
+            <a href="https://t.me/FoXNEWofficial" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="user" aria-hidden="true" class="lucide lucide-user w-5 h-5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-white group-hover:text-emerald-400 transition">Написати Особисто</h3>
+                        <p class="text-xs text-gray-400">Питання та співпраця</p>
+                    </div>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-right" aria-hidden="true" class="lucide lucide-chevron-right w-5 h-5 text-gray-500 group-hover:text-white transition"><path d="m9 18 6-6-6-6"></path></svg>
+            </a>
+
+        </main>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-white/5 py-6 bg-black/20">
+        <div class="max-w-3xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+            <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="eye" aria-hidden="true" class="lucide lucide-eye w-3.5 h-3.5 text-gray-400"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <span>Відвідувань:</span>
+                <img src="https://counter9.optistats.ovh/private/freecounterstat.php?c=lnslshye5wypf4h4sc3m76fajuzmlwyh" border="0" title="Counter" alt="Counter" class="h-3.5 opacity-70 inline">
+            </div>
+            
+            <p>© 2026 AUTOHUB. Всі права захищено.</p>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE EXPANDABLE MUSIC PLAYER (BOTTOM RIGHT) -->
+    <div id="musicPlayer" class="fixed bottom-4 right-4 z-40 card rounded-2xl border border-white/10 shadow-2xl backdrop-blur-xl bg-slate-900/95 transition-all duration-300 w-full max-w-[320px] overflow-hidden">
+        
+        <!-- COMPACT HEADER (Always visible) -->
+        <div class="p-3 flex items-center justify-between gap-3 cursor-pointer select-none" onclick="togglePlayerExpand(event)">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="relative w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="disc" aria-hidden="true" id="playerStatusIcon" class="lucide lucide-disc w-5 h-5 animate-spin"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                </div>
+                <div class="min-w-0">
+                    <div class="text-[10px] text-orange-400 font-semibold uppercase tracking-wider">AUTOHUB SOUNDCLOUD</div>
+                    <div id="trackTitle" class="text-xs font-semibold text-white truncate">Пули — Луна</div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-1 shrink-0">
+                <button onclick="toggleAudio(event)" id="playPauseBtn" class="p-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white transition"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="pause" aria-hidden="true" class="lucide lucide-pause w-4 h-4"><rect x="14" y="3" width="5" height="18" rx="1"></rect><rect x="5" y="3" width="5" height="18" rx="1"></rect></svg></button>
+                <button id="expandBtn" title="Розгорнути плеєр" class="p-2 text-gray-400 hover:text-white transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-up" aria-hidden="true" id="expandIcon" class="lucide lucide-chevron-up w-4 h-4"><path d="m18 15-6-6-6 6"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- EXPANDED CONTROL PANEL (Hidden by default) -->
+        <div id="playerExpandedContent" class="hidden px-4 pb-4 pt-1 border-t border-white/5 space-y-3">
+            
+            <!-- PROGRESS BAR & TIMERS -->
+            <div class="space-y-1">
+                <input type="range" id="progressBar" min="0" max="100" value="0" class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-orange-500">
+                <div class="flex justify-between text-[10px] text-gray-400 font-mono">
+                    <span id="currentTime">0:54</span>
+                    <span id="duration">4:26</span>
+                </div>
+            </div>
+
+            <!-- PLAYER CONTROLS (Prev / Play / Next) -->
+            <div class="flex items-center justify-center gap-4">
+                <button onclick="prevTrack()" title="Попередній трек" class="p-2 text-gray-300 hover:text-white transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="skip-back" aria-hidden="true" class="lucide lucide-skip-back w-5 h-5"><path d="M17.971 4.285A2 2 0 0 1 21 6v12a2 2 0 0 1-3.029 1.715l-9.997-5.998a2 2 0 0 1-.003-3.432z"></path><path d="M3 20V4"></path></svg>
+                </button>
+                <button onclick="toggleAudio(event)" class="p-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white transition shadow-lg shadow-orange-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="pause" aria-hidden="true" id="expandedPlayIcon" class="lucide lucide-pause lucide-play w-5 h-5"><rect x="14" y="3" width="5" height="18" rx="1"></rect><rect x="5" y="3" width="5" height="18" rx="1"></rect></svg>
+                </button>
+                <button onclick="nextTrack()" title="Наступний трек" class="p-2 text-gray-300 hover:text-white transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="skip-forward" aria-hidden="true" class="lucide lucide-skip-forward w-5 h-5"><path d="M21 4v16"></path><path d="M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z"></path></svg>
+                </button>
+            </div>
+
+            <!-- VOLUME CONTROL -->
+            <div class="flex items-center gap-2 pt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="volume-2" aria-hidden="true" class="lucide lucide-volume-2 w-4 h-4 text-gray-400"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"></path><path d="M16 9a5 5 0 0 1 0 6"></path><path d="M19.364 18.364a9 9 0 0 0 0-12.728"></path></svg>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.8" class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-orange-500">
+            </div>
+
+            <!-- SOUNDCLOUD LINK -->
+            <a id="soundcloudLink" href="https://on.soundcloud.com/sU5M7TAcJNTkYYutdT" target="_blank" class="block text-center text-[11px] text-orange-400 hover:text-orange-300 transition pt-1">Слухати «Пули — Луна» на SoundCloud ↗</a>
+        </div>
+    </div>
+
+    <!-- AUDIO ELEMENT -->
+    <audio id="bgAudio" preload="metadata" src="https://sefon.pro/api/mp3_download/direct/1170286/3vUCAGilqz1v8BrioMt3R8uGHb6MkPV722tgMNoPcuRLOsZWdokDV8TkwKAZzgGISpcy-y40LQeKbk-SjN7Hq2aHRQ4gJbSB1xicUJOCqeO4f-VoJ2OXo7H5RYDbPXkD_MrLkI1qewhtkPECp_liPZGFpXmOQ4f77kDOnA/"></audio>
+
+    <!-- MODAL: GAME -->
+    <div id="gameModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-bg">
+        <div class="card w-full max-w-md rounded-2xl p-6 relative shadow-2xl">
+            <button onclick="closeGameModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" aria-hidden="true" class="lucide lucide-x w-5 h-5"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+            </button>
+
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-2 rounded-xl bg-amber-500/10 text-amber-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="gamepad-2" aria-hidden="true" class="lucide lucide-gamepad-2 w-5 h-5"><line x1="6" x2="10" y1="11" y2="11"></line><line x1="8" x2="8" y1="9" y2="13"></line><line x1="15" x2="15.01" y1="12" y2="12"></line><line x1="18" x2="18.01" y1="10" y2="10"></line><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"></path></svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white text-base">Вгадай Авто</h3>
+                    <div class="text-xs text-gray-400 flex gap-3">
+                        <span>Питання: <b id="gameStep" class="text-amber-400">1/3</b></span>
+                        <span>Бали: <b id="gameScore" class="text-emerald-400">0</b></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gameContent" class="space-y-4">
+                <div class="w-full h-44 rounded-xl overflow-hidden relative bg-slate-900 border border-white/10">
+                    <img id="gameImg" src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&amp;fit=crop&amp;w=600&amp;q=80" alt="Car to guess" class="w-full h-full object-cover">
+                </div>
+                <p id="gameQuestion" class="text-xs font-medium text-center text-gray-300">Яка марка автомобіля зображена?</p>
+                <div id="gameOptions" class="grid grid-cols-1 gap-2"></div>
+            </div>
+
+            <div id="gameOver" class="hidden text-center py-6 space-y-3">
+                <h4 class="text-lg font-bold text-white">Гру завершено!</h4>
+                <p id="gameFinalResult" class="text-gray-300 text-xs">Ви набрали 0 балів</p>
+                <button onclick="restartGame()" class="px-5 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold transition">
+                    Зіграти ще раз
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: FEEDBACK -->
+    <div id="feedbackModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-bg">
+        <div class="card w-full max-w-md rounded-2xl p-6 relative shadow-2xl">
+            <button onclick="closeFeedbackModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" aria-hidden="true" class="lucide lucide-x w-5 h-5"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+            </button>
+
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-2 rounded-xl bg-blue-500/10 text-blue-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="message-square-plus" aria-hidden="true" class="lucide lucide-message-square-plus w-5 h-5"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"></path><path d="M12 8v6"></path><path d="M9 11h6"></path></svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white text-base">Ваші пропозиції</h3>
+                    <p class="text-xs text-gray-400">Поділіться ідеями для AUTOHUB</p>
+                </div>
+            </div>
+
+            <form id="feedbackForm" onsubmit="submitFeedback(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Ваш нікнейм або ім'я</label>
+                    <input type="text" required="" placeholder="Олександр" class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Ваша ідея</label>
+                    <textarea required="" rows="3" placeholder="Опишіть пропозицію..." class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-orange-500 resize-none"></textarea>
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold transition">
+                    Надіслати
+                </button>
+            </form>
+
+            <div id="feedbackSuccess" class="hidden text-center py-6 space-y-2">
+                <div class="w-10 h-10 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="check" aria-hidden="true" class="lucide lucide-check w-5 h-5"><path d="M20 6 9 17l-5-5"></path></svg>
+                </div>
+                <h4 class="text-sm font-bold text-white">Дякуємо! Повідомлення надіслано.</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADMIN PANEL -->
+    <div id="adminModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg">
+        <div class="card w-full max-w-md rounded-2xl p-5 relative shadow-2xl border-amber-500/30 max-h-[90vh] flex flex-col">
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="x" aria-hidden="true" class="lucide lucide-x w-5 h-5"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+            </button>
+
+            <!-- LOGO IN ADMIN PANEL -->
+            <div class="text-center mb-3 shrink-0">
+                <img src="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png" alt="AUTOHUB Admin Logo" class="w-14 h-14 rounded-2xl object-cover mx-auto border border-amber-500/40 shadow-lg mb-1.5">
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold border border-amber-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield-check" aria-hidden="true" class="lucide lucide-shield-check w-3.5 h-3.5"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                    <span>Панель Адміністратора</span>
+                </div>
+            </div>
+
+            <!-- SCROLLABLE EDIT FORM -->
+            <div class="overflow-y-auto space-y-3 pr-1 flex-grow text-xs text-left">
+                <!-- STATS EDIT -->
+                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                    <span class="font-semibold text-amber-400 block mb-1">📊 Кількість підписників</span>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">YouTube</label>
+                            <input type="text" id="adminYtStat" class="w-full px-2 py-1 bg-black/40 border border-white/10 rounded-lg text-white font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Telegram</label>
+                            <input type="text" id="adminTgStat" class="w-full px-2 py-1 bg-black/40 border border-white/10 rounded-lg text-white font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">TikTok</label>
+                            <input type="text" id="adminTtStat" class="w-full px-2 py-1 bg-black/40 border border-white/10 rounded-lg text-white font-semibold">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LINKS EDIT -->
+                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                    <span class="font-semibold text-amber-400 block mb-1">🔗 Посилання на соцмережі</span>
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-0.5">YouTube URL</label>
+                        <input type="text" id="adminYtUrl" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-0.5">Telegram URL</label>
+                        <input type="text" id="adminTgUrl" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="applyAdminChanges()" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-xl transition text-xs flex items-center justify-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="check" aria-hidden="true" class="lucide lucide-check w-4 h-4"><path d="M20 6 9 17l-5-5"></path></svg> Застосувати зміни
+                    </button>
+                </div>
+
+                <!-- EXPORT FILE BUTTON -->
+                <div class="pt-2 border-t border-white/10">
+                    <button onclick="exportUpdatedFile()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="download" aria-hidden="true" class="lucide lucide-download w-4 h-4"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
+                        <span>Завантажити новий index.html для GitHub</span>
+                    </button>
+                    <p class="text-[10px] text-gray-400 text-center mt-1">Збережіть цей файл і просто замініть ним файл в GitHub-репозиторії</p>
+                </div>
+            </div>
+
+            <div class="mt-3 shrink-0">
+                <button onclick="closeAdminModal()" class="w-full py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs font-semibold rounded-xl transition border border-red-500/20">
+                    Вийти з адмін-панелі
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        lucide.createIcons();
+
+        // DIRECT MP3 PLAYLIST
+        const playlist = [
+            { 
+                title: "Пули — Луна", 
+                scUrl: "https://on.soundcloud.com/sU5M7TAcJNTkYYutdT", 
+                streamUrl: "https://sefon.pro/api/mp3_download/direct/1170286/3vUCAGilqz1v8BrioMt3R8uGHb6MkPV722tgMNoPcuRLOsZWdokDV8TkwKAZzgGISpcy-y40LQeKbk-SjN7Hq2aHRQ4gJbSB1xicUJOCqeO4f-VoJ2OXo7H5RYDbPXkD_MrLkI1qewhtkPECp_liPZGFpXmOQ4f77kDOnA/" 
+            },
+            { 
+                title: "Six Days — Rapido y Furioso", 
+                scUrl: "https://on.soundcloud.com/yAAEoZKsMU66NESvaO", 
+                streamUrl: "https://nmuz.net/load/e85825786a98a887.mp3" 
+            },
+            { 
+                title: "Marcelo D2 — Desabafo / Deixa", 
+                scUrl: "https://on.soundcloud.com/fOqGtUmfg7er9TdJTJ", 
+                streamUrl: "https://www.image2url.com/r2/default/audio/1794419244582-021a8ff3-e5a7-4712-b690-08703bb0cf34.mp3"
+            },
+            { 
+                title: "Charlie Work", 
+                scUrl: "https://on.soundcloud.com/JHLuocqSpeTTrJ9tyU", 
+                streamUrl: "https://www.image2url.com/r2/default/audio/1794419204979-c84a6985-11bb-4bed-a317-db4b607b4765.mp3" 
+            },
+            { 
+                title: "RICHI — AUTOMOTIVO", 
+                scUrl: "https://on.soundcloud.com/bBW7421BDYu3upogf3", 
+                streamUrl: "https://mp3tourl.com/audio/1794419140150-cf20a211-de0d-4dcd-ba0a-a8b1a5364bd4.mp3"
+            },
+            { 
+                title: "Дурачок", 
+                scUrl: "https://on.soundcloud.com/npdkWxZIpCChXNPrHV", 
+                streamUrl: "https://mp3tourl.com/audio/1794419103688-19a54c5d-84d8-4511-a036-24faf9e9757e.mp3"
+            },
+            { 
+                title: "Весь этот мир", 
+                scUrl: "https://on.soundcloud.com/A3nZZdoR3rnYfonOae", 
+                streamUrl: "https://sefon.pro/api/mp3_download/direct/2568840/3vUCAHcRDXqPQOaXR9x92ohIDaFZi8q95aeX_SBZ6km2PvOB96r55eUR7cTFKj1dtqv53-_nW-KVLSvWVYb7IuPe68qU2UXvVK7AGq9VGVnRLsD5AQ1Q6s1POReRaycBPMI5LsmDyV2xMDL5ye3s7rl7FF-qRS0ntuD13w/" 
+            },
+            { 
+                title: "Весна — Русский Размер", 
+                scUrl: "https://on.soundcloud.com/7tPbmnnkc0QRl4IuEB", 
+                streamUrl: "https://mp3tourl.com/audio/1794421197362-383435d8-97e3-4f95-a459-bb4743d7d4a5.mp3" 
+            },
+            { 
+                title: "Suzanne Vega — Tom's Diner", 
+                scUrl: "https://on.soundcloud.com/gEKzeLOLKcLL9Aww1s", 
+                streamUrl: "https://mp3tourl.com/audio/1794421269557-a5ccf4c2-040d-4c78-b455-d6ae2a2d2856.mp3" 
+            }
+        ];
+
+        let currentTrackIndex = 0;
+        const bgAudio = document.getElementById('bgAudio');
+        const progressBar = document.getElementById('progressBar');
+        const volumeSlider = document.getElementById('volumeSlider');
+        let isPlaying = false;
+        let isExpanded = false;
+
+        function updateTrackUI() {
+            const track = playlist[currentTrackIndex];
+            document.getElementById('trackTitle').innerText = track.title;
+            const scBtn = document.getElementById('soundcloudLink');
+            scBtn.href = track.scUrl;
+            scBtn.innerText = `Слухати «${track.title}» на SoundCloud ↗`;
+            
+            bgAudio.src = track.streamUrl;
+            bgAudio.load();
+            if (isPlaying) {
+                bgAudio.play().catch(e => console.log("Audio play error:", e));
+            }
+        }
+
+        function togglePlayerExpand(e) {
+            if (e.target.closest('button')) return;
+            
+            isExpanded = !isExpanded;
+            const expandedContent = document.getElementById('playerExpandedContent');
+            const expandIcon = document.getElementById('expandIcon');
+
+            if (isExpanded) {
+                expandedContent.classList.remove('hidden');
+                expandIcon.setAttribute('data-lucide', 'chevron-down');
+            } else {
+                expandedContent.classList.add('hidden');
+                expandIcon.setAttribute('data-lucide', 'chevron-up');
+            }
+            lucide.createIcons();
+        }
+
+        function toggleAudio(e) {
+            if (e) e.stopPropagation();
+            if (isPlaying) {
+                bgAudio.pause();
+                isPlaying = false;
+                updatePlayIcons(false);
+            } else {
+                bgAudio.play().then(() => {
+                    isPlaying = true;
+                    updatePlayIcons(true);
+                }).catch(e => console.log("Audio play failed:", e));
+            }
+        }
+
+        function updatePlayIcons(playing) {
+            const headerAudioText = document.getElementById('headerAudioText');
+            const playBtn = document.getElementById('playPauseBtn');
+            const expandedPlayIcon = document.getElementById('expandedPlayIcon');
+            const playerStatusIcon = document.getElementById('playerStatusIcon');
+
+            if (playing) {
+                headerAudioText.innerText = "Авто-вайб: ON";
+                playBtn.innerHTML = '<i data-lucide="pause" class="w-4 h-4"></i>';
+                expandedPlayIcon.setAttribute('data-lucide', 'pause');
+                playerStatusIcon.classList.add('animate-spin');
+            } else {
+                headerAudioText.innerText = "Авто-вайб: OFF";
+                playBtn.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i>';
+                expandedPlayIcon.setAttribute('data-lucide', 'play');
+                playerStatusIcon.classList.remove('animate-spin');
+            }
+            lucide.createIcons();
+        }
+
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            updateTrackUI();
+            if (!isPlaying) toggleAudio();
+        }
+
+        function prevTrack() {
+            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+            updateTrackUI();
+            if (!isPlaying) toggleAudio();
+        }
+
+        // AUDIO CONTROLS & TIMERS
+        bgAudio.addEventListener('timeupdate', () => {
+            if (bgAudio.duration) {
+                const percent = (bgAudio.currentTime / bgAudio.duration) * 100;
+                progressBar.value = percent;
+                document.getElementById('currentTime').innerText = formatTime(bgAudio.currentTime);
+                document.getElementById('duration').innerText = formatTime(bgAudio.duration);
+            }
+        });
+
+        bgAudio.addEventListener('ended', () => {
+            nextTrack();
+        });
+
+        progressBar.addEventListener('input', () => {
+            if (bgAudio.duration) {
+                bgAudio.currentTime = (progressBar.value / 100) * bgAudio.duration;
+            }
+        });
+
+        volumeSlider.addEventListener('input', () => {
+            bgAudio.volume = volumeSlider.value;
+        });
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "0:00";
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // INITIALIZATION
+        updateTrackUI();
+
+        // WELCOME MODAL LOGIC
+        function closeWelcomeModal(withMusic = false) {
+            document.getElementById('welcomeModal').classList.add('hidden');
+            if (withMusic) {
+                toggleAudio();
+            }
+        }
+
+        // TRIPLE CLICK ON LOGO FOR ADMIN ACCESS
+        let logoClickCount = 0;
+        let logoClickTimer;
+        const logoContainer = document.getElementById('logoContainer');
+
+        if (logoContainer) {
+            logoContainer.addEventListener('click', (e) => {
+                e.preventDefault();
+                logoClickCount++;
+                clearTimeout(logoClickTimer);
+
+                if (logoClickCount >= 3) {
+                    logoClickCount = 0;
+                    // Populate current values in admin form
+                    document.getElementById('adminYtStat').value = document.getElementById('statYoutube').innerText;
+                    document.getElementById('adminTgStat').value = document.getElementById('statTelegram').innerText;
+                    document.getElementById('adminTtStat').value = document.getElementById('statTiktok').innerText;
+                    document.getElementById('adminYtUrl').value = document.getElementById('linkYoutube').href;
+                    document.getElementById('adminTgUrl').value = document.getElementById('linkTelegram').href;
+
+                    document.getElementById('adminModal').classList.remove('hidden');
+                    document.getElementById('adminBanner').classList.remove('hidden');
+                    lucide.createIcons();
+                } else {
+                    logoClickTimer = setTimeout(() => {
+                        logoClickCount = 0;
+                    }, 1200);
+                }
+            });
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function applyAdminChanges() {
+            document.getElementById('statYoutube').innerText = document.getElementById('adminYtStat').value;
+            document.getElementById('statTelegram').innerText = document.getElementById('adminTgStat').value;
+            document.getElementById('statTiktok').innerText = document.getElementById('adminTtStat').value;
+
+            const ytUrl = document.getElementById('adminYtUrl').value;
+            const tgUrl = document.getElementById('adminTgUrl').value;
+
+            document.getElementById('linkYoutube').href = ytUrl;
+            document.getElementById('mainYoutubeLinkHeader').href = ytUrl;
+            document.getElementById('mainYoutubeLinkBtn').href = ytUrl;
+            document.getElementById('linkTelegram').href = tgUrl;
+
+            alert("Зміни застосовано на сторінці! Не забудьте завантажити новий файл для збереження в GitHub.");
+        }
+
+        function exportUpdatedFile() {
+            applyAdminChanges();
+            const fullHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+            const blob = new Blob([fullHtml], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // GAME LOGIC
+        const quizData = [
+            {
+                img: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80",
+                question: "Яка марка автомобіля зображена?",
+                options: ["BMW 4 Series", "Audi RS5", "Mercedes-AMG C63", "Porsche Taycan"],
+                answer: 0
+            },
+            {
+                img: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80",
+                question: "Вгадайте спорткар:",
+                options: ["Ferrari F40", "Porsche 911 GT3", "Lamborghini Huracan", "Ford Mustang"],
+                answer: 1
+            },
+            {
+                img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80",
+                question: "Який купе зображено?",
+                options: ["Chevrolet Corvette", "Nissan GT-R", "McLaren 720S", "Bugatti Chiron"],
+                answer: 0
+            }
+        ];
+
+        let currentStep = 0;
+        let score = 0;
+
+        function openGameModal() {
+            document.getElementById('gameModal').classList.remove('hidden');
+            restartGame();
+        }
+
+        function closeGameModal() {
+            document.getElementById('gameModal').classList.add('hidden');
+        }
+
+        function loadQuestion() {
+            const q = quizData[currentStep];
+            document.getElementById('gameStep').innerText = `${currentStep + 1}/${quizData.length}`;
+            document.getElementById('gameScore').innerText = score;
+            document.getElementById('gameImg').src = q.img;
+            document.getElementById('gameQuestion').innerText = q.question;
+
+            const optionsContainer = document.getElementById('gameOptions');
+            optionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full py-2 px-3 rounded-lg bg-white/5 hover:bg-orange-500/20 border border-white/10 hover:border-orange-500/40 text-xs text-gray-200 transition text-left";
+                btn.innerText = opt;
+                btn.onclick = () => selectOption(idx);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(index) {
+            if (index === quizData[currentStep].answer) {
+                score += 100;
+            }
+            currentStep++;
+            if (currentStep < quizData.length) {
+                loadQuestion();
+            } else {
+                showGameOver();
+            }
+        }
+
+        function showGameOver() {
+            document.getElementById('gameContent').classList.add('hidden');
+            document.getElementById('gameOver').classList.remove('hidden');
+            document.getElementById('gameFinalResult').innerText = `Ви набрали ${score} балів!`;
+        }
+
+        function restartGame() {
+            currentStep = 0;
+            score = 0;
+            document.getElementById('gameContent').classList.remove('hidden');
+            document.getElementById('gameOver').classList.add('hidden');
+            loadQuestion();
+        }
+
+        // FEEDBACK FORM LOGIC
+        function openFeedbackModal() {
+            document.getElementById('feedbackModal').classList.remove('hidden');
+            document.getElementById('feedbackForm').reset();
+            document.getElementById('feedbackForm').classList.remove('hidden');
+            document.getElementById('feedbackSuccess').classList.add('hidden');
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById('feedbackModal').classList.add('hidden');
+        }
+
+        function submitFeedback(e) {
+            e.preventDefault();
+            document.getElementById('feedbackForm').classList.add('hidden');
+            document.getElementById('feedbackSuccess').classList.remove('hidden');
+        }
+    </script>
+
+
+</body></html>
