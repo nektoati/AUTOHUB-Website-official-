@@ -95,16 +95,16 @@
         
         <!-- HEADER -->
         <header class="text-center mb-10">
-            <div class="relative inline-block cursor-pointer mb-3" id="logoContainer" title="Клікни 3 рази для входу в адмінку">
+            <div class="relative inline-block cursor-pointer mb-3 select-none" id="logoContainer" title="Клікни 3 рази для входу в адмінку">
                 <img src="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png" 
                      alt="AUTOHUB Logo" 
-                     class="w-20 h-20 md:w-24 md:h-24 rounded-2xl object-cover mx-auto border border-white/10 shadow-lg">
+                     class="w-20 h-20 md:w-24 md:h-24 rounded-2xl object-cover mx-auto border border-white/10 shadow-lg pointer-events-none">
             </div>
 
-            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-white">
+            <h1 id="headerTitleText" class="text-3xl md:text-4xl font-bold tracking-tight text-white">
                 AUTOHUB
             </h1>
-            <p class="text-gray-400 text-sm md:text-base mt-2">
+            <p id="headerSubtitleText" class="text-gray-400 text-sm md:text-base mt-2">
                 Огляди, корисні поради та автомобільні тренди 🚗🔥
             </p>
 
@@ -120,15 +120,15 @@
             <div class="flex flex-wrap items-center justify-center gap-4 mt-5 text-xs text-gray-400">
                 <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5">
                     <i data-lucide="youtube" class="w-4 h-4 text-red-500"></i>
-                    <span class="text-white font-semibold">10K+</span> YouTube
+                    <span id="statYoutube" class="text-white font-semibold">10K+</span> YouTube
                 </div>
                 <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5">
                     <i data-lucide="send" class="w-4 h-4 text-sky-400"></i>
-                    <span class="text-white font-semibold">5K+</span> Telegram
+                    <span id="statTelegram" class="text-white font-semibold">5K+</span> Telegram
                 </div>
                 <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5">
                     <i data-lucide="music-2" class="w-4 h-4 text-pink-400"></i>
-                    <span class="text-white font-semibold">15K+</span> TikTok
+                    <span id="statTiktok" class="text-white font-semibold">15K+</span> TikTok
                 </div>
             </div>
         </header>
@@ -143,7 +143,7 @@
                         <i data-lucide="flame" class="w-4 h-4"></i>
                         <span>ОСТАННІЙ ВИПУСК НА YOUTUBE</span>
                     </div>
-                    <a href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="text-xs text-gray-400 hover:text-white flex items-center gap-1 transition">
+                    <a id="mainYoutubeLinkHeader" href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="text-xs text-gray-400 hover:text-white flex items-center gap-1 transition">
                         <span>На канал</span>
                         <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                     </a>
@@ -152,6 +152,7 @@
                 <!-- YouTube Video Embed Preview -->
                 <div class="relative w-full aspect-video rounded-xl overflow-hidden border border-white/10 mb-3 shadow-lg group">
                     <iframe 
+                        id="youtubeIframe"
                         class="w-full h-full" 
                         src="https://www.youtube.com/embed?listType=playlist&list=UUo_i2rV7yEQu0Md1o" 
                         title="AUTOHUB Останнє відео" 
@@ -166,14 +167,14 @@
                         <h2 class="text-base font-bold text-white">Новий огляд та тести авто 🚗🔥</h2>
                         <p class="text-xs text-gray-400 mt-0.5">Дивіться найновіший контент на нашому каналі</p>
                     </div>
-                    <a href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="shrink-0 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-medium text-xs transition flex items-center gap-2 shadow-md">
+                    <a id="mainYoutubeLinkBtn" href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="shrink-0 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-medium text-xs transition flex items-center gap-2 shadow-md">
                         <i data-lucide="youtube" class="w-4 h-4"></i> Дивитись
                     </a>
                 </div>
             </div>
 
             <!-- YOUTUBE CHANNEL -->
-            <a href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
+            <a id="linkYoutube" href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
                 <div class="flex items-center gap-3.5">
                     <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">
                         <i data-lucide="youtube" class="w-5 h-5"></i>
@@ -187,7 +188,7 @@
             </a>
 
             <!-- TELEGRAM COMMUNITY -->
-            <a href="https://t.me/FoXNEWofficial" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
+            <a id="linkTelegram" href="https://t.me/FoXNEWofficial" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
                 <div class="flex items-center gap-3.5">
                     <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center shrink-0">
                         <i data-lucide="send" class="w-5 h-5"></i>
@@ -430,24 +431,77 @@
 
     <!-- MODAL: ADMIN PANEL -->
     <div id="adminModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-bg">
-        <div class="card w-full max-w-sm rounded-2xl p-6 relative shadow-2xl">
+        <div class="card w-full max-w-md rounded-2xl p-5 relative shadow-2xl border-amber-500/30 max-h-[90vh] flex flex-col">
             <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
-            <div class="flex items-center gap-3 mb-5">
-                <div class="p-2 rounded-xl bg-amber-500/10 text-amber-400">
-                    <i data-lucide="shield" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h3 class="font-bold text-white text-base">Адмін-Панель</h3>
-                    <p class="text-xs text-gray-400">Керування AUTOHUB</p>
+            <!-- LOGO IN ADMIN PANEL -->
+            <div class="text-center mb-3 shrink-0">
+                <img src="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png" 
+                     alt="AUTOHUB Admin Logo" 
+                     class="w-14 h-14 rounded-2xl object-cover mx-auto border border-amber-500/40 shadow-lg mb-1.5">
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold border border-amber-500/20">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                    <span>Панель Адміністратора</span>
                 </div>
             </div>
 
-            <button onclick="closeAdminModal()" class="w-full py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs font-semibold transition">
-                Закрити панель
-            </button>
+            <!-- SCROLLABLE EDIT FORM -->
+            <div class="overflow-y-auto space-y-3 pr-1 flex-grow text-xs text-left">
+                <!-- STATS EDIT -->
+                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                    <span class="font-semibold text-amber-400 block mb-1">📊 Кількість підписників</span>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">YouTube</label>
+                            <input type="text" id="adminYtStat" class="w-full px-2 py-1 bg-black/40 border border-white/10 rounded-lg text-white font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Telegram</label>
+                            <input type="text" id="adminTgStat" class="w-full px-2 py-1 bg-black/40 border border-white/10 rounded-lg text-white font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">TikTok</label>
+                            <input type="text" id="adminTtStat" class="w-full px-2 py-1 bg-black/40 border border-white/10 rounded-lg text-white font-semibold">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LINKS EDIT -->
+                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                    <span class="font-semibold text-amber-400 block mb-1">🔗 Посилання на соцмережі</span>
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-0.5">YouTube URL</label>
+                        <input type="text" id="adminYtUrl" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-0.5">Telegram URL</label>
+                        <input type="text" id="adminTgUrl" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="applyAdminChanges()" class="w-full py-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-xl transition text-xs flex items-center justify-center gap-1.5">
+                        <i data-lucide="check" class="w-4 h-4"></i> Застосувати зміни
+                    </button>
+                </div>
+
+                <!-- EXPORT FILE BUTTON -->
+                <div class="pt-2 border-t border-white/10">
+                    <button onclick="exportUpdatedFile()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>Завантажити новий index.html для GitHub</span>
+                    </button>
+                    <p class="text-[10px] text-gray-400 text-center mt-1">Збережіть цей файл і просто замініть ним файл в GitHub-репозиторії</p>
+                </div>
+            </div>
+
+            <div class="mt-3 shrink-0">
+                <button onclick="closeAdminModal()" class="w-full py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs font-semibold rounded-xl transition border border-red-500/20">
+                    Вийти з адмін-панелі
+                </button>
+            </div>
         </div>
     </div>
 
@@ -633,22 +687,64 @@
         // TRIPLE CLICK ON LOGO FOR ADMIN ACCESS
         let logoClickCount = 0;
         let logoClickTimer;
-        document.getElementById('logoContainer').addEventListener('click', () => {
-            logoClickCount++;
-            clearTimeout(logoClickTimer);
-            if (logoClickCount === 3) {
-                logoClickCount = 0;
-                document.getElementById('adminModal').classList.remove('hidden');
-                document.getElementById('adminBanner').classList.remove('hidden');
-            } else {
-                logoClickTimer = setTimeout(() => {
+        const logoContainer = document.getElementById('logoContainer');
+
+        if (logoContainer) {
+            logoContainer.addEventListener('click', (e) => {
+                e.preventDefault();
+                logoClickCount++;
+                clearTimeout(logoClickTimer);
+
+                if (logoClickCount >= 3) {
                     logoClickCount = 0;
-                }, 1000);
-            }
-        });
+                    // Populate current values in admin form
+                    document.getElementById('adminYtStat').value = document.getElementById('statYoutube').innerText;
+                    document.getElementById('adminTgStat').value = document.getElementById('statTelegram').innerText;
+                    document.getElementById('adminTtStat').value = document.getElementById('statTiktok').innerText;
+                    document.getElementById('adminYtUrl').value = document.getElementById('linkYoutube').href;
+                    document.getElementById('adminTgUrl').value = document.getElementById('linkTelegram').href;
+
+                    document.getElementById('adminModal').classList.remove('hidden');
+                    document.getElementById('adminBanner').classList.remove('hidden');
+                    lucide.createIcons();
+                } else {
+                    logoClickTimer = setTimeout(() => {
+                        logoClickCount = 0;
+                    }, 1200);
+                }
+            });
+        }
 
         function closeAdminModal() {
             document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function applyAdminChanges() {
+            document.getElementById('statYoutube').innerText = document.getElementById('adminYtStat').value;
+            document.getElementById('statTelegram').innerText = document.getElementById('adminTgStat').value;
+            document.getElementById('statTiktok').innerText = document.getElementById('adminTtStat').value;
+
+            const ytUrl = document.getElementById('adminYtUrl').value;
+            const tgUrl = document.getElementById('adminTgUrl').value;
+
+            document.getElementById('linkYoutube').href = ytUrl;
+            document.getElementById('mainYoutubeLinkHeader').href = ytUrl;
+            document.getElementById('mainYoutubeLinkBtn').href = ytUrl;
+            document.getElementById('linkTelegram').href = tgUrl;
+
+            alert("Зміни застосовано на сторінці! Не забудьте завантажити новий файл для збереження в GitHub.");
+        }
+
+        function exportUpdatedFile() {
+            applyAdminChanges();
+            const fullHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+            const blob = new Blob([fullHtml], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
         // GAME LOGIC
