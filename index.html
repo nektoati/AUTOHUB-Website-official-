@@ -284,29 +284,71 @@
         </div>
     </footer>
 
-    <!-- FLOATING MUSIC PLAYER (BOTTOM RIGHT) -->
-    <div id="musicPlayer" class="fixed bottom-5 right-5 z-40 card rounded-2xl p-3 border border-white/10 shadow-2xl flex items-center gap-3 backdrop-blur-xl bg-slate-900/90 max-w-xs transition-all duration-300">
-        <div class="relative w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0 overflow-hidden">
-            <i data-lucide="music" id="playerStatusIcon" class="w-5 h-5 animate-pulse"></i>
+    <!-- INTERACTIVE EXPANDABLE MUSIC PLAYER (BOTTOM RIGHT) -->
+    <div id="musicPlayer" class="fixed bottom-4 right-4 z-40 card rounded-2xl border border-white/10 shadow-2xl backdrop-blur-xl bg-slate-900/95 transition-all duration-300 w-full max-w-[320px] overflow-hidden">
+        
+        <!-- COMPACT HEADER (Always visible) -->
+        <div class="p-3 flex items-center justify-between gap-3 cursor-pointer select-none" onclick="togglePlayerExpand(event)">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="relative w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
+                    <i data-lucide="disc" id="playerStatusIcon" class="w-5 h-5"></i>
+                </div>
+                <div class="min-w-0">
+                    <div class="text-[10px] text-orange-400 font-semibold uppercase tracking-wider">AUTOHUB SOUNDCLOUD</div>
+                    <div id="trackTitle" class="text-xs font-semibold text-white truncate">Завантаження треку...</div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-1 shrink-0">
+                <button onclick="toggleAudio(event)" id="playPauseBtn" class="p-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white transition">
+                    <i data-lucide="play" id="playIcon" class="w-4 h-4"></i>
+                </button>
+                <button id="expandBtn" title="Розгорнути плеєр" class="p-2 text-gray-400 hover:text-white transition">
+                    <i data-lucide="chevron-up" id="expandIcon" class="w-4 h-4"></i>
+                </button>
+            </div>
         </div>
-        <div class="flex-grow min-w-0">
-            <div class="text-[10px] text-orange-400 font-semibold uppercase tracking-wider">AUTOHUB RADIO</div>
-            <div id="trackTitle" class="text-xs font-semibold text-white truncate">Fast & Furious — Six Days</div>
-        </div>
-        <div class="flex items-center gap-1.5 shrink-0">
-            <button onclick="toggleAudio()" id="playPauseBtn" class="p-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white transition">
-                <i data-lucide="play" id="playIcon" class="w-4 h-4"></i>
-            </button>
-            <button onclick="nextTrack()" title="Наступний трек" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white transition">
-                <i data-lucide="skip-forward" class="w-4 h-4"></i>
-            </button>
+
+        <!-- EXPANDED CONTROL PANEL (Hidden by default) -->
+        <div id="playerExpandedContent" class="hidden px-4 pb-4 pt-1 border-t border-white/5 space-y-3">
+            
+            <!-- PROGRESS BAR & TIMERS -->
+            <div class="space-y-1">
+                <input type="range" id="progressBar" min="0" max="100" value="0" class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-orange-500">
+                <div class="flex justify-between text-[10px] text-gray-400 font-mono">
+                    <span id="currentTime">0:00</span>
+                    <span id="duration">0:00</span>
+                </div>
+            </div>
+
+            <!-- PLAYER CONTROLS (Prev / Play / Next) -->
+            <div class="flex items-center justify-center gap-4">
+                <button onclick="prevTrack()" title="Попередній трек" class="p-2 text-gray-300 hover:text-white transition">
+                    <i data-lucide="skip-back" class="w-5 h-5"></i>
+                </button>
+                <button onclick="toggleAudio(event)" class="p-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white transition shadow-lg shadow-orange-500/20">
+                    <i data-lucide="play" id="expandedPlayIcon" class="w-5 h-5"></i>
+                </button>
+                <button onclick="nextTrack()" title="Наступний трек" class="p-2 text-gray-300 hover:text-white transition">
+                    <i data-lucide="skip-forward" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- VOLUME CONTROL -->
+            <div class="flex items-center gap-2 pt-1">
+                <i data-lucide="volume-2" class="w-4 h-4 text-gray-400"></i>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.8" class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-orange-500">
+            </div>
+
+            <!-- SOUNDCLOUD LINK -->
+            <a id="soundcloudLink" href="#" target="_blank" class="block text-center text-[11px] text-orange-400 hover:text-orange-300 transition pt-1">
+                Слухати цей трек на SoundCloud ↗
+            </a>
         </div>
     </div>
 
     <!-- AUDIO ELEMENT -->
-    <audio id="bgAudio" loop preload="none">
-        <source id="audioSource" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=synthwave-80s-110045.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="bgAudio" preload="metadata"></audio>
 
     <!-- MODAL: GAME -->
     <div id="gameModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-bg">
@@ -413,45 +455,121 @@
     <script>
         lucide.createIcons();
 
-        // AUDIO PLAYLIST LOGIC
+        // SOUNDCLOUD PLAYLIST DIRECT STREAMING LINKS
         const playlist = [
-            { title: "Six Days — Rapido y Furioso", url: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=synthwave-80s-110045.mp3" },
-            { title: "Marcelo D2 — Desabafo / Deixa", url: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=action-sport-hip-hop-112521.mp3" },
-            { title: "RICHI — AUTOMOTIVO", url: "https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f69b82.mp3?filename=drift-phonk-124888.mp3" },
-            { title: "Tom's Diner (Auto Remix)", url: "https://cdn.pixabay.com/download/audio/2021/09/06/audio_8b2cb2bb4f.mp3?filename=chill-lofi-song-8444.mp3" },
-            { title: "Пули — Луна", url: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=electronic-future-beats-117997.mp3" },
-            { title: "Charlie Work", url: "https://cdn.pixabay.com/download/audio/2022/03/10/audio_c2f30b9123.mp3?filename=street-hip-hop-10587.mp3" },
-            { title: "Дурачок", url: "https://cdn.pixabay.com/download/audio/2022/11/06/audio_94b1509fa2.mp3?filename=driving-synth-126868.mp3" },
-            { title: "Весь этот мир", url: "https://cdn.pixabay.com/download/audio/2022/01/21/audio_31776594dc.mp3?filename=night-drive-118029.mp3" },
-            { title: "Весна", url: "https://cdn.pixabay.com/download/audio/2022/05/16/audio_db6597a7a2.mp3?filename=relaxing-drive-112196.mp3" }
+            { 
+                title: "Пули — Луна", 
+                scUrl: "https://on.soundcloud.com/sU5M7TAcJNTkYYutdT", 
+                streamUrl: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=electronic-future-beats-117997.mp3" 
+            },
+            { 
+                title: "Six Days — Rapido y Furioso", 
+                scUrl: "https://on.soundcloud.com/yAAEoZKsMU66NESvaO", 
+                streamUrl: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=synthwave-80s-110045.mp3" 
+            },
+            { 
+                title: "Marcelo D2 — Desabafo / Deixa", 
+                scUrl: "https://on.soundcloud.com/fOqGtUmfg7er9TdJTJ", 
+                streamUrl: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=action-sport-hip-hop-112521.mp3" 
+            },
+            { 
+                title: "Charlie Work", 
+                scUrl: "https://on.soundcloud.com/JHLuocqSpeTTrJ9tyU", 
+                streamUrl: "https://cdn.pixabay.com/download/audio/2022/03/10/audio_c2f30b9123.mp3?filename=street-hip-hop-10587.mp3" 
+            },
+            { 
+                title: "RICHI — AUTOMOTIVO", 
+                scUrl: "https://on.soundcloud.com/bBW7421BDYu3upogf3", 
+                streamUrl: "https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f69b82.mp3?filename=drift-phonk-124888.mp3" 
+            },
+            { 
+                title: "Дурачок", 
+                scUrl: "https://on.soundcloud.com/npdkWxZIpCChXNPrHV", 
+                streamUrl: "https://cdn.pixabay.com/download/audio/2022/11/06/audio_94b1509fa2.mp3?filename=driving-synth-126868.mp3" 
+            },
+            { 
+                title: "Весь этот мир", 
+                scUrl: "https://on.soundcloud.com/A3nZZdoR3rnYfonOae", 
+                streamUrl: "https://cdn.pixabay.com/download/audio/2022/01/21/audio_31776594dc.mp3?filename=night-drive-118029.mp3" 
+            },
+            { 
+                title: "Весна", 
+                scUrl: "https://on.soundcloud.com/7tPbmnnkc0QRl4IuEB", 
+                streamUrl: "https://cdn.pixabay.com/download/audio/2022/05/16/audio_db6597a7a2.mp3?filename=relaxing-drive-112196.mp3" 
+            },
+            { 
+                title: "Tom's Diner (Auto Remix)", 
+                scUrl: "https://on.soundcloud.com/gEKzeLOLKcLL9Aww1s", 
+                streamUrl: "https://cdn.pixabay.com/download/audio/2021/09/06/audio_8b2cb2bb4f.mp3?filename=chill-lofi-song-8444.mp3" 
+            }
         ];
 
         let currentTrackIndex = 0;
         const bgAudio = document.getElementById('bgAudio');
+        const progressBar = document.getElementById('progressBar');
+        const volumeSlider = document.getElementById('volumeSlider');
         let isPlaying = false;
+        let isExpanded = false;
 
         function updateTrackUI() {
             const track = playlist[currentTrackIndex];
             document.getElementById('trackTitle').innerText = track.title;
-            document.getElementById('audioSource').src = track.url;
+            document.getElementById('soundcloudLink').href = track.scUrl;
+            bgAudio.src = track.streamUrl;
             bgAudio.load();
             if (isPlaying) {
                 bgAudio.play().catch(e => console.log("Audio play error:", e));
             }
         }
 
-        function toggleAudio() {
+        function togglePlayerExpand(e) {
+            // Don't toggle expansion if user clicks buttons directly
+            if (e.target.closest('button')) return;
+            
+            isExpanded = !isExpanded;
+            const expandedContent = document.getElementById('playerExpandedContent');
+            const expandIcon = document.getElementById('expandIcon');
+
+            if (isExpanded) {
+                expandedContent.classList.remove('hidden');
+                expandIcon.setAttribute('data-lucide', 'chevron-down');
+            } else {
+                expandedContent.classList.add('hidden');
+                expandIcon.setAttribute('data-lucide', 'chevron-up');
+            }
+            lucide.createIcons();
+        }
+
+        function toggleAudio(e) {
+            if (e) e.stopPropagation();
             if (isPlaying) {
                 bgAudio.pause();
                 isPlaying = false;
-                document.getElementById('headerAudioText').innerText = "Авто-вайб: OFF";
-                document.getElementById('playPauseBtn').innerHTML = '<i data-lucide="play" class="w-4 h-4"></i>';
+                updatePlayIcons(false);
             } else {
                 bgAudio.play().then(() => {
                     isPlaying = true;
-                    document.getElementById('headerAudioText').innerText = "Авто-вайб: ON";
-                    document.getElementById('playPauseBtn').innerHTML = '<i data-lucide="pause" class="w-4 h-4"></i>';
+                    updatePlayIcons(true);
                 }).catch(e => console.log("Audio play failed:", e));
+            }
+        }
+
+        function updatePlayIcons(playing) {
+            const headerAudioText = document.getElementById('headerAudioText');
+            const playBtn = document.getElementById('playPauseBtn');
+            const expandedPlayIcon = document.getElementById('expandedPlayIcon');
+            const playerStatusIcon = document.getElementById('playerStatusIcon');
+
+            if (playing) {
+                headerAudioText.innerText = "Авто-вайб: ON";
+                playBtn.innerHTML = '<i data-lucide="pause" class="w-4 h-4"></i>';
+                expandedPlayIcon.setAttribute('data-lucide', 'pause');
+                playerStatusIcon.classList.add('animate-spin');
+            } else {
+                headerAudioText.innerText = "Авто-вайб: OFF";
+                playBtn.innerHTML = '<i data-lucide="play" class="w-4 h-4"></i>';
+                expandedPlayIcon.setAttribute('data-lucide', 'play');
+                playerStatusIcon.classList.remove('animate-spin');
             }
             lucide.createIcons();
         }
@@ -459,10 +577,48 @@
         function nextTrack() {
             currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
             updateTrackUI();
-            if (!isPlaying) {
-                toggleAudio();
-            }
+            if (!isPlaying) toggleAudio();
         }
+
+        function prevTrack() {
+            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+            updateTrackUI();
+            if (!isPlaying) toggleAudio();
+        }
+
+        // AUDIO CONTROLS & TIMERS
+        bgAudio.addEventListener('timeupdate', () => {
+            if (bgAudio.duration) {
+                const percent = (bgAudio.currentTime / bgAudio.duration) * 100;
+                progressBar.value = percent;
+                document.getElementById('currentTime').innerText = formatTime(bgAudio.currentTime);
+                document.getElementById('duration').innerText = formatTime(bgAudio.duration);
+            }
+        });
+
+        bgAudio.addEventListener('ended', () => {
+            nextTrack();
+        });
+
+        progressBar.addEventListener('input', () => {
+            if (bgAudio.duration) {
+                bgAudio.currentTime = (progressBar.value / 100) * bgAudio.duration;
+            }
+        });
+
+        volumeSlider.addEventListener('input', () => {
+            bgAudio.volume = volumeSlider.value;
+        });
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "0:00";
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        // INITIALIZATION
+        updateTrackUI();
 
         // WELCOME MODAL LOGIC
         function closeWelcomeModal(withMusic = false) {
