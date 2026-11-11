@@ -13,309 +13,333 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0b0d10;
-            color: #f3f4f6;
-            overflow-x: hidden;
+            background-color: #0d0f12;
+            color: #e5e7eb;
+            /* Динамічний фоновий малюнок із затемненням */
+            background-image: linear-gradient(to bottom, rgba(13, 15, 18, 0.85), rgba(13, 15, 18, 0.95)), url('https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
 
-        /* Gradient Glow Effects */
-        .bg-glow-orange {
-            background: radial-gradient(circle, rgba(249, 115, 22, 0.15) 0%, rgba(0,0,0,0) 70%);
-        }
-        .bg-glow-red {
-            background: radial-gradient(circle, rgba(239, 68, 68, 0.12) 0%, rgba(0,0,0,0) 70%);
-        }
-
-        /* Glassmorphism Cards */
-        .glass-card {
-            background: rgba(22, 26, 33, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+        /* Clean Card Style with backdrop blur */
+        .card {
+            background-color: rgba(26, 29, 36, 0.85);
+            backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s ease;
         }
 
-        .glass-card:hover {
+        .card:hover {
             border-color: rgba(249, 115, 22, 0.4);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px -10px rgba(249, 115, 22, 0.15);
+            transform: translateY(-2px);
         }
 
-        .glass-modal {
-            background: rgba(15, 18, 24, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .modal-bg {
+            background-color: rgba(10, 12, 16, 0.85);
+            backdrop-filter: blur(8px);
         }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #0b0d10;
+            background: #121418;
         }
         ::-webkit-scrollbar-thumb {
-            background: #1f2937;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #f97316;
-        }
-
-        .gradient-text {
-            background: linear-gradient(135deg, #ffffff 0%, #9ca3af 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .gradient-brand {
-            background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            background: #2a2e37;
+            border-radius: 3px;
         }
     </style>
 </head>
-<body class="min-h-screen relative flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between selection:bg-orange-500 selection:text-white">
 
-    <!-- Background Glow Visuals -->
-    <div class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-glow-orange pointer-events-none rounded-full z-0"></div>
-    <div class="fixed bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-glow-red pointer-events-none rounded-full z-0"></div>
+    <!-- WELCOME / NEW DESIGN ANNOUNCEMENT MODAL -->
+    <div id="welcomeModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg transition-opacity duration-300">
+        <div class="card w-full max-w-md rounded-2xl p-6 text-center relative shadow-2xl border-orange-500/30">
+            <div class="w-14 h-14 bg-orange-500/10 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-orange-500/20">
+                <i data-lucide="sparkles" class="w-7 h-7"></i>
+            </div>
+            
+            <h3 class="text-xl font-bold text-white mb-2">Ми оновили дизайн сайту! 🎉</h3>
+            <p class="text-gray-300 text-sm leading-relaxed mb-6">
+                Ласкаво просимо до оновленого <span class="text-orange-400 font-semibold">AUTOHUB</span>! Ми зробили інтерфейс простішим, сучаснішим та ще зручнішим для вас. Переглядайте контент, грайте в інтерактив та вмикайте авто-вайб! 🚗🔥
+            </p>
+
+            <div class="space-y-2.5">
+                <button onclick="closeWelcomeModal(true)" class="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2">
+                    <i data-lucide="music" class="w-4 h-4"></i>
+                    <span>Погнали з музикою! 🎵</span>
+                </button>
+                <button onclick="closeWelcomeModal(false)" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white text-xs font-medium transition">
+                    Продовжити без музики
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Admin Indicator Banner (Hidden by default) -->
-    <div id="adminBanner" class="hidden fixed top-0 left-0 right-0 z-50 bg-amber-500/20 border-b border-amber-500/30 text-amber-300 text-xs text-center py-1.5 px-4 flex items-center justify-center gap-2 backdrop-blur-md">
+    <div id="adminBanner" class="hidden fixed top-0 left-0 right-0 z-40 bg-amber-500/20 border-b border-amber-500/30 text-amber-300 text-xs text-center py-1.5 px-4 flex items-center justify-center gap-2">
         <i data-lucide="shield-alert" class="w-4 h-4"></i>
         <span>Режим Admin Активовано</span>
     </div>
 
-    <!-- Main Container -->
-    <div class="relative z-10 max-w-5xl mx-auto px-4 py-8 md:py-12 w-full flex-grow flex flex-col justify-center">
+    <!-- MAIN WRAPPER -->
+    <div class="max-w-3xl mx-auto px-4 py-10 md:py-16 w-full flex-grow flex flex-col justify-center">
         
-        <!-- TOP LOGO & HEADER -->
-        <header class="text-center mb-10 md:mb-14">
-            <div class="relative inline-block group cursor-pointer" id="logoContainer" title="Клікни 3 рази для входу в адмінку">
-                <div class="absolute -inset-1 bg-gradient-to-r from-orange-500 to-red-600 rounded-full blur opacity-40 group-hover:opacity-100 transition duration-500"></div>
+        <!-- HEADER -->
+        <header class="text-center mb-10">
+            <div class="relative inline-block cursor-pointer mb-3" id="logoContainer" title="Клікни 3 рази для входу в адмінку">
                 <img src="https://cdn.phototourl.com/free/2026-07-06-123e025e-8287-4447-9dd5-5ac704dc202f.png" 
                      alt="AUTOHUB Logo" 
-                     class="relative w-24 h-24 md:w-28 md:h-28 rounded-full object-cover border-2 border-white/10 shadow-2xl transition duration-300 group-hover:scale-105">
+                     class="w-20 h-20 md:w-24 md:h-24 rounded-2xl object-cover mx-auto border border-white/10 shadow-lg">
             </div>
 
-            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mt-4 gradient-brand">
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight text-white">
                 AUTOHUB
             </h1>
-            <p class="text-gray-400 text-base md:text-lg max-w-md mx-auto mt-2 font-normal">
+            <p class="text-gray-400 text-sm md:text-base mt-2">
                 Огляди, корисні поради та автомобільні тренди 🚗🔥
             </p>
 
-            <!-- STATS BADGES -->
-            <div class="flex flex-wrap items-center justify-center gap-3 mt-6">
-                <div class="glass-card px-4 py-2 rounded-full flex items-center gap-2 text-xs md:text-sm font-medium">
-                    <span class="text-orange-400 font-bold">10K+</span>
-                    <span class="text-gray-400 flex items-center gap-1"><i data-lucide="youtube" class="w-3.5 h-3.5 text-red-500"></i> YouTube</span>
+            <!-- MUSIC TOGGLE BUTTON IN HEADER -->
+            <div class="mt-4 inline-flex items-center">
+                <button id="headerAudioBtn" onclick="toggleAudio()" class="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white transition flex items-center gap-2">
+                    <i data-lucide="disc" id="headerAudioIcon" class="w-3.5 h-3.5 text-orange-400"></i>
+                    <span id="headerAudioText">Авто-вайб: OFF</span>
+                </button>
+            </div>
+
+            <!-- STATS COUNTERS -->
+            <div class="flex flex-wrap items-center justify-center gap-4 mt-5 text-xs text-gray-400">
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5">
+                    <i data-lucide="youtube" class="w-4 h-4 text-red-500"></i>
+                    <span class="text-white font-semibold">10K+</span> YouTube
                 </div>
-                <div class="glass-card px-4 py-2 rounded-full flex items-center gap-2 text-xs md:text-sm font-medium">
-                    <span class="text-orange-400 font-bold">5K+</span>
-                    <span class="text-gray-400 flex items-center gap-1"><i data-lucide="send" class="w-3.5 h-3.5 text-sky-400"></i> Telegram</span>
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5">
+                    <i data-lucide="send" class="w-4 h-4 text-sky-400"></i>
+                    <span class="text-white font-semibold">5K+</span> Telegram
                 </div>
-                <div class="glass-card px-4 py-2 rounded-full flex items-center gap-2 text-xs md:text-sm font-medium">
-                    <span class="text-orange-400 font-bold">15K+</span>
-                    <span class="text-gray-400 flex items-center gap-1"><i data-lucide="music-2" class="w-3.5 h-3.5 text-pink-400"></i> TikTok</span>
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5">
+                    <i data-lucide="music-2" class="w-4 h-4 text-pink-400"></i>
+                    <span class="text-white font-semibold">15K+</span> TikTok
                 </div>
             </div>
         </header>
 
-        <!-- BENTO GRID CONTENT STRUCTURE -->
-        <main class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        <!-- LINKS & CONTENT SECTION -->
+        <main class="space-y-3.5">
 
-            <!-- LATEST VIDEO / FEATURED CARD (Wide 2 Cols) -->
-            <div class="md:col-span-2 glass-card rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between group">
-                <div class="flex items-center justify-between mb-4 z-10">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange-500/10 text-orange-400 border border-orange-500/20">
-                        <i data-lucide="flame" class="w-3.5 h-3.5"></i> Останній Випуск
-                    </span>
-                    <span class="text-xs text-gray-400">Дивитись зараз</span>
-                </div>
-
-                <div class="my-4 z-10">
-                    <h2 class="text-xl md:text-2xl font-bold text-white mb-2 group-hover:text-orange-400 transition">
-                        Великий Огляд Новинок Авторинку
-                    </h2>
-                    <p class="text-gray-400 text-sm line-clamp-2">
-                        Останні тест-драйви, порівняння характеристик та свіжі враження від нових автомобілів.
-                    </p>
-                </div>
-
-                <div class="mt-4 z-10 flex items-center gap-3">
-                    <a href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-medium text-sm transition shadow-lg shadow-red-600/30">
-                        <i data-lucide="play" class="w-4 h-4 fill-current"></i> Дивитись на YouTube
+            <!-- LATEST VIDEO BANNER WITH YOUTUBE EMBED / PREVIEW -->
+            <div class="card rounded-2xl p-4 md:p-5 border-l-4 border-l-orange-500 overflow-hidden">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2 text-xs font-semibold text-orange-400">
+                        <i data-lucide="flame" class="w-4 h-4"></i>
+                        <span>ОСТАННІЙ ВИПУСК НА YOUTUBE</span>
+                    </div>
+                    <a href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="text-xs text-gray-400 hover:text-white flex items-center gap-1 transition">
+                        <span>На канал</span>
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                     </a>
-                    <button onclick="copyCurrentLink()" class="p-2.5 rounded-xl glass-card text-gray-300 hover:text-white transition" title="Поділитися">
-                        <i data-lucide="share-2" class="w-4 h-4"></i>
-                    </button>
                 </div>
 
-                <!-- Abstract Decorative Graphic -->
-                <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-red-500/10 rounded-full blur-2xl group-hover:bg-orange-500/20 transition duration-500 pointer-events-none"></div>
+                <!-- YouTube Video Embed Preview -->
+                <div class="relative w-full aspect-video rounded-xl overflow-hidden border border-white/10 mb-3 shadow-lg group">
+                    <iframe 
+                        class="w-full h-full" 
+                        src="https://www.youtube.com/embed?listType=playlist&list=UUo_i2rV7yEQu0Md1o" 
+                        title="AUTOHUB Останнє відео" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-base font-bold text-white">Новий огляд та тести авто 🚗🔥</h2>
+                        <p class="text-xs text-gray-400 mt-0.5">Дивіться найновіший контент на нашому каналі</p>
+                    </div>
+                    <a href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="shrink-0 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-medium text-xs transition flex items-center gap-2 shadow-md">
+                        <i data-lucide="youtube" class="w-4 h-4"></i> Дивитись
+                    </a>
+                </div>
             </div>
 
-            <!-- YOUTUBE CHANNEL CARD -->
-            <a href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="glass-card rounded-2xl p-6 flex flex-col justify-between group">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500">
+            <!-- YOUTUBE CHANNEL -->
+            <a href="https://youtube.com/@aut0hub-ua-f3q?si=o_i2rV7yEQu0Md1o" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center shrink-0">
                         <i data-lucide="youtube" class="w-5 h-5"></i>
                     </div>
-                    <i data-lucide="arrow-up-right" class="w-5 h-5 text-gray-500 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition"></i>
+                    <div>
+                        <h3 class="text-sm font-semibold text-white group-hover:text-orange-400 transition">YouTube Канал</h3>
+                        <p class="text-xs text-gray-400">Головні автомобільні огляди</p>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-1">YouTube Канал</h3>
-                    <p class="text-xs text-gray-400">Головні автомобільні огляди та теми</p>
-                </div>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500 group-hover:text-white transition"></i>
             </a>
 
             <!-- TELEGRAM COMMUNITY -->
-            <a href="https://t.me/FoXNEWofficial" target="_blank" class="glass-card rounded-2xl p-6 flex flex-col justify-between group">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+            <a href="https://t.me/FoXNEWofficial" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center shrink-0">
                         <i data-lucide="send" class="w-5 h-5"></i>
                     </div>
-                    <i data-lucide="arrow-up-right" class="w-5 h-5 text-gray-500 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition"></i>
+                    <div>
+                        <h3 class="text-sm font-semibold text-white group-hover:text-orange-400 transition">Telegram Спільнота</h3>
+                        <p class="text-xs text-gray-400">Новини та бекстейдж у реальному часі</p>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-1">Telegram Спільнота</h3>
-                    <p class="text-xs text-gray-400">Новини та бекстейдж у реальному часі</p>
-                </div>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500 group-hover:text-white transition"></i>
             </a>
 
-            <!-- INSTAGRAM -->
-            <a href="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" target="_blank" class="glass-card rounded-2xl p-6 flex flex-col justify-between group">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
-                        <i data-lucide="instagram" class="w-5 h-5"></i>
+            <!-- TWO COLUMNS: INSTAGRAM & TIKTOK -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <a href="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0">
+                            <i data-lucide="instagram" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white group-hover:text-orange-400 transition">Instagram</h3>
+                            <p class="text-xs text-gray-400">Естетика та Сторіз</p>
+                        </div>
                     </div>
-                    <i data-lucide="arrow-up-right" class="w-5 h-5 text-gray-500 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-1">Instagram</h3>
-                    <p class="text-xs text-gray-400">Естетичні автофото та сторіз</p>
-                </div>
-            </a>
+                </a>
 
-            <!-- TIKTOK -->
-            <a href="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" target="_blank" class="glass-card rounded-2xl p-6 flex flex-col justify-between group">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-10 h-10 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400">
-                        <i data-lucide="music-2" class="w-5 h-5"></i>
+                <a href="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-pink-500/10 text-pink-400 flex items-center justify-center shrink-0">
+                            <i data-lucide="music-2" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white group-hover:text-orange-400 transition">TikTok</h3>
+                            <p class="text-xs text-gray-400">Короткі Тренди</p>
+                        </div>
                     </div>
-                    <i data-lucide="arrow-up-right" class="w-5 h-5 text-gray-500 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-1">TikTok</h3>
-                    <p class="text-xs text-gray-400">Короткі автомобільні тренди</p>
-                </div>
-            </a>
+                </a>
+            </div>
 
-            <!-- GAME TRIGGER BUTTON -->
-            <div onclick="openGameModal()" class="glass-card rounded-2xl p-6 flex flex-col justify-between group cursor-pointer border-orange-500/20 hover:border-orange-500/60">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-                        <i data-lucide="gamepad-2" class="w-5 h-5"></i>
+            <!-- TWO COLUMNS: GAME & FEEDBACK -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div onclick="openGameModal()" class="card rounded-2xl p-4 flex items-center justify-between cursor-pointer group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+                            <i data-lucide="gamepad-2" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white group-hover:text-amber-400 transition">Вгадай Авто</h3>
+                            <p class="text-xs text-gray-400">Мінігра на знання</p>
+                        </div>
                     </div>
-                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300">ІНТЕРАКТИВ</span>
                 </div>
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-1 group-hover:text-orange-400 transition">Вгадай Авто</h3>
-                    <p class="text-xs text-gray-400">Перевір свої знання автомобільних брендових моделей</p>
+
+                <div onclick="openFeedbackModal()" class="card rounded-2xl p-4 flex items-center justify-between cursor-pointer group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0">
+                            <i data-lucide="message-square-plus" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-semibold text-white group-hover:text-blue-400 transition">Ваші Ідеї</h3>
+                            <p class="text-xs text-gray-400">Запропонувати ідею</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- FEEDBACK TRIGGER BUTTON -->
-            <div onclick="openFeedbackModal()" class="glass-card rounded-2xl p-6 flex flex-col justify-between group cursor-pointer border-blue-500/20 hover:border-blue-500/60">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                        <i data-lucide="message-square-plus" class="w-5 h-5"></i>
+            <!-- CONTACT -->
+            <a href="https://t.me/FoXNEWofficial" target="_blank" class="card rounded-2xl p-4 flex items-center justify-between group">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                        <i data-lucide="user" class="w-5 h-5"></i>
                     </div>
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500 group-hover:text-white transition"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-1 group-hover:text-blue-400 transition">Ваші Ідеї</h3>
-                    <p class="text-xs text-gray-400">Запропонувати співпрацю або тему для випуску</p>
-                </div>
-            </div>
-
-            <!-- CONTACT / PERSONAL LINK -->
-            <a href="https://t.me/FoXNEWofficial" target="_blank" class="glass-card rounded-2xl p-6 flex flex-col justify-between group">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                        <i data-lucide="user-check" class="w-5 h-5"></i>
+                    <div>
+                        <h3 class="text-sm font-semibold text-white group-hover:text-emerald-400 transition">Написати Особисто</h3>
+                        <p class="text-xs text-gray-400">Питання та співпраця</p>
                     </div>
-                    <i data-lucide="arrow-up-right" class="w-5 h-5 text-gray-500 group-hover:text-white transition"></i>
                 </div>
-                <div>
-                    <h3 class="text-lg font-bold text-white mb-1">Написати Особисто</h3>
-                    <p class="text-xs text-gray-400">Прямий зв'язок з автором проєкту</p>
-                </div>
+                <i data-lucide="chevron-right" class="w-5 h-5 text-gray-500 group-hover:text-white transition"></i>
             </a>
 
         </main>
     </div>
 
     <!-- FOOTER -->
-    <footer class="relative z-10 border-t border-white/5 py-6 mt-12 bg-black/40 backdrop-blur-md">
-        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+    <footer class="border-t border-white/5 py-6 bg-black/20">
+        <div class="max-w-3xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
             <div class="flex items-center gap-2">
-                <i data-lucide="eye" class="w-4 h-4 text-gray-400"></i>
+                <i data-lucide="eye" class="w-3.5 h-3.5 text-gray-400"></i>
                 <span>Відвідувань:</span>
-                <!-- Counter Image Widget preserved -->
-                <img src="https://counter9.optistats.ovh/private/freecounterstat.php?c=lnslshye5wypf4h4sc3m76fajuzmlwyh" border="0" title="Counter" alt="Counter" class="h-4 opacity-80 inline">
+                <img src="https://counter9.optistats.ovh/private/freecounterstat.php?c=lnslshye5wypf4h4sc3m76fajuzmlwyh" border="0" title="Counter" alt="Counter" class="h-3.5 opacity-70 inline">
             </div>
             
-            <p>© 2026 AUTOHUB. Усі права захищено.</p>
+            <p>© 2026 AUTOHUB. Всі права захищено.</p>
         </div>
     </footer>
 
-    <!-- MODAL: GAME "GUESS THE CAR" -->
-    <div id="gameModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-        <div class="glass-modal w-full max-w-md rounded-2xl p-6 relative shadow-2xl">
+    <!-- FLOATING MUSIC PLAYER (BOTTOM RIGHT) -->
+    <div id="musicPlayer" class="fixed bottom-5 right-5 z-40 card rounded-2xl p-3 border border-white/10 shadow-2xl flex items-center gap-3 backdrop-blur-xl bg-slate-900/90 max-w-xs transition-all duration-300">
+        <div class="relative w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0 overflow-hidden">
+            <i data-lucide="music" id="playerStatusIcon" class="w-5 h-5 animate-pulse"></i>
+        </div>
+        <div class="flex-grow min-w-0">
+            <div class="text-[10px] text-orange-400 font-semibold uppercase tracking-wider">AUTOHUB RADIO</div>
+            <div id="trackTitle" class="text-xs font-semibold text-white truncate">Fast & Furious — Six Days</div>
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+            <button onclick="toggleAudio()" id="playPauseBtn" class="p-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white transition">
+                <i data-lucide="play" id="playIcon" class="w-4 h-4"></i>
+            </button>
+            <button onclick="nextTrack()" title="Наступний трек" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white transition">
+                <i data-lucide="skip-forward" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- AUDIO ELEMENT -->
+    <audio id="bgAudio" loop preload="none">
+        <source id="audioSource" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=synthwave-80s-110045.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- MODAL: GAME -->
+    <div id="gameModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-bg">
+        <div class="card w-full max-w-md rounded-2xl p-6 relative shadow-2xl">
             <button onclick="closeGameModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
             <div class="flex items-center gap-3 mb-4">
-                <div class="p-2 rounded-xl bg-amber-500/20 text-amber-400">
-                    <i data-lucide="gamepad-2" class="w-6 h-6"></i>
+                <div class="p-2 rounded-xl bg-amber-500/10 text-amber-400">
+                    <i data-lucide="gamepad-2" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-white text-lg">Гра "Вгадай Авто"</h3>
-                    <div class="text-xs text-gray-400 flex gap-4">
+                    <h3 class="font-bold text-white text-base">Вгадай Авто</h3>
+                    <div class="text-xs text-gray-400 flex gap-3">
                         <span>Питання: <b id="gameStep" class="text-amber-400">1/3</b></span>
-                        <span>Рахунок: <b id="gameScore" class="text-emerald-400">0</b></span>
+                        <span>Бали: <b id="gameScore" class="text-emerald-400">0</b></span>
                     </div>
                 </div>
             </div>
 
-            <!-- Game Main Area -->
             <div id="gameContent" class="space-y-4">
-                <div class="w-full h-48 rounded-xl overflow-hidden relative border border-white/10 bg-slate-900">
+                <div class="w-full h-44 rounded-xl overflow-hidden relative bg-slate-900 border border-white/10">
                     <img id="gameImg" src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80" alt="Car to guess" class="w-full h-full object-cover">
                 </div>
-                <p id="gameQuestion" class="text-sm font-medium text-center text-gray-200">Яка марка автомобіля зображена?</p>
-                <div id="gameOptions" class="grid grid-cols-1 gap-2">
-                    <!-- Options injected dynamically -->
-                </div>
+                <p id="gameQuestion" class="text-xs font-medium text-center text-gray-300">Яка марка автомобіля зображена?</p>
+                <div id="gameOptions" class="grid grid-cols-1 gap-2"></div>
             </div>
 
-            <!-- Game Over Screen (Hidden) -->
-            <div id="gameOver" class="hidden text-center py-6 space-y-4">
-                <div class="w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center mx-auto">
-                    <i data-lucide="trophy" class="w-8 h-8"></i>
-                </div>
-                <h4 class="text-xl font-bold text-white">Гру завершено!</h4>
-                <p id="gameFinalResult" class="text-gray-300 text-sm">Ви набрали 0 балів!</p>
-                <button onclick="restartGame()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-semibold hover:opacity-90 transition">
+            <div id="gameOver" class="hidden text-center py-6 space-y-3">
+                <h4 class="text-lg font-bold text-white">Гру завершено!</h4>
+                <p id="gameFinalResult" class="text-gray-300 text-xs">Ви набрали 0 балів</p>
+                <button onclick="restartGame()" class="px-5 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold transition">
                     Зіграти ще раз
                 </button>
             </div>
@@ -323,85 +347,130 @@
     </div>
 
     <!-- MODAL: FEEDBACK -->
-    <div id="feedbackModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-        <div class="glass-modal w-full max-w-md rounded-2xl p-6 relative shadow-2xl">
+    <div id="feedbackModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-bg">
+        <div class="card w-full max-w-md rounded-2xl p-6 relative shadow-2xl">
             <button onclick="closeFeedbackModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
             <div class="flex items-center gap-3 mb-4">
-                <div class="p-2 rounded-xl bg-blue-500/20 text-blue-400">
-                    <i data-lucide="lightbulb" class="w-6 h-6"></i>
+                <div class="p-2 rounded-xl bg-blue-500/10 text-blue-400">
+                    <i data-lucide="message-square-plus" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-white text-lg">Ваші ідеї та пропозиції</h3>
-                    <p class="text-xs text-gray-400">Допоможіть зробити AUTOHUB ще кращим!</p>
+                    <h3 class="font-bold text-white text-base">Ваші пропозиції</h3>
+                    <p class="text-xs text-gray-400">Поділіться ідеями для AUTOHUB</p>
                 </div>
             </div>
 
-            <form id="feedbackForm" onsubmit="submitFeedback(event)" class="space-y-4">
+            <form id="feedbackForm" onsubmit="submitFeedback(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Ваше ім'я або нікнейм</label>
-                    <input type="text" required placeholder="Олександр" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-orange-500">
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Ваш нікнейм або ім'я</label>
+                    <input type="text" required placeholder="Олександр" class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-orange-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-400 mb-1">Ваша пропозиція або тема</label>
-                    <textarea required rows="4" placeholder="Опишіть вашу ідею тут..." class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-orange-500 resize-none"></textarea>
+                    <label class="block text-xs font-medium text-gray-400 mb-1">Ваша ідея</label>
+                    <textarea required rows="3" placeholder="Опишіть пропозицію..." class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-orange-500 resize-none"></textarea>
                 </div>
-                <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-semibold hover:opacity-90 transition shadow-lg shadow-orange-500/20">
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold transition">
                     Надіслати
                 </button>
             </form>
 
-            <div id="feedbackSuccess" class="hidden text-center py-8 space-y-3">
-                <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto">
-                    <i data-lucide="check" class="w-6 h-6"></i>
+            <div id="feedbackSuccess" class="hidden text-center py-6 space-y-2">
+                <div class="w-10 h-10 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto">
+                    <i data-lucide="check" class="w-5 h-5"></i>
                 </div>
-                <h4 class="text-lg font-bold text-white">Дякуємо за вашу підтримку!</h4>
-                <p class="text-xs text-gray-400">Ваше повідомлення успішно отримано.</p>
+                <h4 class="text-sm font-bold text-white">Дякуємо! Повідомлення надіслано.</h4>
             </div>
         </div>
     </div>
 
     <!-- MODAL: ADMIN PANEL -->
-    <div id="adminModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-        <div class="glass-modal w-full max-w-sm rounded-2xl p-6 relative shadow-2xl">
+    <div id="adminModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-bg">
+        <div class="card w-full max-w-sm rounded-2xl p-6 relative shadow-2xl">
             <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
-            <div class="flex items-center gap-3 mb-6">
-                <div class="p-2 rounded-xl bg-amber-500/20 text-amber-400">
-                    <i data-lucide="shield" class="w-6 h-6"></i>
+            <div class="flex items-center gap-3 mb-5">
+                <div class="p-2 rounded-xl bg-amber-500/10 text-amber-400">
+                    <i data-lucide="shield" class="w-5 h-5"></i>
                 </div>
                 <div>
-                    <h3 class="font-bold text-white text-lg">Панель Адміністратора</h3>
-                    <p class="text-xs text-gray-400">Налаштування AUTOHUB</p>
+                    <h3 class="font-bold text-white text-base">Адмін-Панель</h3>
+                    <p class="text-xs text-gray-400">Керування AUTOHUB</p>
                 </div>
             </div>
 
-            <div class="space-y-3">
-                <button onclick="toggleOptimization()" class="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-left text-sm text-gray-200 border border-white/10 flex items-center justify-between transition">
-                    <span>Режим Оптимізації (Слабкі пристрої)</span>
-                    <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
-                </button>
-                <button onclick="closeAdminModal()" class="w-full py-2.5 px-4 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-center text-sm text-red-400 border border-red-500/30 transition font-semibold">
-                    Вийти з адмін-панелі
-                </button>
-            </div>
+            <button onclick="closeAdminModal()" class="w-full py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs font-semibold transition">
+                Закрити панель
+            </button>
         </div>
-    </div>
-
-    <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden glass-card border border-emerald-500/40 text-emerald-300 px-4 py-3 rounded-xl text-sm flex items-center gap-2 shadow-xl">
-        <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-        <span id="toastMsg">Посилання скопійовано!</span>
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Initialize Lucide Icons
         lucide.createIcons();
+
+        // AUDIO PLAYLIST LOGIC
+        const playlist = [
+            { title: "Six Days — Rapido y Furioso", url: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=synthwave-80s-110045.mp3" },
+            { title: "Marcelo D2 — Desabafo / Deixa", url: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=action-sport-hip-hop-112521.mp3" },
+            { title: "RICHI — AUTOMOTIVO", url: "https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f69b82.mp3?filename=drift-phonk-124888.mp3" },
+            { title: "Tom's Diner (Auto Remix)", url: "https://cdn.pixabay.com/download/audio/2021/09/06/audio_8b2cb2bb4f.mp3?filename=chill-lofi-song-8444.mp3" },
+            { title: "Пули — Луна", url: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=electronic-future-beats-117997.mp3" },
+            { title: "Charlie Work", url: "https://cdn.pixabay.com/download/audio/2022/03/10/audio_c2f30b9123.mp3?filename=street-hip-hop-10587.mp3" },
+            { title: "Дурачок", url: "https://cdn.pixabay.com/download/audio/2022/11/06/audio_94b1509fa2.mp3?filename=driving-synth-126868.mp3" },
+            { title: "Весь этот мир", url: "https://cdn.pixabay.com/download/audio/2022/01/21/audio_31776594dc.mp3?filename=night-drive-118029.mp3" },
+            { title: "Весна", url: "https://cdn.pixabay.com/download/audio/2022/05/16/audio_db6597a7a2.mp3?filename=relaxing-drive-112196.mp3" }
+        ];
+
+        let currentTrackIndex = 0;
+        const bgAudio = document.getElementById('bgAudio');
+        let isPlaying = false;
+
+        function updateTrackUI() {
+            const track = playlist[currentTrackIndex];
+            document.getElementById('trackTitle').innerText = track.title;
+            document.getElementById('audioSource').src = track.url;
+            bgAudio.load();
+            if (isPlaying) {
+                bgAudio.play().catch(e => console.log("Audio play error:", e));
+            }
+        }
+
+        function toggleAudio() {
+            if (isPlaying) {
+                bgAudio.pause();
+                isPlaying = false;
+                document.getElementById('headerAudioText').innerText = "Авто-вайб: OFF";
+                document.getElementById('playPauseBtn').innerHTML = '<i data-lucide="play" class="w-4 h-4"></i>';
+            } else {
+                bgAudio.play().then(() => {
+                    isPlaying = true;
+                    document.getElementById('headerAudioText').innerText = "Авто-вайб: ON";
+                    document.getElementById('playPauseBtn').innerHTML = '<i data-lucide="pause" class="w-4 h-4"></i>';
+                }).catch(e => console.log("Audio play failed:", e));
+            }
+            lucide.createIcons();
+        }
+
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            updateTrackUI();
+            if (!isPlaying) {
+                toggleAudio();
+            }
+        }
+
+        // WELCOME MODAL LOGIC
+        function closeWelcomeModal(withMusic = false) {
+            document.getElementById('welcomeModal').classList.add('hidden');
+            if (withMusic) {
+                toggleAudio();
+            }
+        }
 
         // TRIPLE CLICK ON LOGO FOR ADMIN ACCESS
         let logoClickCount = 0;
@@ -424,29 +493,6 @@
             document.getElementById('adminModal').classList.add('hidden');
         }
 
-        // COPY LINK FUNCTIONALITY
-        function copyCurrentLink() {
-            const url = window.location.href;
-            const dummy = document.createElement('input');
-            document.body.appendChild(dummy);
-            dummy.value = url;
-            dummy.select();
-            document.execCommand('copy');
-            document.body.removeChild(dummy);
-
-            showToast("Посилання успішно скопійовано!");
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMsg');
-            toastMsg.innerText = message;
-            toast.classList.remove('hidden');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 3000);
-        }
-
         // GAME LOGIC
         const quizData = [
             {
@@ -457,13 +503,13 @@
             },
             {
                 img: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80",
-                question: "Вгадайте класичний спортивний декан:",
+                question: "Вгадайте спорткар:",
                 options: ["Ferrari F40", "Porsche 911 GT3", "Lamborghini Huracan", "Ford Mustang"],
                 answer: 1
             },
             {
                 img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80",
-                question: "Який суперкар зображено?",
+                question: "Який купе зображено?",
                 options: ["Chevrolet Corvette", "Nissan GT-R", "McLaren 720S", "Bugatti Chiron"],
                 answer: 0
             }
@@ -492,7 +538,7 @@
             optionsContainer.innerHTML = '';
             q.options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
-                btn.className = "w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-orange-500/20 border border-white/10 hover:border-orange-500/40 text-sm text-gray-200 transition text-left";
+                btn.className = "w-full py-2 px-3 rounded-lg bg-white/5 hover:bg-orange-500/20 border border-white/10 hover:border-orange-500/40 text-xs text-gray-200 transition text-left";
                 btn.innerText = opt;
                 btn.onclick = () => selectOption(idx);
                 optionsContainer.appendChild(btn);
@@ -541,13 +587,6 @@
             e.preventDefault();
             document.getElementById('feedbackForm').classList.add('hidden');
             document.getElementById('feedbackSuccess').classList.remove('hidden');
-        }
-
-        // OPTIMIZATION MODE TOGGLE
-        function toggleOptimization() {
-            document.body.classList.toggle('bg-glow-orange');
-            document.body.classList.toggle('bg-glow-red');
-            showToast("Параметри оптимізації змінено");
         }
     </script>
 </body>
