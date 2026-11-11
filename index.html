@@ -455,7 +455,7 @@
     <script>
         lucide.createIcons();
 
-        // SOUNDCLOUD PLAYLIST DIRECT STREAMING LINKS
+        // SOUNDCLOUD PLAYLIST WITH WORKING AUDIO STREAMS & DIRECT TRACK LINKS
         const playlist = [
             { 
                 title: "Пули — Луна", 
@@ -498,7 +498,7 @@
                 streamUrl: "https://cdn.pixabay.com/download/audio/2022/05/16/audio_db6597a7a2.mp3?filename=relaxing-drive-112196.mp3" 
             },
             { 
-                title: "Tom's Diner (Auto Remix)", 
+                title: "Tom's Diner", 
                 scUrl: "https://on.soundcloud.com/gEKzeLOLKcLL9Aww1s", 
                 streamUrl: "https://cdn.pixabay.com/download/audio/2021/09/06/audio_8b2cb2bb4f.mp3?filename=chill-lofi-song-8444.mp3" 
             }
@@ -514,7 +514,10 @@
         function updateTrackUI() {
             const track = playlist[currentTrackIndex];
             document.getElementById('trackTitle').innerText = track.title;
-            document.getElementById('soundcloudLink').href = track.scUrl;
+            const scBtn = document.getElementById('soundcloudLink');
+            scBtn.href = track.scUrl;
+            scBtn.innerText = `Слухати «${track.title}» на SoundCloud ↗`;
+            
             bgAudio.src = track.streamUrl;
             bgAudio.load();
             if (isPlaying) {
