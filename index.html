@@ -30,11 +30,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --accent-rgb: 249, 115, 22;
+            --accent-soft: rgba(249, 115, 22, 0.14);
+            --accent-border: rgba(249, 115, 22, 0.45);
+            --bg-top: #1a1e26;
+            --bg-bottom: #0d0f12;
+        }
+
+        body[data-theme="neon"] {
+            --accent: #06b6d4;
+            --accent-hover: #0891b2;
+            --accent-rgb: 6, 182, 212;
+            --accent-soft: rgba(6, 182, 212, 0.14);
+            --accent-border: rgba(6, 182, 212, 0.5);
+            --bg-top: #11222b;
+            --bg-bottom: #090e14;
+        }
+
+        body[data-theme="garage"] {
+            --accent: #eab308;
+            --accent-hover: #ca8a04;
+            --accent-rgb: 234, 179, 8;
+            --accent-soft: rgba(234, 179, 8, 0.14);
+            --accent-border: rgba(234, 179, 8, 0.45);
+            --bg-top: #231f16;
+            --bg-bottom: #0e0d0b;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0d0f12;
+            background-color: var(--bg-bottom);
             color: #e5e7eb;
-            background-image: radial-gradient(circle at 50% 0%, #1a1e26 0%, #0d0f12 75%);
+            background-image: radial-gradient(circle at 50% 0%, var(--bg-top) 0%, var(--bg-bottom) 75%);
+            transition: background-color 0.25s ease, background-image 0.25s ease;
         }
 
         .card {
@@ -44,8 +75,28 @@
         }
 
         .card:hover {
-            border-color: rgba(249, 115, 22, 0.45);
+            border-color: var(--accent-border);
             transform: translateY(-2px);
+        }
+
+        .accent-text {
+            color: var(--accent);
+        }
+
+        .accent-bg {
+            background-color: var(--accent);
+        }
+
+        .accent-bg:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .accent-soft-bg {
+            background-color: var(--accent-soft);
+        }
+
+        .accent-border-l {
+            border-left-color: var(--accent);
         }
 
         .modal-bg {
@@ -64,22 +115,22 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-orange-500 selection:text-white">
+<body data-theme="orange" class="min-h-screen flex flex-col justify-between">
 
     <!-- WELCOME / NEW DESIGN ANNOUNCEMENT MODAL -->
     <div id="welcomeModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg transition-opacity duration-300">
-        <div class="card w-full max-w-md rounded-2xl p-6 text-center relative shadow-2xl border-orange-500/30">
-            <div class="w-14 h-14 bg-orange-500/10 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-orange-500/20">
+        <div class="card w-full max-w-md rounded-2xl p-6 text-center relative shadow-2xl">
+            <div class="w-14 h-14 accent-soft-bg accent-text rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10">
                 <i data-lucide="sparkles" class="w-7 h-7"></i>
             </div>
             
             <h3 class="text-xl font-bold text-white mb-2">Ми оновили дизайн сайту! 🎉</h3>
             <p class="text-gray-300 text-sm leading-relaxed mb-6">
-                Ласкаво просимо до оновленого <span class="text-orange-400 font-semibold">AUTOHUB</span>! Ми зробили інтерфейс простішим, сучаснішим та ще зручнішим для вас. Переглядайте контент та вмикайте авто-вайб! 🚗🔥
+                Ласкаво просимо до оновленого <span class="accent-text font-semibold">AUTOHUB</span>! Ми зробили інтерфейс простішим, сучаснішим та ще зручнішим для вас. Переглядайте контент, голосуйте в опитуваннях та вмикайте авто-вайб! 🚗🔥
             </p>
 
             <div class="space-y-2.5">
-                <button onclick="closeWelcomeModal(true)" class="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2">
+                <button onclick="closeWelcomeModal(true)" class="w-full py-3 rounded-xl accent-bg text-white text-sm font-semibold transition shadow-lg flex items-center justify-center gap-2">
                     <i data-lucide="music" class="w-4 h-4"></i>
                     <span>Погнали з музикою! 🎵</span>
                 </button>
@@ -116,11 +167,21 @@
                 Огляди, корисні поради та автомобільні тренди 🚗🔥
             </p>
 
-            <!-- MUSIC TOGGLE BUTTON IN HEADER -->
-            <div class="mt-4 inline-flex items-center">
+            <!-- ACTION BUTTONS IN HEADER: MUSIC, THEME, SHARE -->
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
                 <button id="headerAudioBtn" onclick="toggleAudio()" class="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white transition flex items-center gap-2">
-                    <i data-lucide="disc" id="headerAudioIcon" class="w-3.5 h-3.5 text-orange-400"></i>
+                    <i data-lucide="disc" id="headerAudioIcon" class="w-3.5 h-3.5 accent-text"></i>
                     <span id="headerAudioText">Авто-вайб: OFF</span>
+                </button>
+
+                <button id="themeCycleBtn" onclick="cycleTheme()" title="Змінити акцентну тему" class="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white transition flex items-center gap-1.5">
+                    <i data-lucide="palette" class="w-3.5 h-3.5 accent-text"></i>
+                    <span id="themeBadgeLabel">Тема: Orange</span>
+                </button>
+
+                <button id="shareSiteBtn" onclick="shareSite()" class="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white transition flex items-center gap-1.5">
+                    <i data-lucide="share-2" class="w-3.5 h-3.5 accent-text"></i>
+                    <span id="shareBtnText">Поділитися</span>
                 </button>
             </div>
 
@@ -144,10 +205,26 @@
         <!-- LINKS & CONTENT SECTION -->
         <main class="space-y-3.5">
 
+            <!-- ANNOUNCEMENT / PRIORITY LINK BANNER -->
+            <div id="announcementBanner" class="card rounded-2xl p-4 border border-white/10 accent-soft-bg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-start sm:items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl accent-bg text-white flex items-center justify-center shrink-0">
+                        <i data-lucide="megaphone" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-semibold uppercase tracking-wider accent-text">Оголошення та пріоритет</div>
+                        <p id="announcementText" class="text-xs sm:text-sm font-medium text-white">Свіжий розбір авто та новини спільноти вже доступні!</p>
+                    </div>
+                </div>
+                <a id="announcementBtn" href="https://t.me/FoXNEWofficial" target="_blank" rel="noopener noreferrer" class="shrink-0 px-3.5 py-2 rounded-xl accent-bg text-white text-xs font-semibold transition text-center">
+                    <span id="announcementBtnLabel">Перейти</span> ↗
+                </a>
+            </div>
+
             <!-- LATEST VIDEO BANNER WITH YOUTUBE PREVIEW -->
-            <div class="card rounded-2xl p-4 md:p-5 border-l-4 border-l-orange-500 overflow-hidden">
+            <div class="card rounded-2xl p-4 md:p-5 border-l-4 accent-border-l overflow-hidden">
                 <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center gap-2 text-xs font-semibold text-orange-400">
+                    <div class="flex items-center gap-2 text-xs font-semibold accent-text">
                         <i data-lucide="flame" class="w-4 h-4"></i>
                         <span>ОСТАННІЙ ВИПУСК НА YOUTUBE</span>
                     </div>
@@ -182,6 +259,54 @@
                 </div>
             </div>
 
+            <!-- GARAGE OF THE DAY / AUTO LIFEHACK -->
+            <div class="card rounded-2xl p-4 md:p-5">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                    <div class="flex items-center gap-2 text-xs font-semibold accent-text">
+                        <i data-lucide="wrench" class="w-4 h-4"></i>
+                        <span id="garageTitle">ГАРАЖ ДНЯ • АВТО-ЛАЙФХАК</span>
+                    </div>
+                    <span class="text-[11px] text-gray-500">Порада від AUTOHUB</span>
+                </div>
+                <p id="garageTipText" class="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                    Перед поїздкою в холодну погоду перевіряйте тиск у шинах: на морозі він падає, що погіршує зчеплення та збільшує витрату пального.
+                </p>
+            </div>
+
+            <!-- WEEKLY POLL IN FIREBASE -->
+            <div class="card rounded-2xl p-4 md:p-5 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 text-xs font-semibold accent-text">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                        <span>ОПИТУВАННЯ ТИЖНЯ</span>
+                    </div>
+                    <span id="pollTotalVotes" class="text-[11px] text-gray-400">Голосів: 0</span>
+                </div>
+
+                <h3 id="pollQuestionText" class="text-sm sm:text-base font-bold text-white">
+                    Який формат відео знімати наступним?
+                </h3>
+
+                <div class="space-y-2">
+                    <button type="button" id="pollOptABtn" onclick="voteInPoll('a')" class="w-full text-left p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition relative overflow-hidden">
+                        <div id="pollBarA" class="absolute inset-y-0 left-0 accent-soft-bg transition-all duration-300" style="width: 0%"></div>
+                        <div class="relative flex items-center justify-between gap-2 text-xs sm:text-sm">
+                            <span id="pollOptALabel" class="font-medium text-white">Історія та еволюція легендарних авто</span>
+                            <span id="pollPercentA" class="font-semibold accent-text shrink-0">0%</span>
+                        </div>
+                    </button>
+
+                    <button type="button" id="pollOptBBtn" onclick="voteInPoll('b')" class="w-full text-left p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition relative overflow-hidden">
+                        <div id="pollBarB" class="absolute inset-y-0 left-0 accent-soft-bg transition-all duration-300" style="width: 0%"></div>
+                        <div class="relative flex items-center justify-between gap-2 text-xs sm:text-sm">
+                            <span id="pollOptBLabel" class="font-medium text-white">Практичні поради та розбір поломок</span>
+                            <span id="pollPercentB" class="font-semibold accent-text shrink-0">0%</span>
+                        </div>
+                    </button>
+                </div>
+                <p id="pollStatusHint" class="text-[11px] text-gray-400">Натисніть на варіант, щоб проголосувати.</p>
+            </div>
+
             <!-- YOUTUBE CHANNEL -->
             <a id="linkYoutube" href="https://youtube.com/@aut0hub-ua-f3q" target="_blank" rel="noopener noreferrer" class="card rounded-2xl p-4 flex items-center justify-between group">
                 <div class="flex items-center gap-3.5">
@@ -189,7 +314,7 @@
                         <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-semibold text-white group-hover:text-orange-400 transition">YouTube Канал</h3>
+                        <h3 class="text-sm font-semibold text-white group-hover:text-white transition">YouTube Канал</h3>
                         <p class="text-xs text-gray-400">Головні автомобільні огляди</p>
                     </div>
                 </div>
@@ -203,7 +328,7 @@
                         <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-semibold text-white group-hover:text-orange-400 transition">Telegram Спільнота</h3>
+                        <h3 class="text-sm font-semibold text-white group-hover:text-white transition">Telegram Спільнота</h3>
                         <p class="text-xs text-gray-400">Новини та бекстейдж у реальному часі</p>
                     </div>
                 </div>
@@ -212,26 +337,26 @@
 
             <!-- TWO COLUMNS: INSTAGRAM & TIKTOK -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <a href="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" target="_blank" rel="noopener noreferrer" class="card rounded-2xl p-4 flex items-center justify-between group">
+                <a id="linkInstagram" href="https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==" target="_blank" rel="noopener noreferrer" class="card rounded-2xl p-4 flex items-center justify-between group">
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500/20 via-pink-500/20 to-purple-500/20 text-pink-400 flex items-center justify-center shrink-0">
                             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                         </div>
                         <div>
-                            <h3 class="text-sm font-semibold text-white group-hover:text-orange-400 transition">Instagram</h3>
+                            <h3 class="text-sm font-semibold text-white group-hover:text-white transition">Instagram</h3>
                             <p class="text-xs text-gray-400">Естетика та Сторіз</p>
                         </div>
                     </div>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-gray-500 group-hover:text-white transition"></i>
                 </a>
 
-                <a href="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" target="_blank" rel="noopener noreferrer" class="card rounded-2xl p-4 flex items-center justify-between group">
+                <a id="linkTiktok" href="https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN" target="_blank" rel="noopener noreferrer" class="card rounded-2xl p-4 flex items-center justify-between group">
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-xl bg-white/10 text-white flex items-center justify-center shrink-0">
                             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
                         </div>
                         <div>
-                            <h3 class="text-sm font-semibold text-white group-hover:text-orange-400 transition">TikTok</h3>
+                            <h3 class="text-sm font-semibold text-white group-hover:text-white transition">TikTok</h3>
                             <p class="text-xs text-gray-400">Короткі Тренди</p>
                         </div>
                     </div>
@@ -275,17 +400,17 @@
         <!-- COMPACT HEADER (Always visible) -->
         <div class="p-3 flex items-center justify-between gap-3 cursor-pointer select-none" onclick="togglePlayerExpand(event)">
             <div class="flex items-center gap-3 min-w-0">
-                <div class="relative w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
+                <div class="relative w-10 h-10 rounded-xl accent-soft-bg accent-text flex items-center justify-center shrink-0">
                     <i data-lucide="disc" id="playerStatusIcon" class="w-5 h-5"></i>
                 </div>
                 <div class="min-w-0">
-                    <div class="text-[10px] text-orange-400 font-semibold uppercase tracking-wider">AUTOHUB SOUNDCLOUD</div>
+                    <div class="text-[10px] accent-text font-semibold uppercase tracking-wider">AUTOHUB SOUNDCLOUD</div>
                     <div id="trackTitle" class="text-xs font-semibold text-white truncate">Завантаження треку...</div>
                 </div>
             </div>
             
             <div class="flex items-center gap-1 shrink-0">
-                <button type="button" onclick="toggleAudio(event)" id="playPauseBtn" class="p-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white transition">
+                <button type="button" onclick="toggleAudio(event)" id="playPauseBtn" class="p-2 rounded-xl accent-bg text-white transition">
                     <i data-lucide="play" class="w-4 h-4"></i>
                 </button>
                 <button type="button" onclick="togglePlayerExpand(event, true)" id="expandBtn" title="Розгорнути плеєр" class="p-2 text-gray-400 hover:text-white transition">
@@ -299,7 +424,7 @@
             
             <!-- PROGRESS BAR & TIMERS -->
             <div class="space-y-1">
-                <input type="range" id="progressBar" min="0" max="100" value="0" class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-orange-500">
+                <input type="range" id="progressBar" min="0" max="100" value="0" class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer">
                 <div class="flex justify-between text-[10px] text-gray-400 font-mono">
                     <span id="currentTime">0:00</span>
                     <span id="duration">0:00</span>
@@ -311,7 +436,7 @@
                 <button type="button" onclick="prevTrack()" title="Попередній трек" class="p-2 text-gray-300 hover:text-white transition">
                     <i data-lucide="skip-back" class="w-5 h-5"></i>
                 </button>
-                <button type="button" onclick="toggleAudio(event)" id="expandedPlayBtn" class="p-3 rounded-full bg-orange-500 hover:bg-orange-600 text-white transition shadow-lg shadow-orange-500/20">
+                <button type="button" onclick="toggleAudio(event)" id="expandedPlayBtn" class="p-3 rounded-full accent-bg text-white transition shadow-lg">
                     <i data-lucide="play" class="w-5 h-5"></i>
                 </button>
                 <button type="button" onclick="nextTrack()" title="Наступний трек" class="p-2 text-gray-300 hover:text-white transition">
@@ -322,11 +447,11 @@
             <!-- VOLUME CONTROL -->
             <div class="flex items-center gap-2 pt-1">
                 <i data-lucide="volume-2" class="w-4 h-4 text-gray-400"></i>
-                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.8" class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-orange-500">
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.8" class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer">
             </div>
 
             <!-- SOUNDCLOUD LINK -->
-            <a id="soundcloudLink" href="#" target="_blank" rel="noopener noreferrer" class="block text-center text-[11px] text-orange-400 hover:text-orange-300 transition pt-1">
+            <a id="soundcloudLink" href="#" target="_blank" rel="noopener noreferrer" class="block text-center text-[11px] accent-text hover:opacity-80 transition pt-1">
                 Слухати цей трек на SoundCloud ↗
             </a>
         </div>
@@ -355,14 +480,14 @@
             <form id="feedbackForm" onsubmit="submitFeedback(event)" class="space-y-3">
                 <div>
                     <label class="block text-xs font-medium text-gray-400 mb-1">Ваш нікнейм або ім'я</label>
-                    <input type="text" id="feedbackName" name="name" required placeholder="Олександр" class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-orange-500">
+                    <input type="text" id="feedbackName" name="name" required placeholder="Олександр" class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-white/30">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-400 mb-1">Ваша ідея</label>
-                    <textarea id="feedbackMessage" name="message" required rows="3" placeholder="Опишіть пропозицію..." class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-orange-500 resize-none"></textarea>
+                    <textarea id="feedbackMessage" name="message" required rows="3" placeholder="Опишіть пропозицію..." class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-white/30 resize-none"></textarea>
                 </div>
                 <p id="feedbackError" class="hidden text-xs text-red-400"></p>
-                <button type="submit" id="feedbackSubmitBtn" class="w-full py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold transition flex items-center justify-center gap-2">
+                <button type="submit" id="feedbackSubmitBtn" class="w-full py-2.5 rounded-xl accent-bg text-white text-xs font-semibold transition flex items-center justify-center gap-2">
                     <span>Надіслати ідею</span>
                 </button>
             </form>
@@ -401,6 +526,76 @@
                 <!-- STATUS MESSAGE -->
                 <div id="adminStatusMsg" class="hidden p-2.5 rounded-xl text-xs font-medium"></div>
 
+                <!-- THEME SELECTOR -->
+                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-1.5">
+                    <span class="font-semibold text-amber-400 block">🎨 Акцентна тема сайту</span>
+                    <select id="adminThemeSelect" onchange="applyTheme(this.value)" class="w-full px-2.5 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                        <option value="orange">AUTOHUB Orange (Помаранчева)</option>
+                        <option value="neon">Neon Drift (Бірюзова)</option>
+                        <option value="garage">Classic Garage (Золота)</option>
+                    </select>
+                </div>
+
+                <!-- ANNOUNCEMENT & PRIORITY LINK -->
+                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold text-amber-400">📢 Банер оголошень / Пріоритет</span>
+                        <label class="inline-flex items-center gap-1 text-[11px] text-gray-300 cursor-pointer">
+                            <input type="checkbox" id="adminAnnouncementActive" checked class="rounded">
+                            <span>Показати</span>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-0.5">Текст оголошення</label>
+                        <input type="text" id="adminAnnouncementText" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Текст кнопки</label>
+                            <input type="text" id="adminAnnouncementBtnLabel" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Посилання URL</label>
+                            <input type="text" id="adminAnnouncementUrl" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GARAGE OF THE DAY / AUTO LIFEHACK -->
+                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                    <span class="font-semibold text-amber-400 block">🔧 Гараж дня / Авто-лайфхак</span>
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-0.5">Заголовок картки</label>
+                        <input type="text" id="adminGarageTitle" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-0.5">Порада або лайфхак</label>
+                        <textarea id="adminGarageTip" rows="2" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- WEEKLY POLL EDITOR -->
+                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold text-amber-400">📊 Опитування тижня</span>
+                        <button type="button" onclick="resetPollVotesInFirebase()" class="text-[10px] text-red-300 hover:text-red-200 underline">Скинути голоси</button>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-0.5">Питання</label>
+                        <input type="text" id="adminPollQuestion" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Варіант А</label>
+                            <input type="text" id="adminPollOptA" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Варіант Б</label>
+                            <input type="text" id="adminPollOptB" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                        </div>
+                    </div>
+                </div>
+
                 <!-- EMAIL FOR IDEAS -->
                 <div class="p-3 bg-white/5 rounded-xl border border-amber-500/20 space-y-1.5">
                     <span class="font-semibold text-amber-400 block">✉️ Пошта для отримання ідей</span>
@@ -425,7 +620,7 @@
 
                 <!-- STATS EDIT -->
                 <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
-                    <span class="font-semibold text-amber-400 block mb-1">📊 Кількість підписників</span>
+                    <span class="font-semibold text-amber-400 block mb-1">📈 Кількість підписників</span>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
                             <label class="block text-[10px] text-gray-400 mb-0.5">YouTube</label>
@@ -466,6 +661,14 @@
                         <label class="block text-[10px] text-gray-400 mb-0.5">Telegram URL</label>
                         <input type="text" id="adminTgUrl" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
                     </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-0.5">Instagram URL</label>
+                        <input type="text" id="adminIgUrl" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-0.5">TikTok URL</label>
+                        <input type="text" id="adminTtUrl" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                    </div>
                 </div>
 
                 <!-- SAVED IDEAS FROM FIREBASE -->
@@ -504,11 +707,180 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Ініціалізація іконок
         lucide.createIcons();
 
         // ПІДКЛЮЧЕННЯ ДО FIREBASE REALTIME DATABASE ("ПАМ'ЯТЬ" САЙТУ)
         const FIREBASE_DB_URL = "https://autohub-94cf7-default-rtdb.europe-west1.firebasedatabase.app";
+
+        // ТЕМИ ОФОРМЛЕННЯ
+        const THEMES = ["orange", "neon", "garage"];
+        const THEME_LABELS = {
+            orange: "Orange",
+            neon: "Neon Drift",
+            garage: "Classic Garage"
+        };
+        let currentTheme = "orange";
+
+        function applyTheme(themeName) {
+            currentTheme = THEMES.includes(themeName) ? themeName : "orange";
+            document.body.setAttribute("data-theme", currentTheme);
+            const badge = document.getElementById("themeBadgeLabel");
+            if (badge) badge.innerText = `Тема: ${THEME_LABELS[currentTheme]}`;
+            const select = document.getElementById("adminThemeSelect");
+            if (select) select.value = currentTheme;
+        }
+
+        function cycleTheme() {
+            const idx = THEMES.indexOf(currentTheme);
+            const nextTheme = THEMES[(idx + 1) % THEMES.length];
+            applyTheme(nextTheme);
+            try {
+                const saved = JSON.parse(localStorage.getItem("autohub_config") || "{}");
+                saved.theme = nextTheme;
+                localStorage.setItem("autohub_config", JSON.stringify(saved));
+            } catch (e) {}
+        }
+
+        // КНОПКА "ПОДІЛИТИСЯ САЙТОМ"
+        async function shareSite() {
+            const shareUrl = window.location.href;
+            const shareData = {
+                title: document.title,
+                text: "Заглянь на AUTOHUB — огляди, авто-поради та тренди 🚗🔥",
+                url: shareUrl
+            };
+            const btnText = document.getElementById("shareBtnText");
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                    return;
+                } catch (e) {
+                    if (e && e.name === "AbortError") return;
+                }
+            }
+
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                if (btnText) {
+                    const prev = btnText.innerText;
+                    btnText.innerText = "Скопійовано!";
+                    setTimeout(() => { btnText.innerText = prev; }, 1800);
+                }
+            } catch (e) {
+                prompt("Скопіюйте посилання на сайт:", shareUrl);
+            }
+        }
+
+        // ОПИТУВАННЯ ТИЖНЯ (FIREBASE)
+        let pollState = {
+            question: "Який формат відео знімати наступним?",
+            optionA: "Історія та еволюція легендарних авто",
+            optionB: "Практичні поради та розбір поломок",
+            votesA: 0,
+            votesB: 0
+        };
+
+        function getUserVotedKey() {
+            const qKey = encodeURIComponent(pollState.question || "default");
+            return `autohub_poll_voted_${qKey}`;
+        }
+
+        function renderPollUI() {
+            document.getElementById("pollQuestionText").innerText = pollState.question || "Опитування тижня";
+            document.getElementById("pollOptALabel").innerText = pollState.optionA || "Варіант А";
+            document.getElementById("pollOptBLabel").innerText = pollState.optionB || "Варіант Б";
+
+            const a = Number(pollState.votesA) || 0;
+            const b = Number(pollState.votesB) || 0;
+            const total = a + b;
+            const pctA = total > 0 ? Math.round((a / total) * 100) : 0;
+            const pctB = total > 0 ? Math.round((b / total) * 100) : 0;
+
+            document.getElementById("pollTotalVotes").innerText = `Голосів: ${total}`;
+            document.getElementById("pollPercentA").innerText = `${pctA}% (${a})`;
+            document.getElementById("pollPercentB").innerText = `${pctB}% (${b})`;
+            document.getElementById("pollBarA").style.width = `${pctA}%`;
+            document.getElementById("pollBarB").style.width = `${pctB}%`;
+
+            const votedChoice = localStorage.getItem(getUserVotedKey());
+            const hintEl = document.getElementById("pollStatusHint");
+            if (votedChoice) {
+                hintEl.innerText = `Ваш голос зараховано (${votedChoice === 'a' ? 'Варіант А' : 'Варіант Б'}).`;
+            } else {
+                hintEl.innerText = "Натисніть на варіант, щоб проголосувати.";
+            }
+        }
+
+        async function loadPollFromFirebase() {
+            try {
+                const res = await fetch(`${FIREBASE_DB_URL}/poll.json`);
+                const data = res.ok ? await res.json() : null;
+                if (data) {
+                    pollState = {
+                        question: data.question || pollState.question,
+                        optionA: data.optionA || pollState.optionA,
+                        optionB: data.optionB || pollState.optionB,
+                        votesA: Number(data.votesA) || 0,
+                        votesB: Number(data.votesB) || 0
+                    };
+                }
+            } catch (e) {
+                console.warn("Помилка завантаження опитування:", e);
+            }
+            renderPollUI();
+        }
+
+        async function voteInPoll(choice) {
+            const votedKey = getUserVotedKey();
+            if (localStorage.getItem(votedKey)) {
+                document.getElementById("pollStatusHint").innerText = "Ви вже проголосували в цьому опитуванні.";
+                return;
+            }
+
+            localStorage.setItem(votedKey, choice);
+            if (choice === "a") pollState.votesA = (Number(pollState.votesA) || 0) + 1;
+            if (choice === "b") pollState.votesB = (Number(pollState.votesB) || 0) + 1;
+            renderPollUI();
+
+            try {
+                const res = await fetch(`${FIREBASE_DB_URL}/poll.json`);
+                const latest = (res.ok ? await res.json() : null) || pollState;
+                const updated = {
+                    question: latest.question || pollState.question,
+                    optionA: latest.optionA || pollState.optionA,
+                    optionB: latest.optionB || pollState.optionB,
+                    votesA: (Number(latest.votesA) || 0) + (choice === "a" ? 1 : 0),
+                    votesB: (Number(latest.votesB) || 0) + (choice === "b" ? 1 : 0)
+                };
+                await fetch(`${FIREBASE_DB_URL}/poll.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(updated)
+                });
+                pollState = updated;
+                renderPollUI();
+            } catch (e) {
+                console.warn("Помилка збереження голосу у Firebase:", e);
+            }
+        }
+
+        async function resetPollVotesInFirebase() {
+            pollState.votesA = 0;
+            pollState.votesB = 0;
+            localStorage.removeItem(getUserVotedKey());
+            renderPollUI();
+            try {
+                await fetch(`${FIREBASE_DB_URL}/poll.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(pollState)
+                });
+                showAdminStatus("Голоси опитування скинуто.", true);
+            } catch (e) {
+                showAdminStatus("Не вдалося скинути голоси у базі.", false);
+            }
+        }
 
         // Плейлист треків
         const playlist = [
@@ -715,6 +1087,7 @@
 
         function applyConfigObject(cfg) {
             if (!cfg) return;
+            if (cfg.theme) applyTheme(cfg.theme);
             if (cfg.email) ownerEmail = cfg.email;
             if (cfg.logo) setLogoSrc(cfg.logo);
             if (cfg.ytStat) document.getElementById('statYoutube').innerText = cfg.ytStat;
@@ -725,6 +1098,20 @@
                 updateLatestVideo(cfg.latestVideoUrl, cfg.latestVideoTitle);
             }
             if (cfg.tgUrl) document.getElementById('linkTelegram').href = cfg.tgUrl;
+            if (cfg.igUrl) document.getElementById('linkInstagram').href = cfg.igUrl;
+            if (cfg.ttUrl) document.getElementById('linkTiktok').href = cfg.ttUrl;
+
+            if (cfg.garageTitle) document.getElementById('garageTitle').innerText = cfg.garageTitle;
+            if (cfg.garageTip) document.getElementById('garageTipText').innerText = cfg.garageTip;
+
+            const bannerEl = document.getElementById('announcementBanner');
+            if (bannerEl) {
+                const isActive = cfg.announcementActive !== false;
+                bannerEl.classList.toggle('hidden', !isActive);
+                if (cfg.announcementText) document.getElementById('announcementText').innerText = cfg.announcementText;
+                if (cfg.announcementBtnLabel) document.getElementById('announcementBtnLabel').innerText = cfg.announcementBtnLabel;
+                if (cfg.announcementUrl) document.getElementById('announcementBtn').href = cfg.announcementUrl;
+            }
         }
 
         function loadSavedConfig() {
@@ -746,6 +1133,8 @@
                     }
                 })
                 .catch(err => console.warn("Firebase недоступний або ще порожній:", err));
+
+            loadPollFromFirebase();
         }
 
         function extractYouTubeId(url) {
@@ -802,6 +1191,17 @@
                 if (logoClickCount >= 3) {
                     logoClickCount = 0;
                     document.getElementById('adminStatusMsg').classList.add('hidden');
+                    document.getElementById('adminThemeSelect').value = currentTheme;
+                    document.getElementById('adminAnnouncementActive').checked = !document.getElementById('announcementBanner').classList.contains('hidden');
+                    document.getElementById('adminAnnouncementText').value = document.getElementById('announcementText').innerText;
+                    document.getElementById('adminAnnouncementBtnLabel').value = document.getElementById('announcementBtnLabel').innerText;
+                    document.getElementById('adminAnnouncementUrl').value = document.getElementById('announcementBtn').href;
+                    document.getElementById('adminGarageTitle').value = document.getElementById('garageTitle').innerText;
+                    document.getElementById('adminGarageTip').value = document.getElementById('garageTipText').innerText;
+                    document.getElementById('adminPollQuestion').value = pollState.question;
+                    document.getElementById('adminPollOptA').value = pollState.optionA;
+                    document.getElementById('adminPollOptB').value = pollState.optionB;
+
                     document.getElementById('adminEmailTarget').value = ownerEmail;
                     document.getElementById('adminLogoUrl').value = document.getElementById('mainLogoImg').src;
                     document.getElementById('adminYtStat').value = document.getElementById('statYoutube').innerText;
@@ -811,6 +1211,8 @@
                     document.getElementById('adminLatestVideoTitle').value = document.getElementById('latestVideoTitle').innerText;
                     document.getElementById('adminYtUrl').value = document.getElementById('linkYoutube').href;
                     document.getElementById('adminTgUrl').value = document.getElementById('linkTelegram').href;
+                    document.getElementById('adminIgUrl').value = document.getElementById('linkInstagram').href;
+                    document.getElementById('adminTtUrl').value = document.getElementById('linkTiktok').href;
 
                     document.getElementById('adminModal').classList.remove('hidden');
                     document.getElementById('adminBanner').classList.remove('hidden');
@@ -851,6 +1253,18 @@
 
         async function applyAdminChanges() {
             const saveBtn = document.getElementById('saveCloudBtn');
+            const themeVal = document.getElementById('adminThemeSelect').value;
+            const announcementActive = document.getElementById('adminAnnouncementActive').checked;
+            const announcementText = document.getElementById('adminAnnouncementText').value.trim();
+            const announcementBtnLabel = document.getElementById('adminAnnouncementBtnLabel').value.trim();
+            const announcementUrl = document.getElementById('adminAnnouncementUrl').value.trim();
+            const garageTitle = document.getElementById('adminGarageTitle').value.trim();
+            const garageTip = document.getElementById('adminGarageTip').value.trim();
+
+            const pollQuestion = document.getElementById('adminPollQuestion').value.trim();
+            const pollOptA = document.getElementById('adminPollOptA').value.trim();
+            const pollOptB = document.getElementById('adminPollOptB').value.trim();
+
             const emailVal = document.getElementById('adminEmailTarget').value.trim();
             const logoUrl = document.getElementById('adminLogoUrl').value.trim();
             const ytStat = document.getElementById('adminYtStat').value.trim();
@@ -860,8 +1274,17 @@
             const latestVideoTitle = document.getElementById('adminLatestVideoTitle').value.trim();
             const ytUrl = document.getElementById('adminYtUrl').value.trim();
             const tgUrl = document.getElementById('adminTgUrl').value.trim();
+            const igUrl = document.getElementById('adminIgUrl').value.trim();
+            const ttUrl = document.getElementById('adminTtUrl').value.trim();
 
             const configObj = {
+                theme: themeVal,
+                announcementActive,
+                announcementText,
+                announcementBtnLabel,
+                announcementUrl,
+                garageTitle,
+                garageTip,
                 email: emailVal,
                 logo: logoUrl,
                 ytStat,
@@ -871,8 +1294,27 @@
                 latestVideoTitle,
                 ytUrl,
                 tgUrl,
+                igUrl,
+                ttUrl,
                 updatedAt: Date.now()
             };
+
+            const pollChanged =
+                (pollQuestion && pollQuestion !== pollState.question) ||
+                (pollOptA && pollOptA !== pollState.optionA) ||
+                (pollOptB && pollOptB !== pollState.optionB);
+
+            pollState = {
+                question: pollQuestion || pollState.question,
+                optionA: pollOptA || pollState.optionA,
+                optionB: pollOptB || pollState.optionB,
+                votesA: pollChanged ? 0 : (Number(pollState.votesA) || 0),
+                votesB: pollChanged ? 0 : (Number(pollState.votesB) || 0)
+            };
+            if (pollChanged) {
+                localStorage.removeItem(getUserVotedKey());
+            }
+            renderPollUI();
 
             applyConfigObject(configObj);
 
@@ -890,6 +1332,13 @@
                     body: JSON.stringify(configObj)
                 });
                 if (!resp.ok) throw new Error("Помилка запису у Firebase");
+
+                await fetch(`${FIREBASE_DB_URL}/poll.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(pollState)
+                });
+
                 showAdminStatus("✅ Збережено у хмарній пам'яті! Зміни вже видно всім відвідувачам.", true);
             } catch (err) {
                 console.error("Firebase save error:", err);
