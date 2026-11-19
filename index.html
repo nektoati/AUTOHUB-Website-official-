@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AUTOHUB — Огляди, поради та автомобільні тренди</title>
+    <meta name="description" content="Огляди, корисні поради та автомобільні тренди від AUTOHUB.">
+
+    <!-- Open Graph / Telegram Link Preview -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="AUTOHUB">
+    <meta property="og:title" content="AUTOHUB — Огляди, поради та автомобільні тренди 🚗🔥">
+    <meta property="og:description" content="Дивіться свіжі випуски, корисні авто-поради, тренди та вмикайте авто-вайб!">
+    <meta property="og:image" content="https://cdn.phototourl.com/anon/2026-11-19-7f8a5074-71b4-4ab7-bebb-dae62bd23fc4.jpg">
+    <meta property="og:image:alt" content="AUTOHUB">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AUTOHUB — Огляди, поради та автомобільні тренди 🚗🔥">
+    <meta name="twitter:description" content="Дивіться свіжі випуски, корисні авто-поради, тренди та вмикайте авто-вайб!">
+    <meta name="twitter:image" content="https://cdn.phototourl.com/anon/2026-11-19-7f8a5074-71b4-4ab7-bebb-dae62bd23fc4.jpg">
+
     <link id="faviconLink" rel="icon" type="image/png" href="https://cdn.phototourl.com/anon/2026-11-19-7f8a5074-71b4-4ab7-bebb-dae62bd23fc4.jpg">
     
     <!-- Tailwind CSS CDN -->
@@ -714,7 +728,6 @@
         }
 
         function loadSavedConfig() {
-            // 1. Швидкий локальний кеш
             try {
                 const localSaved = JSON.parse(localStorage.getItem('autohub_config'));
                 if (localSaved) applyConfigObject(localSaved);
@@ -722,7 +735,6 @@
                 console.warn("Помилка читання localStorage:", e);
             }
 
-            // 2. Загальна хмарна пам'ять Firebase Realtime Database
             fetch(`${FIREBASE_DB_URL}/settings.json`)
                 .then(res => res.ok ? res.json() : null)
                 .then(cloudData => {
@@ -979,14 +991,12 @@
             submitBtn.innerText = "Надсилання...";
 
             try {
-                // 1. Зберігаємо ідею у "пам'ять" Firebase
                 await fetch(`${FIREBASE_DB_URL}/ideas.json`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name, message, createdAt: Date.now() })
                 });
 
-                // 2. Якщо вказана пошта — надсилаємо ще й на пошту
                 if (ownerEmail) {
                     await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(ownerEmail)}`, {
                         method: "POST",
