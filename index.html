@@ -113,6 +113,125 @@
             background: #2a2e37;
             border-radius: 3px;
         }
+
+        /* Віджет ШІ-помічника AUTOHUB */
+        #ah-ai-toggle {
+            position: fixed;
+            left: 16px;
+            bottom: 84px;
+            z-index: 40;
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 1px solid var(--accent-border);
+            background-color: #161920;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.55);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        @media (min-width: 640px) {
+            #ah-ai-toggle {
+                bottom: 16px;
+            }
+        }
+        #ah-ai-toggle:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+        #ah-ai-box {
+            display: none;
+            position: fixed;
+            left: 16px;
+            bottom: 132px;
+            z-index: 45;
+            width: 330px;
+            max-width: calc(100vw - 32px);
+            background-color: #161920;
+            color: #e5e7eb;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+        }
+        @media (min-width: 640px) {
+            #ah-ai-box {
+                bottom: 66px;
+            }
+        }
+        #ah-ai-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-weight: 600;
+            font-size: 13px;
+            color: #ffffff;
+        }
+        #ah-ai-close {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 16px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 2px 4px;
+        }
+        #ah-ai-close:hover {
+            color: #ffffff;
+        }
+        #ah-ai-messages {
+            height: 240px;
+            overflow-y: auto;
+            padding: 12px;
+            font-size: 12.5px;
+            line-height: 1.5;
+            background-color: #111318;
+        }
+        #ah-ai-form {
+            display: flex;
+            gap: 8px;
+            padding: 10px;
+            background-color: #161920;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        #ah-ai-input {
+            flex: 1;
+            padding: 8px 11px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 12.5px;
+            outline: none;
+        }
+        #ah-ai-input:focus {
+            border-color: var(--accent-border);
+        }
+        #ah-ai-send {
+            padding: 8px 13px;
+            border-radius: 10px;
+            border: none;
+            background-color: var(--accent);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 12.5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, opacity 0.2s ease;
+        }
+        #ah-ai-send:hover {
+            background-color: var(--accent-hover);
+        }
+        #ah-ai-send:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body data-theme="orange" class="min-h-screen flex flex-col justify-between pb-24 sm:pb-12">
@@ -394,6 +513,29 @@
             <p>© 2026 AUTOHUB. Всі права захищено.</p>
         </div>
     </footer>
+
+    <!-- ВІДЖЕТ ШІ-ПОМІЧНИКА AUTOHUB (BOTTOM LEFT) -->
+    <button id="ah-ai-toggle" type="button" title="Запитати у ШІ-помічника">
+        <i data-lucide="bot" class="w-4 h-4 accent-text"></i>
+        <span>Помічник AUTOHUB</span>
+    </button>
+
+    <div id="ah-ai-box">
+        <div id="ah-ai-header">
+            <div class="flex items-center gap-2">
+                <i data-lucide="bot" class="w-4 h-4 accent-text"></i>
+                <span>Помічник AUTOHUB</span>
+            </div>
+            <button id="ah-ai-close" type="button" title="Закрити">✕</button>
+        </div>
+        <div id="ah-ai-messages">
+            <p style="margin:0 0 8px 0;color:#9ca3af;">Привіт! Запитай щось про легкові авто, вантажівки, авто-поради або навігацію по сайту 🚗</p>
+        </div>
+        <div id="ah-ai-form">
+            <input id="ah-ai-input" type="text" maxlength="600" placeholder="Напиши запитання...">
+            <button id="ah-ai-send" type="button">➤</button>
+        </div>
+    </div>
 
     <!-- INTERACTIVE EXPANDABLE MUSIC PLAYER (BOTTOM RIGHT) -->
     <div id="musicPlayer" class="fixed bottom-4 right-4 z-40 card rounded-2xl border border-white/10 shadow-2xl bg-slate-900 transition-all duration-300 w-[calc(100%-2rem)] max-w-[320px] overflow-hidden">
@@ -1626,6 +1768,87 @@
                 submitBtn.innerText = "Надіслати ідею";
             }
         }
+
+        // ЛОГІКА ШІ-ПОМІЧНИКА AUTOHUB
+        (function () {
+            const WORKER_URL = "https://shiny-moon-c021.sandreklam.workers.dev/";
+
+            const toggleBtn = document.getElementById("ah-ai-toggle");
+            const chatBox = document.getElementById("ah-ai-box");
+            const closeBtn = document.getElementById("ah-ai-close");
+            const messagesEl = document.getElementById("ah-ai-messages");
+            const inputEl = document.getElementById("ah-ai-input");
+            const sendBtn = document.getElementById("ah-ai-send");
+
+            let lastSendTime = 0;
+
+            toggleBtn.addEventListener("click", () => {
+                const isOpen = chatBox.style.display === "block";
+                chatBox.style.display = isOpen ? "none" : "block";
+                if (!isOpen) inputEl.focus();
+            });
+
+            closeBtn.addEventListener("click", () => {
+                chatBox.style.display = "none";
+            });
+
+            function appendMsg(author, text, isError = false) {
+                const p = document.createElement("p");
+                p.style.margin = "6px 0";
+                p.style.color = isError ? "#f87171" : "#e5e7eb";
+                const strong = document.createElement("strong");
+                strong.style.color = isError ? "#f87171" : "#ffffff";
+                strong.textContent = author + ": ";
+                p.appendChild(strong);
+                p.appendChild(document.createTextNode(text));
+                messagesEl.appendChild(p);
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+            }
+
+            async function askAI() {
+                const now = Date.now();
+                if (now - lastSendTime < 2500) {
+                    appendMsg("Система", "Зачекай пару секунд перед наступним запитом.", true);
+                    return;
+                }
+
+                const text = inputEl.value.trim();
+                if (!text) return;
+
+                lastSendTime = now;
+                inputEl.value = "";
+                appendMsg("Ви", text);
+
+                sendBtn.disabled = true;
+
+                try {
+                    const res = await fetch(WORKER_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ message: text })
+                    });
+
+                    const data = await res.json();
+                    if (!res.ok || !data.reply) {
+                        const errDetails = data && (data.error || data.message) ? ` (${data.error || data.message})` : ` [HTTP ${res.status}]`;
+                        throw new Error("Помилка відповіді" + errDetails);
+                    }
+
+                    appendMsg("AUTOHUB ШІ", data.reply);
+                } catch (err) {
+                    const reason = err && err.message ? ` (${err.message})` : "";
+                    appendMsg("AUTOHUB ШІ", `Не вдалося отримати відповідь${reason}. Перевір підключення, воркер або ліміт запитів.`, true);
+                } finally {
+                    sendBtn.disabled = false;
+                    inputEl.focus();
+                }
+            }
+
+            sendBtn.addEventListener("click", askAI);
+            inputEl.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") askAI();
+            });
+        })();
 
         // Застосовуємо збережені дані при відкритті сторінки
         loadSavedConfig();
