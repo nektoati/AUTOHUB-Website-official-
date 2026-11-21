@@ -2160,90 +2160,25 @@
 
             let lastShownPrompts = [];
             let lastSendTime = 0;
+            let chatHistory = [];
 
             function renderRandomChips() {
-                if (!chipsContainer) return;
-                const candidates = PROMPT_POOL.filter(q => !lastShownPrompts.includes(q));
-                const source = candidates.length >= 3 ? candidates : PROMPT_POOL;
-                const shuffled = [...source].sort(() => Math.random() - 0.5);
-                const selected = shuffled.slice(0, 3);
-                lastShownPrompts = selected;
-
-                chipsContainer.innerHTML = "";
-                selected.forEach(promptText => {
-                    const btn = document.createElement("button");
-                    btn.type = "button";
-                    btn.className = "ah-ai-chip";
-                    btn.textContent = promptText;
-                    btn.addEventListener("click", () => {
-                        inputEl.value = promptText;
-                        askAI();
-                    });
-                    chipsContainer.appendChild(btn);
-                });
-            }
-
-            renderRandomChips();
-
-            toggleBtn.addEventListener("click", () => {
-                const isOpen = chatBox.style.display === "block";
-                chatBox.style.display = isOpen ? "none" : "block";
-                if (!isOpen) {
-                    renderRandomChips();
-                    inputEl.focus();
-                }
-            });
-
-            if (refreshChipsBtn) {
-                refreshChipsBtn.addEventListener("click", () => {
-                    renderRandomChips();
-                });
-            }
-
-            closeBtn.addEventListener("click", () => {
-                chatBox.style.display = "none";
-            });
-
-            function appendMsg(author, text, isError = false) {
-                const p = document.createElement("p");
-                p.style.margin = "6px 0";
-                p.style.color = isError ? "#f87171" : "#e5e7eb";
-                const strong = document.createElement("strong");
-                strong.style.color = isError ? "#f87171" : "#ffffff";
-                strong.textContent = author + ": ";
-                p.appendChild(strong);
-                p.appendChild(document.createTextNode(text));
-                messagesEl.appendChild(p);
-                messagesEl.scrollTop = messagesEl.scrollHeight;
-            }
-
-            async function askAI() {
-                const now = Date.now();
-                if (now - lastSendTime < 2500) {
-                    appendMsg("Система", "Зачекай пару секунд перед наступним запитом.", true);
-                    return;
-                }
-
-                const text = inputEl.value.trim();
-                if (!text) return;
-
-                lastSendTime = now;
-                inputEl.value = "";
-                appendMsg("Ви", text);
-                renderRandomChips();
-
+// ... existing code ... -->
                 sendBtn.disabled = true;
 
                 try {
-                    const siteContext = `Контекст сайту AUTOHUB:
-- Це хаб-сторінка з оглядами, авто-порадами, трендами та посиланнями на YouTube, Telegram, Instagram і TikTok.
-- На сайті є такі віджети й блоки: банер оголошень, картка «Останній випуск на YouTube» (зараз: «${document.getElementById("latestVideoTitle")?.innerText || "Еволюція ПАЗ"}»), блок «Гараж дня / Авто-лайфхак», «Опитування тижня» у Firebase, «Гараж підписників • Авто тижня» (де можна додати своє авто і голосувати лайками), форма «Ваші Ідеї», кнопка «Поділитися», перемикач тем (Orange, Neon Drift, Classic Garage), розгортаємий музичний плеєр «Авто-вайб» (SoundCloud/аудіотреки) та цей чат-віджет «Помічник AUTOHUB».
-- Запит користувача: ${text}`;
+                    const latestVideo = document.getElementById("latestVideoTitle")?.innerText || "Еволюція ПАЗ";
+                    const historyText = chatHistory.slice(-4).map(m => `${m.role}: ${m.text}`).join("\n");
+                    const compactPayload = [
+                        `Запит: ${text}`,
+                        historyText ? `Попередній діалог:\n${historyText}` : "",
+                        `Контекст AUTOHUB: огляди авто, поради, останній випуск «${latestVideo}», Гараж дня, Опитування тижня, Гараж підписників, Ваші ідеї, плеєр Авто-вайб.`
+                    ].filter(Boolean).join("\n");
 
                     const res = await fetch(WORKER_URL, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ message: siteContext })
+                        body: JSON.stringify({ message: compactPayload })
                     });
 
                     const data = await res.json();
@@ -2252,24 +2187,10 @@
                         throw new Error("Помилка відповіді" + errDetails);
                     }
 
+                    chatHistory.push({ role: "Користувач", text });
+                    chatHistory.push({ role: "Помічник", text: data.reply });
+                    if (chatHistory.length > 6) chatHistory = chatHistory.slice(-6);
+
                     appendMsg("AUTOHUB ШІ", data.reply);
                 } catch (err) {
-                    const reason = err && err.message ? ` (${err.message})` : "";
-                    appendMsg("AUTOHUB ШІ", `Не вдалося отримати відповідь${reason}. Перевір підключення, воркер або ліміт запитів.`, true);
-                } finally {
-                    sendBtn.disabled = false;
-                    inputEl.focus();
-                }
-            }
-
-            sendBtn.addEventListener("click", askAI);
-            inputEl.addEventListener("keydown", (e) => {
-                if (e.key === "Enter") askAI();
-            });
-        })();
-
-        // Застосовуємо збережені дані при відкритті сторінки
-        loadSavedConfig();
-    </script>
-</body>
-</html>
+// ... existing code ... -->
