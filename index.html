@@ -614,7 +614,7 @@
                 <div id="adminVerifyCodeBox" class="hidden space-y-2 pt-1">
                     <p id="adminVerifyCodeInfo" class="text-[11px] text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 rounded-lg p-2"></p>
                     <label for="adminVerifyCodeInput" class="block text-[11px] font-medium text-gray-300">
-                        Введіть код підтвердження:
+                        Введіть код підтвердження з пошти:
                     </label>
                     <input type="text" id="adminVerifyCodeInput" maxlength="6" placeholder="000000" class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/15 text-white placeholder-gray-500 text-xs font-mono tracking-widest focus:outline-none focus:border-amber-400">
                 </div>
@@ -627,7 +627,7 @@
                 <p id="adminProviderLoginError" class="hidden text-[11px] text-red-400"></p>
 
                 <button type="button" id="adminSendOrConfirmBtn" onclick="confirmAdminProviderLogin()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-semibold text-xs transition">
-                    Надіслати код підтвердження
+                    Надіслати код підтвердження на пошту
                 </button>
             </div>
         </div>
@@ -1251,6 +1251,31 @@
             } catch (e) {}
         }
 
+        function getRecipientEmail() {
+            const target = (currentConfigState.emailTarget || "").trim();
+            return target || ALLOWED_ADMIN_EMAIL;
+        }
+
+        async function sendMailViaFormSubmit(toEmail, payload) {
+            const target = encodeURIComponent((toEmail || ALLOWED_ADMIN_EMAIL).trim());
+            const res = await fetch(`https://formsubmit.co/ajax/${target}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    _captcha: "false",
+                    _template: "table",
+                    ...payload
+                })
+            });
+            if (!res.ok) {
+                throw new Error(`FormSubmit HTTP ${res.status}`);
+            }
+            return res.json().catch(() => ({}));
+        }
+
         function applyTheme(themeName) {
             const validTheme = THEMES.includes(themeName) ? themeName : "orange";
             currentConfigState.theme = validTheme;
@@ -1433,7 +1458,7 @@
             const submitBtn = document.getElementById("adminSendOrConfirmBtn");
             if (codeBox) codeBox.classList.add("hidden");
             if (codeInput) codeInput.value = "";
-            if (submitBtn) submitBtn.textContent = "Надіслати код підтвердження";
+            if (submitBtn) submitBtn.textContent = "Надіслати код підтвердження на пошту";
         }
 
         window.openAdminModal = function openAdminModal() {
@@ -1492,6 +1517,10 @@
 
         async function sendVerificationNotice(email, code, provider) {
             const infoEl = document.getElementById("adminVerifyCodeInfo");
+            if (infoEl) {
+                infoEl.textContent = `Надсилаємо 6-значний код підтвердження на ${email}...`;
+            }
+
             try {
                 await fetch(`${FIREBASE_DB_URL}/adminAuthLogs.json`, {
                     method: "POST",
@@ -1506,21 +1535,20 @@
             } catch (e) {}
 
             try {
-                await fetch(WORKER_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        action: "admin_verify_code",
-                        email,
-                        code,
-                        provider,
-                        message: `Код підтвердження входу в AUTOHUB Admin для ${email}: ${code}`
-                    })
+                await sendMailViaFormSubmit(email, {
+                    _subject: `Код підтвердження входу в AUTOHUB Admin: ${code}`,
+                    "Спосіб входу": provider,
+                    "Email адміністратора": email,
+                    "Код підтвердження": code,
+                    "Час запиту": new Date().toLocaleString("uk-UA")
                 });
-            } catch (e) {}
-
-            if (infoEl) {
-                infoEl.textContent = `Підтвердження надіслано на ${email}. Ваш код підтвердження: ${code}`;
+                if (infoEl) {
+                    infoEl.textContent = `Код підтвердження надіслано на пошту ${email} (перевірте Вхідні та Спам).`;
+                }
+            } catch (e) {
+                if (infoEl) {
+                    infoEl.textContent = `Не вдалося надіслати лист через поштовий сервіс. Резервний код: ${code}`;
+                }
             }
         }
 
@@ -1549,8 +1577,15 @@
                     errEl.textContent = "";
                 }
                 if (codeBox) codeBox.classList.remove("hidden");
-                if (submitBtn) submitBtn.textContent = "Підтвердити та увійти";
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = "Надсилання коду...";
+                }
                 await sendVerificationNotice(enteredEmail, pendingVerificationCode, selectedAdminProvider);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Підтвердити та увійти";
+                }
                 if (codeInput) codeInput.focus();
                 return;
             }
@@ -1558,7 +1593,7 @@
             const enteredCode = (codeInput?.value || "").trim();
             if (enteredCode !== pendingVerificationCode) {
                 if (errEl) {
-                    errEl.textContent = "Невірний код підтвердження. Перевірте код і спробуйте ще раз.";
+                    errEl.textContent = "Невірний код підтвердження. Перевірте пошту та спробуйте ще раз.";
                     errEl.classList.remove("hidden");
                 }
                 return;
@@ -1952,6 +1987,7 @@
             const name = (document.getElementById("feedbackName")?.value || "").trim();
             const message = (document.getElementById("feedbackMessage")?.value || "").trim();
             const errEl = document.getElementById("feedbackError");
+            const submitBtn = document.getElementById("feedbackSubmitBtn");
             if (!name || !message) {
                 if (errEl) {
                     errEl.textContent = "Вкажіть ім'я та текст ідеї.";
@@ -1959,15 +1995,46 @@
                 }
                 return;
             }
+
+            if (errEl) {
+                errEl.classList.add("hidden");
+                errEl.textContent = "";
+            }
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = "<span>Надсилання...</span>";
+            }
+
             const item = { id: `idea_${Date.now()}`, name, message, createdAt: Date.now() };
             const existing = safeLocalGet(LOCAL_IDEAS_KEY, []);
             safeLocalSet(LOCAL_IDEAS_KEY, [item, ...existing]);
 
-            fetch(`${FIREBASE_DB_URL}/ideas/${encodeURIComponent(item.id)}.json`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(item)
-            }).catch(() => {});
+            try {
+                await fetch(`${FIREBASE_DB_URL}/ideas/${encodeURIComponent(item.id)}.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(item)
+                });
+            } catch (e) {}
+
+            try {
+                await sendMailViaFormSubmit(getRecipientEmail(), {
+                    _subject: `Нова пропозиція для AUTOHUB від ${name}`,
+                    "Від кого": name,
+                    "Ідея / Пропозиція": message,
+                    "Дата": new Date(item.createdAt).toLocaleString("uk-UA")
+                });
+            } catch (e) {
+                if (errEl) {
+                    errEl.textContent = "Ідею збережено, але лист на пошту не вдалося надіслати. Перевірте поштову скриньку та підтвердження FormSubmit.";
+                    errEl.classList.remove("hidden");
+                }
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = "<span>Надіслати ідею</span>";
+                }
+            }
 
             const form = document.getElementById("feedbackForm");
             const success = document.getElementById("feedbackSuccess");
