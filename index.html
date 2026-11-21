@@ -792,238 +792,305 @@
 
     <!-- MODAL: ADMIN PANEL -->
     <div id="adminModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-bg">
-        <div class="card w-full max-w-md rounded-2xl p-5 relative shadow-2xl border-amber-500/30 max-h-[90vh] flex flex-col">
+        <div class="card w-full max-w-2xl rounded-2xl p-5 sm:p-6 relative shadow-2xl border-amber-500/30 max-h-[92vh] flex flex-col">
             <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
-            <!-- LOGO IN ADMIN PANEL -->
-            <div class="text-center mb-3 shrink-0">
-                <img id="adminLogoImg"
-                     src="https://cdn.phototourl.com/anon/2026-11-19-7f8a5074-71b4-4ab7-bebb-dae62bd23fc4.jpg"
-                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=300&q=80';"
-                     alt="AUTOHUB Admin Logo" 
-                     class="w-14 h-14 rounded-2xl object-cover mx-auto border border-amber-500/40 shadow-lg mb-1.5">
-                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold border border-amber-500/20">
-                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-                    <span>Панель Адміністратора (Хмарна пам'ять)</span>
+            <!-- HEADER IN ADMIN PANEL -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-white/10 shrink-0 pr-8">
+                <div class="flex items-center gap-3">
+                    <img id="adminLogoImg"
+                         src="https://cdn.phototourl.com/anon/2026-11-19-7f8a5074-71b4-4ab7-bebb-dae62bd23fc4.jpg"
+                         onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=300&q=80';"
+                         alt="AUTOHUB Admin Logo" 
+                         class="w-12 h-12 rounded-2xl object-cover border border-amber-500/40 shadow-lg shrink-0">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[11px] font-semibold border border-amber-500/20">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                            <span>AUTOHUB ADMIN STUDIO</span>
+                        </div>
+                        <h3 class="text-sm sm:text-base font-bold text-white mt-1">Керування сайтом, гаражем та ідеями</h3>
+                    </div>
+                </div>
+
+                <!-- QUICK STATS IN ADMIN -->
+                <div class="flex items-center gap-2 text-[11px]">
+                    <div class="px-2.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 font-semibold">
+                        На перевірці: <span id="adminPendingCarsCount">0</span>
+                    </div>
+                    <div class="px-2.5 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-300 font-semibold">
+                        Ідей: <span id="adminIdeasCount">0</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- SCROLLABLE EDIT FORM -->
-            <div class="overflow-y-auto space-y-3 pr-1 flex-grow text-xs text-left">
-                <!-- STATUS MESSAGE -->
-                <div id="adminStatusMsg" class="hidden p-2.5 rounded-xl text-xs font-medium"></div>
-
-                <!-- QUICK ANNOUNCEMENT BUTTON -->
-                <button type="button" onclick="openQuickAnnouncementModal()" class="w-full py-2.5 px-3 rounded-xl accent-soft-bg border border-white/10 hover:border-white/25 text-white font-semibold transition flex items-center justify-center gap-2">
-                    <i data-lucide="megaphone" class="w-4 h-4 accent-text"></i>
-                    <span>+ Зробити нове оголошення на сайті</span>
+            <!-- ADMIN NAVIGATION TABS -->
+            <div class="flex items-center gap-2 mb-3 shrink-0 overflow-x-auto pb-1">
+                <button type="button" id="adminTabContent" onclick="switchAdminTab('content')" class="admin-tab-btn px-3.5 py-2 rounded-xl bg-amber-500 text-black font-semibold text-xs transition flex items-center gap-1.5 shrink-0">
+                    <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+                    <span>Контент і тема</span>
                 </button>
-
-                <!-- VISIBILITY OF BLOCKS -->
-                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
-                    <span class="font-semibold text-amber-400 block">👁️ Відображення блоків на сайті</span>
-                    <div class="grid grid-cols-2 gap-2 pt-0.5">
-                        <label class="inline-flex items-center gap-1.5 text-gray-200 cursor-pointer">
-                            <input type="checkbox" id="adminAnnouncementActive" checked class="rounded">
-                            <span>Оголошення</span>
-                        </label>
-                        <label class="inline-flex items-center gap-1.5 text-gray-200 cursor-pointer">
-                            <input type="checkbox" id="adminGarageActive" checked class="rounded">
-                            <span>Гараж дня</span>
-                        </label>
-                        <label class="inline-flex items-center gap-1.5 text-gray-200 cursor-pointer">
-                            <input type="checkbox" id="adminPollActive" checked class="rounded">
-                            <span>Опитування</span>
-                        </label>
-                        <label class="inline-flex items-center gap-1.5 text-gray-200 cursor-pointer">
-                            <input type="checkbox" id="adminSubGarageActive" checked class="rounded">
-                            <span>Авто тижня</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- THEME SELECTOR -->
-                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-1.5">
-                    <span class="font-semibold text-amber-400 block">🎨 Акцентна тема сайту</span>
-                    <select id="adminThemeSelect" onchange="applyTheme(this.value)" class="w-full px-2.5 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                        <option value="orange">AUTOHUB Orange (Помаранчева)</option>
-                        <option value="neon">Neon Drift (Бірюзова)</option>
-                        <option value="garage">Classic Garage (Золота)</option>
-                    </select>
-                </div>
-
-                <!-- ANNOUNCEMENT & PRIORITY LINK -->
-                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
-                    <span class="font-semibold text-amber-400 block">📢 Текст оголошення та посилання</span>
-                    <div>
-                        <label class="block text-[10px] text-gray-400 mb-0.5">Текст оголошення</label>
-                        <input type="text" id="adminAnnouncementText" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] text-gray-400 mb-0.5">Текст кнопки</label>
-                            <input type="text" id="adminAnnouncementBtnLabel" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-gray-400 mb-0.5">Посилання URL</label>
-                            <input type="text" id="adminAnnouncementUrl" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- GARAGE OF THE DAY / AUTO LIFEHACK -->
-                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
-                    <span class="font-semibold text-amber-400 block">🔧 Гараж дня / Авто-лайфхак</span>
-                    <div>
-                        <label class="block text-[10px] text-gray-400 mb-0.5">Заголовок картки</label>
-                        <input type="text" id="adminGarageTitle" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-gray-400 mb-0.5">Порада або лайфхак</label>
-                        <textarea id="adminGarageTip" rows="2" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs resize-none"></textarea>
-                    </div>
-                </div>
-
-                <!-- WEEKLY POLL EDITOR -->
-                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="font-semibold text-amber-400">📊 Опитування тижня</span>
-                        <button type="button" onclick="resetPollVotesInFirebase()" class="text-[10px] text-red-300 hover:text-red-200 underline">Скинути голоси</button>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-gray-400 mb-0.5">Питання</label>
-                        <input type="text" id="adminPollQuestion" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] text-gray-400 mb-0.5">Варіант А</label>
-                            <input type="text" id="adminPollOptA" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-gray-400 mb-0.5">Варіант Б</label>
-                            <input type="text" id="adminPollOptB" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- EMAIL FOR IDEAS -->
-                <div class="p-3 bg-white/5 rounded-xl border border-amber-500/20 space-y-1.5">
-                    <span class="font-semibold text-amber-400 block">✉️ Пошта для отримання ідей</span>
-                    <div>
-                        <label class="block text-[10px] text-gray-400 mb-0.5">Ваш Email (сюди приходитимуть ідеї з сайту)</label>
-                        <input type="email" id="adminEmailTarget" placeholder="your.email@gmail.com" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                    </div>
-                </div>
-
-                <!-- LOGO EDIT -->
-                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
-                    <span class="font-semibold text-amber-400 block mb-1">🖼️ Логотип сайту</span>
-                    <div>
-                        <label class="block text-[10px] text-gray-400 mb-0.5">Пряме посилання (.png / .jpg)</label>
-                        <input type="text" id="adminLogoUrl" placeholder="https://i.ibb.co/..." class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-gray-400 mb-0.5">Або оберіть файл логотипу з пристрою:</label>
-                        <input type="file" id="adminLogoFile" accept="image/*" onchange="handleLogoFileUpload(event)" class="w-full text-[11px] text-gray-300 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-500/20 file:text-amber-300 hover:file:bg-amber-500/30 cursor-pointer">
-                    </div>
-                </div>
-
-                <!-- STATS EDIT -->
-                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
-                    <span class="font-semibold text-amber-400 block mb-1">📈 Кількість підписників</span>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-[10px] text-gray-400 mb-0.5">YouTube</label>
-                            <input type="text" id="adminYtStat" class="w-full px-2 py-1 bg-black/40 border border-white/10 rounded-lg text-white font-semibold">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-gray-400 mb-0.5">Telegram</label>
-                            <input type="text" id="adminTgStat" class="w-full px-2 py-1 bg-black/40 border border-white/10 rounded-lg text-white font-semibold">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] text-gray-400 mb-0.5">TikTok</label>
-                            <input type="text" id="adminTtStat" class="w-full px-2 py-1 bg-black/40 border border-white/10 rounded-lg text-white font-semibold">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- LATEST VIDEO EDIT -->
-                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
-                    <span class="font-semibold text-amber-400 block mb-1">🎬 Останній випуск (YouTube)</span>
-                    <div>
-                        <label class="block text-[10px] text-gray-400 mb-0.5">Посилання на відео</label>
-                        <input type="text" id="adminLatestVideoUrl" placeholder="https://youtu.be/..." class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-gray-400 mb-0.5">Заголовок випуску</label>
-                        <input type="text" id="adminLatestVideoTitle" placeholder="Новий огляд та тести авто 🚗🔥" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                    </div>
-                </div>
-
-                <!-- LINKS EDIT -->
-                <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
-                    <span class="font-semibold text-amber-400 block mb-1">🔗 Посилання на соцмережі</span>
-                    <div>
-                        <label class="block text-[10px] text-gray-400 mb-0.5">YouTube Канал URL</label>
-                        <input type="text" id="adminYtUrl" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-gray-400 mb-0.5">Telegram URL</label>
-                        <input type="text" id="adminTgUrl" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-gray-400 mb-0.5">Instagram URL</label>
-                        <input type="text" id="adminIgUrl" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] text-gray-400 mb-0.5">TikTok URL</label>
-                        <input type="text" id="adminTtUrl" class="w-full px-2.5 py-1 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
-                    </div>
-                </div>
-
-                <!-- SAVED IDEAS FROM FIREBASE -->
-                <div class="p-3 bg-white/5 rounded-xl border border-blue-500/20 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="font-semibold text-blue-400 block">💡 Ідеї підписників з бази</span>
-                        <button type="button" onclick="loadIdeasFromFirebase()" class="text-[10px] text-blue-300 hover:text-white underline">Оновити</button>
-                    </div>
-                    <div id="adminIdeasList" class="space-y-1.5 max-h-40 overflow-y-auto text-[11px] text-gray-300">
-                        <p class="text-gray-500">Завантаження ідей...</p>
-                    </div>
-                </div>
-
-                <!-- SUBSCRIBERS GARAGE MODERATION -->
-                <div class="p-3 bg-white/5 rounded-xl border border-amber-500/20 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="font-semibold text-amber-400 block">🚘 Модерація «Гаражу підписників»</span>
-                        <button type="button" onclick="loadGarageCarsFromFirebase()" class="text-[10px] text-amber-300 hover:text-white underline">Оновити</button>
-                    </div>
-                    <div id="adminGarageCarsList" class="space-y-2 max-h-52 overflow-y-auto text-[11px] text-gray-300">
-                        <p class="text-gray-500">Завантаження заявок...</p>
-                    </div>
-                </div>
-
-                <div class="flex gap-2">
-                    <button id="saveCloudBtn" onclick="applyAdminChanges()" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/20">
-                        <i data-lucide="cloud-upload" class="w-4 h-4"></i> Зберегти у пам'ять сайту (Firebase)
-                    </button>
-                </div>
-
-                <!-- EXPORT FILE BUTTON (BACKUP) -->
-                <div class="pt-2 border-t border-white/10">
-                    <button onclick="exportUpdatedFile()" class="w-full py-2 bg-emerald-600/80 hover:bg-emerald-500 text-white font-semibold rounded-xl transition text-xs flex items-center justify-center gap-2">
-                        <i data-lucide="download" class="w-4 h-4"></i>
-                        <span>Завантажити резервну копію index.html</span>
-                    </button>
-                </div>
+                <button type="button" id="adminTabGarage" onclick="switchAdminTab('garage')" class="admin-tab-btn px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 font-semibold text-xs transition flex items-center gap-1.5 shrink-0">
+                    <i data-lucide="car" class="w-3.5 h-3.5"></i>
+                    <span>Гараж підписників</span>
+                </button>
+                <button type="button" id="adminTabIdeas" onclick="switchAdminTab('ideas')" class="admin-tab-btn px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 font-semibold text-xs transition flex items-center gap-1.5 shrink-0">
+                    <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i>
+                    <span>Ідеї глядачів</span>
+                </button>
             </div>
 
-            <div class="mt-3 shrink-0">
+            <!-- STATUS MESSAGE -->
+            <div id="adminStatusMsg" class="hidden p-2.5 rounded-xl text-xs font-medium mb-3 shrink-0"></div>
+
+            <!-- SCROLLABLE TAB PANELS -->
+            <div class="overflow-y-auto space-y-3.5 pr-1 flex-grow text-xs text-left">
+
+                <!-- TAB 1: CONTENT & SETTINGS -->
+                <div id="adminPanelContent" class="space-y-3">
+                    <!-- QUICK ANNOUNCEMENT BUTTON -->
+                    <button type="button" onclick="openQuickAnnouncementModal()" class="w-full py-2.5 px-3 rounded-xl accent-soft-bg border border-white/10 hover:border-white/25 text-white font-semibold transition flex items-center justify-center gap-2">
+                        <i data-lucide="megaphone" class="w-4 h-4 accent-text"></i>
+                        <span>+ Швидке оголошення на головній</span>
+                    </button>
+
+                    <!-- VISIBILITY OF BLOCKS -->
+                    <div class="p-3.5 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                        <span class="font-semibold text-amber-400 block">👁️ Відображення блоків на сайті</span>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-0.5">
+                            <label class="inline-flex items-center gap-1.5 text-gray-200 cursor-pointer">
+                                <input type="checkbox" id="adminAnnouncementActive" checked class="rounded">
+                                <span>Оголошення</span>
+                            </label>
+                            <label class="inline-flex items-center gap-1.5 text-gray-200 cursor-pointer">
+                                <input type="checkbox" id="adminGarageActive" checked class="rounded">
+                                <span>Гараж дня</span>
+                            </label>
+                            <label class="inline-flex items-center gap-1.5 text-gray-200 cursor-pointer">
+                                <input type="checkbox" id="adminPollActive" checked class="rounded">
+                                <span>Опитування</span>
+                            </label>
+                            <label class="inline-flex items-center gap-1.5 text-gray-200 cursor-pointer">
+                                <input type="checkbox" id="adminSubGarageActive" checked class="rounded">
+                                <span>Авто тижня</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- THEME SELECTOR -->
+                    <div class="p-3.5 bg-white/5 rounded-xl border border-white/5 space-y-1.5">
+                        <span class="font-semibold text-amber-400 block">🎨 Акцентна тема сайту</span>
+                        <select id="adminThemeSelect" onchange="applyTheme(this.value)" class="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-xl text-white text-xs">
+                            <option value="orange">AUTOHUB Orange (Помаранчева)</option>
+                            <option value="neon">Neon Drift (Бірюзова)</option>
+                            <option value="garage">Classic Garage (Золота)</option>
+                        </select>
+                    </div>
+
+                    <!-- ANNOUNCEMENT & PRIORITY LINK -->
+                    <div class="p-3.5 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                        <span class="font-semibold text-amber-400 block">📢 Текст оголошення та посилання</span>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Текст оголошення</label>
+                            <input type="text" id="adminAnnouncementText" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">Текст кнопки</label>
+                                <input type="text" id="adminAnnouncementBtnLabel" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">Посилання URL</label>
+                                <input type="text" id="adminAnnouncementUrl" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GARAGE OF THE DAY / AUTO LIFEHACK -->
+                    <div class="p-3.5 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                        <span class="font-semibold text-amber-400 block">🔧 Гараж дня / Авто-лайфхак</span>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Заголовок картки</label>
+                            <input type="text" id="adminGarageTitle" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Порада або лайфхак</label>
+                            <textarea id="adminGarageTip" rows="2" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs resize-none"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- WEEKLY POLL EDITOR -->
+                    <div class="p-3.5 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-semibold text-amber-400">📊 Опитування тижня</span>
+                            <button type="button" onclick="resetPollVotesInFirebase()" class="text-[10px] text-red-300 hover:text-red-200 underline">Скинути голоси</button>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Питання</label>
+                            <input type="text" id="adminPollQuestion" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">Варіант А</label>
+                                <input type="text" id="adminPollOptA" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">Варіант Б</label>
+                                <input type="text" id="adminPollOptB" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EMAIL FOR IDEAS -->
+                    <div class="p-3.5 bg-white/5 rounded-xl border border-amber-500/20 space-y-1.5">
+                        <span class="font-semibold text-amber-400 block">✉️ Пошта для отримання ідей</span>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Ваш Email</label>
+                            <input type="email" id="adminEmailTarget" placeholder="your.email@gmail.com" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                        </div>
+                    </div>
+
+                    <!-- LOGO EDIT -->
+                    <div class="p-3.5 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                        <span class="font-semibold text-amber-400 block mb-1">🖼️ Логотип сайту</span>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Пряме посилання (.png / .jpg)</label>
+                            <input type="text" id="adminLogoUrl" placeholder="https://i.ibb.co/..." class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Або оберіть файл логотипу з пристрою:</label>
+                            <input type="file" id="adminLogoFile" accept="image/*" onchange="handleLogoFileUpload(event)" class="w-full text-[11px] text-gray-300 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-500/20 file:text-amber-300 hover:file:bg-amber-500/30 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- STATS EDIT -->
+                    <div class="p-3.5 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                        <span class="font-semibold text-amber-400 block mb-1">📈 Кількість підписників</span>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">YouTube</label>
+                                <input type="text" id="adminYtStat" class="w-full px-2.5 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white font-semibold">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">Telegram</label>
+                                <input type="text" id="adminTgStat" class="w-full px-2.5 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white font-semibold">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">TikTok</label>
+                                <input type="text" id="adminTtStat" class="w-full px-2.5 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white font-semibold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LATEST VIDEO EDIT -->
+                    <div class="p-3.5 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                        <span class="font-semibold text-amber-400 block mb-1">🎬 Останній випуск (YouTube)</span>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Посилання на відео</label>
+                            <input type="text" id="adminLatestVideoUrl" placeholder="https://youtu.be/..." class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">Заголовок випуску</label>
+                            <input type="text" id="adminLatestVideoTitle" placeholder="Новий огляд та тести авто 🚗🔥" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                        </div>
+                    </div>
+
+                    <!-- LINKS EDIT -->
+                    <div class="p-3.5 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                        <span class="font-semibold text-amber-400 block mb-1">🔗 Посилання на соцмережі</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">YouTube Канал URL</label>
+                                <input type="text" id="adminYtUrl" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">Telegram URL</label>
+                                <input type="text" id="adminTgUrl" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">Instagram URL</label>
+                                <input type="text" id="adminIgUrl" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 mb-0.5">TikTok URL</label>
+                                <input type="text" id="adminTtUrl" class="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-white text-xs">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: SUBSCRIBERS GARAGE MODERATION & FULL INSPECTION -->
+                <div id="adminPanelGarage" class="hidden space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 p-3 bg-white/5 rounded-xl border border-amber-500/20">
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" id="garageFilterAll" onclick="setGarageFilter('all')" class="px-2.5 py-1 rounded-lg bg-amber-500 text-black font-semibold text-[11px]">Усі</button>
+                            <button type="button" id="garageFilterPending" onclick="setGarageFilter('pending')" class="px-2.5 py-1 rounded-lg bg-white/10 text-gray-300 font-semibold text-[11px]">На модерації</button>
+                            <button type="button" id="garageFilterApproved" onclick="setGarageFilter('approved')" class="px-2.5 py-1 rounded-lg bg-white/10 text-gray-300 font-semibold text-[11px]">Опубліковані</button>
+                        </div>
+                        <button type="button" onclick="loadGarageCarsFromFirebase()" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/15 text-amber-300 text-[11px] font-semibold flex items-center gap-1">
+                            <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                            <span>Оновити</span>
+                        </button>
+                    </div>
+
+                    <div id="adminGarageCarsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <p class="text-gray-500 col-span-full text-center py-4">Завантаження заявок...</p>
+                    </div>
+                </div>
+
+                <!-- TAB 3: SAVED IDEAS FROM FIREBASE -->
+                <div id="adminPanelIdeas" class="hidden space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-blue-500/20">
+                        <span class="font-semibold text-blue-400">💡 Запропоновані ідеї від підписників</span>
+                        <button type="button" onclick="loadIdeasFromFirebase()" class="px-2.5 py-1 rounded-lg bg-blue-500/15 hover:bg-blue-500/25 text-blue-300 text-[11px] font-semibold">Оновити список</button>
+                    </div>
+                    <div id="adminIdeasList" class="space-y-2 text-[11px] text-gray-300">
+                        <p class="text-gray-500 text-center py-4">Завантаження ідей...</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- FOOTER ACTIONS IN ADMIN -->
+            <div class="mt-4 pt-3 border-t border-white/10 space-y-2 shrink-0">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button id="saveCloudBtn" onclick="applyAdminChanges()" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-black font-semibold rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/20">
+                        <i data-lucide="cloud-upload" class="w-4 h-4"></i> Зберегти у Firebase
+                    </button>
+                    <button onclick="exportUpdatedFile()" class="w-full py-2.5 bg-emerald-600/90 hover:bg-emerald-500 text-white font-semibold rounded-xl transition text-xs flex items-center justify-center gap-1.5">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>Експорт index.html</span>
+                    </button>
+                </div>
                 <button onclick="closeAdminModal()" class="w-full py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs font-semibold rounded-xl transition border border-red-500/20">
                     Вийти з адмін-панелі
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: INSPECT SUBSCRIBER CAR IN DETAIL -->
+    <div id="adminCarInspectModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-bg">
+        <div class="card w-full max-w-lg rounded-2xl overflow-hidden relative shadow-2xl border-amber-500/30">
+            <button onclick="closeAdminCarInspectModal()" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/70 text-gray-200 hover:text-white flex items-center justify-center transition">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            <img id="inspectCarPhoto" src="" onerror="this.onerror=null;this.src='https://placehold.co/800x450/161920/f97316?text=AUTOHUB+GARAGE';" alt="Авто підписника" class="w-full h-56 sm:h-64 object-cover bg-black/40">
+            <div class="p-5 space-y-3 text-xs">
+                <div class="flex items-start justify-between gap-2">
+                    <div>
+                        <div id="inspectCarStatusBadge" class="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold mb-1"></div>
+                        <h4 id="inspectCarModel" class="text-base font-bold text-white"></h4>
+                        <p id="inspectCarOwner" class="text-[11px] accent-text font-medium mt-0.5"></p>
+                    </div>
+                    <span id="inspectCarDate" class="text-[10px] text-gray-500 shrink-0"></span>
+                </div>
+                <div class="p-3 rounded-xl bg-white/5 border border-white/10 text-gray-200 leading-relaxed" id="inspectCarDesc"></div>
+                <a id="inspectCarPhotoLink" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] text-gray-400 hover:text-white underline break-all">
+                    <span>Відкрити оригінал фото</span> ↗
+                </a>
+                <div id="inspectCarActions" class="grid grid-cols-2 gap-2 pt-2"></div>
             </div>
         </div>
     </div>
@@ -1062,8 +1129,8 @@
         let logoClickTimer = null;
         let pollState = { votesA: 0, votesB: 0 };
         let aiHistory = [];
-
-        const AI_CHIPS = [
+        let adminGarageEntries = [];
+        let adminGarageFilter = "all";
             "Які останні відео на каналі?",
             "Дай пораду щодо тиску в шинах",
             "Як додати своє авто в гараж?",
@@ -1366,12 +1433,15 @@
 
         async function loadGarageCarsFromFirebase() {
             const publicList = document.getElementById("approvedCarsList");
-            const adminList = document.getElementById("adminGarageCarsList");
+            const pendingCountEl = document.getElementById("adminPendingCarsCount");
             try {
                 const res = await fetch(`${FIREBASE_DB_URL}/garageCars.json`);
                 const data = await res.json();
-                const entries = data ? Object.entries(data) : [];
+                const entries = data ? Object.entries(data).sort((a, b) => (b[1]?.createdAt || 0) - (a[1]?.createdAt || 0)) : [];
+                adminGarageEntries = entries;
                 const approved = entries.filter(([, v]) => v && v.approved);
+                const pendingCount = entries.filter(([, v]) => v && !v.approved).length;
+                if (pendingCountEl) pendingCountEl.textContent = String(pendingCount);
 
                 if (publicList) {
                     if (!approved.length) {
@@ -1390,142 +1460,142 @@
                     }
                 }
 
-                if (adminList) {
-                    if (!entries.length) {
-                        adminList.innerHTML = `<p class="text-gray-500">Заявок поки немає.</p>`;
-                    } else {
-                        adminList.innerHTML = entries.map(([id, car]) => `
-                            <div class="p-2 rounded-lg bg-black/30 border border-white/10 flex items-center justify-between gap-2">
-                                <div class="min-w-0">
-                                    <div class="font-semibold text-white truncate">${car.model} (${car.owner})</div>
-                                    <div class="text-[10px] text-gray-400 truncate">${car.desc}</div>
-                                </div>
-                                <div class="flex items-center gap-1 shrink-0">
-                                    <button type="button" onclick="setGarageCarApproval('${id}', ${!car.approved})" class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 text-[10px]">${car.approved ? "Сховати" : "Схвалити"}</button>
-                                    <button type="button" onclick="deleteGarageCar('${id}')" class="px-2 py-1 rounded bg-red-500/20 text-red-300 text-[10px]">✕</button>
-                                </div>
-                            </div>
-                        `).join("");
-                    }
-                }
+                renderAdminGarageList();
             } catch (e) {
                 if (publicList) publicList.innerHTML = `<div class="p-3 rounded-xl bg-white/5 text-center text-xs text-gray-400 col-span-full">Не вдалося завантажити авто.</div>`;
             }
         }
 
-        async function setGarageCarApproval(id, approved) {
-            await fetch(`${FIREBASE_DB_URL}/garageCars/${id}.json`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ approved })
+        function setGarageFilter(filterName) {
+            adminGarageFilter = filterName;
+            const map = {
+                all: "garageFilterAll",
+                pending: "garageFilterPending",
+                approved: "garageFilterApproved"
+            };
+            Object.entries(map).forEach(([key, id]) => {
+                const btn = document.getElementById(id);
+                if (!btn) return;
+                const active = key === filterName;
+                btn.className = active
+                    ? "px-2.5 py-1 rounded-lg bg-amber-500 text-black font-semibold text-[11px]"
+                    : "px-2.5 py-1 rounded-lg bg-white/10 text-gray-300 font-semibold text-[11px]";
             });
-            loadGarageCarsFromFirebase();
+            renderAdminGarageList();
         }
 
-        async function deleteGarageCar(id) {
-            await fetch(`${FIREBASE_DB_URL}/garageCars/${id}.json`, { method: "DELETE" });
-            loadGarageCarsFromFirebase();
-        }
+        function renderAdminGarageList() {
+            const adminList = document.getElementById("adminGarageCarsList");
+            if (!adminList) return;
 
-        function openFeedbackModal() {
-            document.getElementById("feedbackForm")?.classList.remove("hidden");
-            document.getElementById("feedbackSuccess")?.classList.add("hidden");
-            document.getElementById("feedbackModal")?.classList.remove("hidden");
-        }
+            const filtered = adminGarageEntries.filter(([, car]) => {
+                if (!car) return false;
+                if (adminGarageFilter === "pending") return !car.approved;
+                if (adminGarageFilter === "approved") return Boolean(car.approved);
+                return true;
+            });
 
-        function closeFeedbackModal() {
-            document.getElementById("feedbackModal")?.classList.add("hidden");
-        }
-
-        async function submitFeedback(event) {
-            event.preventDefault();
-            const name = (document.getElementById("feedbackName")?.value || "").trim();
-            const message = (document.getElementById("feedbackMessage")?.value || "").trim();
-            const errEl = document.getElementById("feedbackError");
-            if (!name || !message) return;
-            try {
-                await fetch(`${FIREBASE_DB_URL}/ideas.json`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, message, createdAt: Date.now() })
-                });
-                if (errEl) errEl.classList.add("hidden");
-                document.getElementById("feedbackForm")?.classList.add("hidden");
-                document.getElementById("feedbackSuccess")?.classList.remove("hidden");
-                event.target.reset();
-            } catch (e) {
-                if (errEl) {
-                    errEl.textContent = "Помилка збереження ідеї.";
-                    errEl.classList.remove("hidden");
-                }
+            if (!filtered.length) {
+                adminList.innerHTML = `<p class="text-gray-500 col-span-full text-center py-4">Заявок у цій категорії немає.</p>`;
+                return;
             }
-        }
 
-        async function loadIdeasFromFirebase() {
-            const box = document.getElementById("adminIdeasList");
-            if (!box) return;
-            try {
-                const res = await fetch(`${FIREBASE_DB_URL}/ideas.json`);
-                const data = await res.json();
-                const items = data ? Object.values(data).reverse() : [];
-                if (!items.length) {
-                    box.innerHTML = `<p class="text-gray-500">Ідей поки немає.</p>`;
-                    return;
-                }
-                box.innerHTML = items.map(item => `
-                    <div class="p-2 rounded-lg bg-black/30 border border-white/5">
-                        <div class="font-semibold text-white">${item.name || "Анонім"}</div>
-                        <div class="text-gray-300">${item.message || ""}</div>
+            adminList.innerHTML = filtered.map(([id, car]) => {
+                const badgeClass = car.approved
+                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                    : "bg-amber-500/20 text-amber-300 border-amber-500/30";
+                const badgeText = car.approved ? "Опубліковано" : "Очікує перевірки";
+                return `
+                    <div class="rounded-xl bg-black/35 border border-white/10 overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="relative h-36 bg-black/50 cursor-pointer" onclick="openAdminCarInspectModal('${id}')">
+                                <img src="${car.photo}" onerror="this.onerror=null;this.src='https://placehold.co/600x340/161920/f97316?text=AUTOHUB+GARAGE';" alt="${car.model}" class="w-full h-36 object-cover">
+                                <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${badgeClass}">${badgeText}</span>
+                                <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-lg bg-black/75 text-white text-[10px]">🔍 Детальніше</span>
+                            </div>
+                            <div class="p-3 space-y-1">
+                                <div class="font-bold text-white text-xs">${car.model}</div>
+                                <div class="text-[11px] accent-text font-medium">Підписник: ${car.owner}</div>
+                                <p class="text-[11px] text-gray-300 line-clamp-2">${car.desc}</p>
+                            </div>
+                        </div>
+                        <div class="px-3 pb-3 pt-1 flex items-center gap-1.5">
+                            <button type="button" onclick="openAdminCarInspectModal('${id}')" class="flex-1 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white font-semibold text-[11px]">Переглянути</button>
+                            <button type="button" onclick="setGarageCarApproval('${id}', ${!car.approved})" class="flex-1 py-1.5 rounded-lg ${car.approved ? "bg-amber-500/20 text-amber-300 hover:bg-amber-500/30" : "bg-emerald-500/25 text-emerald-300 hover:bg-emerald-500/35"} font-semibold text-[11px]">${car.approved ? "Зняти" : "Схвалити"}</button>
+                            <button type="button" onclick="deleteGarageCar('${id}')" class="px-2.5 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 font-semibold text-[11px]" title="Видалити">✕</button>
+                        </div>
                     </div>
-                `).join("");
-            } catch (e) {
-                box.innerHTML = `<p class="text-gray-500">Не вдалося завантажити ідеї.</p>`;
+                `;
+            }).join("");
+        }
+
+        function openAdminCarInspectModal(id) {
+            const entry = adminGarageEntries.find(([key]) => key === id);
+            if (!entry) return;
+            const [, car] = entry;
+            const modal = document.getElementById("adminCarInspectModal");
+            if (!modal) return;
+
+            document.getElementById("inspectCarPhoto").src = car.photo || "";
+            document.getElementById("inspectCarPhotoLink").href = car.photo || "#";
+            document.getElementById("inspectCarModel").textContent = car.model || "Авто без назви";
+            document.getElementById("inspectCarOwner").textContent = `Підписник: ${car.owner || "Анонім"}`;
+            document.getElementById("inspectCarDesc").textContent = car.desc || "Опис відсутній.";
+            document.getElementById("inspectCarDate").textContent = car.createdAt
+                ? new Date(car.createdAt).toLocaleString("uk-UA", { dateStyle: "short", timeStyle: "short" })
+                : "";
+
+            const badge = document.getElementById("inspectCarStatusBadge");
+            if (badge) {
+                badge.textContent = car.approved ? "Опубліковано в гаражі" : "На модерації";
+                badge.className = car.approved
+                    ? "inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold mb-1 bg-emerald-500/20 text-emerald-300"
+                    : "inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold mb-1 bg-amber-500/20 text-amber-300";
             }
+
+            const actionsEl = document.getElementById("inspectCarActions");
+            if (actionsEl) {
+                actionsEl.innerHTML = `
+                    <button type="button" onclick="setGarageCarApproval('${id}', ${!car.approved}); closeAdminCarInspectModal();" class="py-2 rounded-xl ${car.approved ? "bg-amber-500 text-black" : "bg-emerald-500 text-black"} font-semibold text-xs">${car.approved ? "Прибрати з сайту" : "Схвалити та показати"}</button>
+                    <button type="button" onclick="deleteGarageCar('${id}'); closeAdminCarInspectModal();" class="py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 font-semibold text-xs">Видалити заявку</button>
+                `;
+            }
+
+            modal.classList.remove("hidden");
+            safeRefreshIcons();
         }
 
-        function openQuickAnnouncementModal() {
-            document.getElementById("quickAnnouncementModal")?.classList.remove("hidden");
+        function closeAdminCarInspectModal() {
+            document.getElementById("adminCarInspectModal")?.classList.add("hidden");
         }
 
-        function closeQuickAnnouncementModal() {
-            document.getElementById("quickAnnouncementModal")?.classList.add("hidden");
-        }
+        function switchAdminTab(tabName) {
+            const panels = {
+                content: "adminPanelContent",
+                garage: "adminPanelGarage",
+                ideas: "adminPanelIdeas"
+            };
+            const buttons = {
+                content: "adminTabContent",
+                garage: "adminTabGarage",
+                ideas: "adminTabIdeas"
+            };
 
-        async function publishQuickAnnouncement(event) {
-            event.preventDefault();
-            const text = (document.getElementById("quickAnnText")?.value || "").trim();
-            const btnLabel = (document.getElementById("quickAnnBtnLabel")?.value || "Перейти").trim() || "Перейти";
-            const url = (document.getElementById("quickAnnUrl")?.value || "https://t.me/FoXNEWofficial").trim() || "https://t.me/FoXNEWofficial";
-            const active = Boolean(document.getElementById("quickAnnActive")?.checked);
-            if (!text) return;
+            Object.entries(panels).forEach(([key, panelId]) => {
+                document.getElementById(panelId)?.classList.toggle("hidden", key !== tabName);
+            });
 
-            document.getElementById("announcementText").textContent = text;
-            document.getElementById("announcementBtnLabel").textContent = btnLabel;
-            document.getElementById("announcementBtn").href = url;
-            document.getElementById("announcementBanner")?.classList.toggle("hidden", !active);
+            Object.entries(buttons).forEach(([key, btnId]) => {
+                const btn = document.getElementById(btnId);
+                if (!btn) return;
+                const isActive = key === tabName;
+                btn.className = isActive
+                    ? "admin-tab-btn px-3.5 py-2 rounded-xl bg-amber-500 text-black font-semibold text-xs transition flex items-center gap-1.5 shrink-0"
+                    : "admin-tab-btn px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 font-semibold text-xs transition flex items-center gap-1.5 shrink-0";
+            });
 
-            try {
-                await fetch(`${FIREBASE_DB_URL}/config.json`, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        announcementText: text,
-                        announcementBtnLabel: btnLabel,
-                        announcementUrl: url,
-                        announcementActive: active
-                    })
-                });
-            } catch (e) {}
-
-            closeQuickAnnouncementModal();
-        }
-
-        function openAdminModal() {
-            isAdminMode = true;
-            document.getElementById("adminBanner")?.classList.remove("hidden");
-            document.getElementById("adminModal")?.classList.remove("hidden");
-            loadIdeasFromFirebase();
-            loadGarageCarsFromFirebase();
+            if (tabName === "garage") loadGarageCarsFromFirebase();
+            if (tabName === "ideas") loadIdeasFromFirebase();
             safeRefreshIcons();
         }
 
@@ -1577,38 +1647,41 @@
                 ttStat: document.getElementById("adminTtStat")?.value || "Тест",
                 latestVideoUrl: document.getElementById("adminLatestVideoUrl")?.value || "",
                 latestVideoTitle: document.getElementById("adminLatestVideoTitle")?.value || "",
-                ytUrl: document.getElementById("adminYtUrl")?.value || "",
-                tgUrl: document.getElementById("adminTgUrl")?.value || "",
-                igUrl: document.getElementById("adminIgUrl")?.value || "",
-                ttUrl: document.getElementById("adminTtUrl")?.value || ""
-            };
-
-            applyConfigToDOM(payload);
+        async function loadIdeasFromFirebase() {
+            const box = document.getElementById("adminIdeasList");
+            const countEl = document.getElementById("adminIdeasCount");
+            if (!box) return;
             try {
-                await fetch(`${FIREBASE_DB_URL}/config.json`, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-                if (statusEl) {
-                    statusEl.textContent = "Зміни збережено у хмарі!";
-                    statusEl.className = "p-2.5 rounded-xl text-xs font-medium bg-emerald-500/20 text-emerald-300";
-                    statusEl.classList.remove("hidden");
+                const res = await fetch(`${FIREBASE_DB_URL}/ideas.json`);
+                const data = await res.json();
+                const items = data ? Object.values(data).reverse() : [];
+                if (countEl) countEl.textContent = String(items.length);
+                if (!items.length) {
+                    box.innerHTML = `<p class="text-gray-500 text-center py-4">Ідей поки немає.</p>`;
+                    return;
                 }
+                box.innerHTML = items.map(item => `
+                    <div class="p-3 rounded-xl bg-black/35 border border-white/10 space-y-1">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="font-semibold text-white text-xs">${item.name || "Анонім"}</span>
+                            <span class="text-[10px] text-gray-500">${item.createdAt ? new Date(item.createdAt).toLocaleDateString("uk-UA") : ""}</span>
+                        </div>
+                        <div class="text-gray-300 leading-relaxed">${item.message || ""}</div>
+                    </div>
+                `).join("");
             } catch (e) {
-                if (statusEl) {
-                    statusEl.textContent = "Помилка збереження у Firebase.";
-                    statusEl.className = "p-2.5 rounded-xl text-xs font-medium bg-red-500/20 text-red-300";
-                    statusEl.classList.remove("hidden");
-                }
+                box.innerHTML = `<p class="text-gray-500 text-center py-4">Не вдалося завантажити ідеї.</p>`;
             }
         }
-
-        function applyConfigToDOM(cfg = {}) {
-            if (cfg.theme) applyTheme(cfg.theme);
-            if (typeof cfg.announcementActive === "boolean") {
-                document.getElementById("announcementBanner")?.classList.toggle("hidden", !cfg.announcementActive);
-            }
+        function openAdminModal() {
+            isAdminMode = true;
+            document.getElementById("adminBanner")?.classList.remove("hidden");
+            document.getElementById("adminModal")?.classList.remove("hidden");
+            switchAdminTab("content");
+            loadIdeasFromFirebase();
+            loadGarageCarsFromFirebase();
+            safeRefreshIcons();
+        }
             if (typeof cfg.garageActive === "boolean") {
                 document.getElementById("garageCard")?.classList.toggle("hidden", !cfg.garageActive);
             }
