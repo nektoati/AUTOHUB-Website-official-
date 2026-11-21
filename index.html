@@ -578,7 +578,7 @@
                     <i data-lucide="shield-check" class="w-6 h-6"></i>
                 </div>
                 <h3 class="text-lg font-bold text-white">Вхід до AUTOHUB Admin</h3>
-                <p class="text-xs text-gray-400 mt-1">Оберіть спосіб входу, щоб керувати контентом та гаражем</p>
+                <p class="text-xs text-gray-400 mt-1">Доступ лише для електронної пошти <span class="text-amber-300 font-semibold">artemmasanov993@gmail.com</span></p>
             </div>
 
             <div class="space-y-2.5">
@@ -607,12 +607,27 @@
 
             <div id="adminProviderEmailBox" class="hidden mt-4 pt-4 border-t border-white/10 space-y-2.5">
                 <label id="adminProviderEmailLabel" for="adminProviderEmailInput" class="block text-[11px] font-medium text-gray-300">
-                    Введіть email адміністратора:
+                    Введіть електронну пошту (artemmasanov993@gmail.com):
                 </label>
-                <input type="email" id="adminProviderEmailInput" placeholder="sandreklam@gmail.com" class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/15 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-amber-400">
+                <input type="email" id="adminProviderEmailInput" placeholder="artemmasanov993@gmail.com" class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/15 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-amber-400">
+
+                <div id="adminVerifyCodeBox" class="hidden space-y-2 pt-1">
+                    <p id="adminVerifyCodeInfo" class="text-[11px] text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 rounded-lg p-2"></p>
+                    <label for="adminVerifyCodeInput" class="block text-[11px] font-medium text-gray-300">
+                        Введіть код підтвердження:
+                    </label>
+                    <input type="text" id="adminVerifyCodeInput" maxlength="6" placeholder="000000" class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/15 text-white placeholder-gray-500 text-xs font-mono tracking-widest focus:outline-none focus:border-amber-400">
+                </div>
+
+                <label class="inline-flex items-center gap-2 text-[11px] text-gray-300 cursor-pointer pt-0.5">
+                    <input type="checkbox" id="adminRememberDeviceCheck" checked class="rounded">
+                    <span>Запам'ятати цей пристрій</span>
+                </label>
+
                 <p id="adminProviderLoginError" class="hidden text-[11px] text-red-400"></p>
-                <button type="button" onclick="confirmAdminProviderLogin()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-semibold text-xs transition">
-                    Підтвердити вхід
+
+                <button type="button" id="adminSendOrConfirmBtn" onclick="confirmAdminProviderLogin()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-semibold text-xs transition">
+                    Надіслати код підтвердження
                 </button>
             </div>
         </div>
@@ -1173,10 +1188,9 @@
         const WORKER_URL = "https://shiny-moon-c021.sandreklam.workers.dev";
         const FIREBASE_DB_URL = "https://autohub-official-default-rtdb.europe-west1.firebasedatabase.app";
         const ADMIN_PASSCODE = "autohub2026";
-        const ADMIN_EMAILS = [
-            "sandreklam@gmail.com",
-            "autohub.admin@gmail.com"
-        ];
+        const ALLOWED_ADMIN_EMAIL = "artemmasanov993@gmail.com";
+        const ADMIN_EMAILS = [ALLOWED_ADMIN_EMAIL];
+        const TRUSTED_DEVICE_KEY = "autohub_trusted_device_v1";
         const LOCAL_GARAGE_KEY = "autohub_garage_cars_v1";
         const LOCAL_IDEAS_KEY = "autohub_ideas_v1";
         const LOCAL_CONFIG_KEY = "autohub_config_v1";
@@ -1196,7 +1210,7 @@
             pollOptA: "Історія та еволюція легендарних авто",
             pollOptB: "Практичні поради та розбір поломок",
             subGarageActive: true,
-            emailTarget: "sandreklam@gmail.com",
+            emailTarget: ALLOWED_ADMIN_EMAIL,
             logoUrl: "https://cdn.phototourl.com/anon/2026-11-19-7f8a5074-71b4-4ab7-bebb-dae62bd23fc4.jpg",
             ytStat: "Тест",
             tgStat: "Тест",
@@ -1383,20 +1397,56 @@
 
         function isAuthorizedAdminEmail(email) {
             const normalized = String(email || "").trim().toLowerCase();
-            if (!normalized) return false;
-            const allowed = new Set(ADMIN_EMAILS.map((e) => e.toLowerCase()));
-            if (currentConfigState.emailTarget) {
-                allowed.add(String(currentConfigState.emailTarget).trim().toLowerCase());
+            return normalized === ALLOWED_ADMIN_EMAIL.toLowerCase();
+        }
+
+        function getTrustedDeviceRecord() {
+            const rec = safeLocalGet(TRUSTED_DEVICE_KEY, null);
+            if (!rec || typeof rec !== "object") return null;
+            if (!isAuthorizedAdminEmail(rec.email)) return null;
+            return rec;
+        }
+
+        function saveTrustedDeviceRecord(provider, email) {
+            const rememberCheck = document.getElementById("adminRememberDeviceCheck");
+            const shouldRemember = rememberCheck ? Boolean(rememberCheck.checked) : true;
+            if (!shouldRemember) {
+                try { localStorage.removeItem(TRUSTED_DEVICE_KEY); } catch (e) {}
+                return;
             }
-            return allowed.has(normalized);
+            safeLocalSet(TRUSTED_DEVICE_KEY, {
+                email: String(email || ALLOWED_ADMIN_EMAIL).trim().toLowerCase(),
+                provider: provider || "email",
+                verifiedAt: Date.now()
+            });
         }
 
         let selectedAdminProvider = "google";
+        let pendingVerificationCode = "";
+        let pendingVerificationEmail = "";
+
+        function resetVerificationStep() {
+            pendingVerificationCode = "";
+            pendingVerificationEmail = "";
+            const codeBox = document.getElementById("adminVerifyCodeBox");
+            const codeInput = document.getElementById("adminVerifyCodeInput");
+            const submitBtn = document.getElementById("adminSendOrConfirmBtn");
+            if (codeBox) codeBox.classList.add("hidden");
+            if (codeInput) codeInput.value = "";
+            if (submitBtn) submitBtn.textContent = "Надіслати код підтвердження";
+        }
 
         window.openAdminModal = function openAdminModal() {
+            const trusted = getTrustedDeviceRecord();
+            if (trusted) {
+                completeAdminLogin(trusted.provider || "email", trusted.email, true);
+                return;
+            }
+
             const loginModal = document.getElementById("adminLoginModal");
             const emailBox = document.getElementById("adminProviderEmailBox");
             const errEl = document.getElementById("adminProviderLoginError");
+            resetVerificationStep();
             if (errEl) {
                 errEl.classList.add("hidden");
                 errEl.textContent = "";
@@ -1407,11 +1457,12 @@
                 renderIconsSafely();
                 return;
             }
-            completeAdminLogin("email");
+            completeAdminLogin("email", ALLOWED_ADMIN_EMAIL, false);
         };
 
         window.closeAdminLoginModal = function closeAdminLoginModal() {
             const loginModal = document.getElementById("adminLoginModal");
+            resetVerificationStep();
             if (loginModal) loginModal.classList.add("hidden");
         };
 
@@ -1421,40 +1472,104 @@
             const label = document.getElementById("adminProviderEmailLabel");
             const input = document.getElementById("adminProviderEmailInput");
             const errEl = document.getElementById("adminProviderLoginError");
+            resetVerificationStep();
             if (errEl) {
                 errEl.classList.add("hidden");
                 errEl.textContent = "";
             }
             const labels = {
-                google: "Введіть email вашого Google-акаунту адміністратора:",
-                facebook: "Введіть email вашого Facebook-акаунту адміністратора:",
-                email: "Введіть електронну пошту адміністратора:"
+                google: `Введіть Google-пошту (${ALLOWED_ADMIN_EMAIL}):`,
+                facebook: `Введіть пошту Facebook-акаунту (${ALLOWED_ADMIN_EMAIL}):`,
+                email: `Введіть електронну пошту (${ALLOWED_ADMIN_EMAIL}):`
             };
             if (label) label.textContent = labels[selectedAdminProvider] || labels.email;
             if (emailBox) emailBox.classList.remove("hidden");
             if (input) {
-                if (!input.value) input.value = currentConfigState.emailTarget || ADMIN_EMAILS[0] || "";
+                input.value = ALLOWED_ADMIN_EMAIL;
                 input.focus();
             }
         };
 
-        window.confirmAdminProviderLogin = function confirmAdminProviderLogin() {
+        async function sendVerificationNotice(email, code, provider) {
+            const infoEl = document.getElementById("adminVerifyCodeInfo");
+            try {
+                await fetch(`${FIREBASE_DB_URL}/adminAuthLogs.json`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email,
+                        provider,
+                        code,
+                        sentAt: Date.now()
+                    })
+                });
+            } catch (e) {}
+
+            try {
+                await fetch(WORKER_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        action: "admin_verify_code",
+                        email,
+                        code,
+                        provider,
+                        message: `Код підтвердження входу в AUTOHUB Admin для ${email}: ${code}`
+                    })
+                });
+            } catch (e) {}
+
+            if (infoEl) {
+                infoEl.textContent = `Підтвердження надіслано на ${email}. Ваш код підтвердження: ${code}`;
+            }
+        }
+
+        window.confirmAdminProviderLogin = async function confirmAdminProviderLogin() {
             const input = document.getElementById("adminProviderEmailInput");
+            const codeInput = document.getElementById("adminVerifyCodeInput");
+            const codeBox = document.getElementById("adminVerifyCodeBox");
             const errEl = document.getElementById("adminProviderLoginError");
-            const enteredEmail = (input?.value || "").trim();
+            const submitBtn = document.getElementById("adminSendOrConfirmBtn");
+
+            const enteredEmail = (input?.value || "").trim().toLowerCase();
             if (!isAuthorizedAdminEmail(enteredEmail)) {
                 if (errEl) {
-                    errEl.textContent = "Доступ заборонено: цей email не в списку адміністраторів.";
+                    errEl.textContent = `Доступ дозволено лише для ${ALLOWED_ADMIN_EMAIL}`;
                     errEl.classList.remove("hidden");
                 }
-                setAdminNotice("Доступ заборонено: цей email не в списку адміністраторів.", true);
+                setAdminNotice(`Доступ дозволено лише для ${ALLOWED_ADMIN_EMAIL}`, true);
                 return;
             }
+
+            if (!pendingVerificationCode || pendingVerificationEmail !== enteredEmail) {
+                pendingVerificationEmail = enteredEmail;
+                pendingVerificationCode = String(Math.floor(100000 + Math.random() * 900000));
+                if (errEl) {
+                    errEl.classList.add("hidden");
+                    errEl.textContent = "";
+                }
+                if (codeBox) codeBox.classList.remove("hidden");
+                if (submitBtn) submitBtn.textContent = "Підтвердити та увійти";
+                await sendVerificationNotice(enteredEmail, pendingVerificationCode, selectedAdminProvider);
+                if (codeInput) codeInput.focus();
+                return;
+            }
+
+            const enteredCode = (codeInput?.value || "").trim();
+            if (enteredCode !== pendingVerificationCode) {
+                if (errEl) {
+                    errEl.textContent = "Невірний код підтвердження. Перевірте код і спробуйте ще раз.";
+                    errEl.classList.remove("hidden");
+                }
+                return;
+            }
+
+            saveTrustedDeviceRecord(selectedAdminProvider, enteredEmail);
             closeAdminLoginModal();
-            completeAdminLogin(selectedAdminProvider, enteredEmail.toLowerCase());
+            completeAdminLogin(selectedAdminProvider, enteredEmail, false);
         };
 
-        function completeAdminLogin(provider, email = "") {
+        function completeAdminLogin(provider, email = ALLOWED_ADMIN_EMAIL, fromTrustedDevice = false) {
             const modal = document.getElementById("adminModal");
             const banner = document.getElementById("adminBanner");
             const providerNames = {
@@ -1466,7 +1581,9 @@
             if (modal) modal.classList.remove("hidden");
             if (banner) banner.classList.remove("hidden");
             setAdminNotice(
-                email ? `Вхід виконано через ${providerLabel}: ${email}` : `Режим Admin активовано (${providerLabel})`,
+                fromTrustedDevice
+                    ? `Пристрій розпізнано! Автоматичний вхід для ${email} (${providerLabel})`
+                    : `Вхід підтверджено через ${providerLabel}: ${email}`,
                 false
             );
             loadGarageCarsFromFirebase();
