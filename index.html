@@ -1186,7 +1186,11 @@
     <script>
         const WELCOME_SEEN_KEY = "autohub_welcome_seen_v1";
         const WORKER_URL = "https://shiny-moon-c021.sandreklam.workers.dev";
-        const FIREBASE_DB_URL = "https://autohub-official-default-rtdb.europe-west1.firebasedatabase.app";
+        const FIREBASE_DB_URLS = [
+            "https://autohub-94cf7-default-rtdb.europe-west1.firebasedatabase.app",
+            "https://autohub-official-default-rtdb.europe-west1.firebasedatabase.app"
+        ];
+        const FIREBASE_DB_URL = FIREBASE_DB_URLS[0];
         const ADMIN_PASSCODE = "autohub2026";
         const ALLOWED_ADMIN_EMAIL = "artemmasanov993@gmail.com";
         const ADMIN_EMAILS = [ALLOWED_ADMIN_EMAIL];
@@ -1241,6 +1245,44 @@
             try {
                 localStorage.setItem(key, JSON.stringify(value));
             } catch (e) {}
+        }
+
+        async function fetchFirebaseAll(path) {
+            const results = [];
+            for (const baseUrl of FIREBASE_DB_URLS) {
+                try {
+                    const res = await fetch(`${baseUrl}${path}?t=${Date.now()}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        results.push({ baseUrl, ok: true, data });
+                    } else {
+                        results.push({ baseUrl, ok: false, status: res.status, data: null });
+                    }
+                } catch (e) {
+                    results.push({ baseUrl, ok: false, error: e, data: null });
+                }
+            }
+            return results;
+        }
+
+        async function writeFirebaseAll(path, method, payload) {
+            let anySuccess = false;
+            let lastStatus = 0;
+            for (const baseUrl of FIREBASE_DB_URLS) {
+                try {
+                    const res = await fetch(`${baseUrl}${path}`, {
+                        method,
+                        headers: { "Content-Type": "application/json" },
+                        body: payload !== undefined ? JSON.stringify(payload) : undefined
+                    });
+                    if (res.ok) {
+                        anySuccess = true;
+                    } else {
+                        lastStatus = res.status;
+                    }
+                } catch (e) {}
+            }
+            return { ok: anySuccess, status: lastStatus };
         }
 
         function renderIconsSafely() {
@@ -1521,18 +1563,12 @@
                 infoEl.textContent = `Надсилаємо 6-значний код підтвердження на ${email}...`;
             }
 
-            try {
-                await fetch(`${FIREBASE_DB_URL}/adminAuthLogs.json`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        email,
-                        provider,
-                        code,
-                        sentAt: Date.now()
-                    })
-                });
-            } catch (e) {}
+            await writeFirebaseAll("/adminAuthLogs.json", "POST", {
+                email,
+                provider,
+                code,
+                sentAt: Date.now()
+            });
 
             try {
                 await sendMailViaFormSubmit(email, {
@@ -1670,20 +1706,37 @@
             renderAdminGarageCars();
         };
 
-        function normalizeGarageList(rawObj) {
+        function normalizeGarageRecord(id, val) {
+            if (!val || typeof val !== "object") return null;
+            const status = val.status || (val.approved === true ? "approved" : "pending");
+            return {
+                id,
+                owner: val.owner || "Підписник",
+                model: val.model || "Авто підписника",
+                photoUrl: val.photoUrl || "",
+                description: val.description || val.desc || "",
+                status,
+                createdAt: Number(val.createdAt || 0)
+            };
+        }
+
+        function normalizeGarageList(rawResponses = []) {
             const localList = safeLocalGet(LOCAL_GARAGE_KEY, []);
             const map = new Map();
             if (Array.isArray(localList)) {
                 localList.forEach((item) => {
-                    if (item && item.id) map.set(item.id, item);
+                    const norm = item && item.id ? normalizeGarageRecord(item.id, item) : null;
+                    if (norm) map.set(norm.id, norm);
                 });
             }
-            if (rawObj && typeof rawObj === "object") {
-                Object.entries(rawObj).forEach(([id, val]) => {
-                    if (val && typeof val === "object") {
-                        map.set(id, { id, ...val });
-                    }
-                });
+            for (const resp of rawResponses) {
+                const rawObj = resp && resp.ok ? resp.data : null;
+                if (rawObj && typeof rawObj === "object") {
+                    Object.entries(rawObj).forEach(([id, val]) => {
+                        const norm = normalizeGarageRecord(id, val);
+                        if (norm) map.set(id, norm);
+                    });
+                }
             }
             const list = Array.from(map.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
             safeLocalSet(LOCAL_GARAGE_KEY, list);
@@ -1762,18 +1815,13 @@
         }
 
         window.loadGarageCarsFromFirebase = async function loadGarageCarsFromFirebase() {
-            adminGarageEntries = normalizeGarageList(null);
+            adminGarageEntries = normalizeGarageList([]);
             renderApprovedGarageCars();
             renderAdminGarageCars();
-            try {
-                const res = await fetch(`${FIREBASE_DB_URL}/garageCars.json`);
-                if (res.ok) {
-                    const data = await res.json();
-                    adminGarageEntries = normalizeGarageList(data);
-                    renderApprovedGarageCars();
-                    renderAdminGarageCars();
-                }
-            } catch (e) {}
+            const responses = await fetchFirebaseAll("/garageCars.json");
+            adminGarageEntries = normalizeGarageList(responses);
+            renderApprovedGarageCars();
+            renderAdminGarageCars();
         };
 
         window.openGarageSubmitModal = function openGarageSubmitModal() {
@@ -1822,7 +1870,9 @@
                 model,
                 photoUrl,
                 description,
+                desc: description,
                 status: "pending",
+                approved: false,
                 createdAt: Date.now()
             };
 
@@ -1833,11 +1883,7 @@
                 renderApprovedGarageCars();
                 renderAdminGarageCars();
 
-                fetch(`${FIREBASE_DB_URL}/garageCars/${encodeURIComponent(newCar.id)}.json`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newCar)
-                }).catch(() => {});
+                await writeFirebaseAll(`/garageCars/${encodeURIComponent(newCar.id)}.json`, "PUT", newCar);
 
                 const form = document.getElementById("garageSubmitForm");
                 const success = document.getElementById("garageSubmitSuccess");
@@ -1850,18 +1896,16 @@
         };
 
         window.setGarageCarApproval = async function setGarageCarApproval(carId, status) {
-            adminGarageEntries = adminGarageEntries.map((c) => c.id === carId ? { ...c, status } : c);
+            const approvedBool = status === "approved";
+            adminGarageEntries = adminGarageEntries.map((c) => c.id === carId ? { ...c, status, approved: approvedBool } : c);
             safeLocalSet(LOCAL_GARAGE_KEY, adminGarageEntries);
             renderApprovedGarageCars();
             renderAdminGarageCars();
-            try {
-                await fetch(`${FIREBASE_DB_URL}/garageCars/${encodeURIComponent(carId)}.json`, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ status })
-                });
-            } catch (e) {}
-            setAdminNotice(status === "approved" ? "Авто схвалено та додано на головну сторінку!" : "Авто переведено на модерацію.", false);
+            await writeFirebaseAll(`/garageCars/${encodeURIComponent(carId)}.json`, "PATCH", {
+                status,
+                approved: approvedBool
+            });
+            setAdminNotice(approvedBool ? "Авто схвалено та додано на головну сторінку!" : "Авто переведено на модерацію.", false);
         };
 
         window.deleteGarageCar = async function deleteGarageCar(carId) {
@@ -1869,11 +1913,7 @@
             safeLocalSet(LOCAL_GARAGE_KEY, adminGarageEntries);
             renderApprovedGarageCars();
             renderAdminGarageCars();
-            try {
-                await fetch(`${FIREBASE_DB_URL}/garageCars/${encodeURIComponent(carId)}.json`, {
-                    method: "DELETE"
-                });
-            } catch (e) {}
+            await writeFirebaseAll(`/garageCars/${encodeURIComponent(carId)}.json`, "DELETE");
             setAdminNotice("Заявку авто видалено.", false);
         };
 
@@ -1922,39 +1962,83 @@
             if (modal) modal.classList.add("hidden");
         };
 
+        function escapeHtml(str) {
+            return String(str ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        window.deleteIdeaFromFirebase = async function deleteIdeaFromFirebase(ideaId) {
+            const localIdeas = safeLocalGet(LOCAL_IDEAS_KEY, []);
+            const filtered = Array.isArray(localIdeas) ? localIdeas.filter((i) => i && i.id !== ideaId) : [];
+            safeLocalSet(LOCAL_IDEAS_KEY, filtered);
+            await writeFirebaseAll(`/ideas/${encodeURIComponent(ideaId)}.json`, "DELETE");
+            await loadIdeasFromFirebase();
+            setAdminNotice("Пропозицію видалено.", false);
+        };
+
         window.loadIdeasFromFirebase = async function loadIdeasFromFirebase() {
             const container = document.getElementById("adminIdeasList");
             const countEl = document.getElementById("adminIdeasCount");
-            let ideas = safeLocalGet(LOCAL_IDEAS_KEY, []);
-            try {
-                const res = await fetch(`${FIREBASE_DB_URL}/ideas.json`);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && typeof data === "object") {
-                        const remote = Object.entries(data).map(([id, val]) => ({ id, ...(val || {}) }));
-                        const map = new Map();
-                        [...ideas, ...remote].forEach((item) => {
-                            if (item && item.id) map.set(item.id, item);
-                        });
-                        ideas = Array.from(map.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                        safeLocalSet(LOCAL_IDEAS_KEY, ideas);
+            const map = new Map();
+
+            const localIdeas = safeLocalGet(LOCAL_IDEAS_KEY, []);
+            if (Array.isArray(localIdeas)) {
+                localIdeas.forEach((item) => {
+                    if (item && item.message) {
+                        const key = item.id || `${item.name || ""}_${item.createdAt || item.message}`;
+                        map.set(key, { id: key, ...item });
                     }
+                });
+            }
+
+            const responses = await fetchFirebaseAll("/ideas.json");
+            let anyRemoteOk = false;
+            let remoteErrorStatus = 0;
+
+            for (const resp of responses) {
+                if (resp.ok) {
+                    anyRemoteOk = true;
+                    const data = resp.data;
+                    if (data && typeof data === "object") {
+                        Object.entries(data).forEach(([id, val]) => {
+                            if (val && typeof val === "object" && val.message) {
+                                map.set(id, { id, ...val });
+                            }
+                        });
+                    }
+                } else if (resp.status) {
+                    remoteErrorStatus = resp.status;
                 }
-            } catch (e) {}
+            }
+
+            const ideas = Array.from(map.values()).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+            safeLocalSet(LOCAL_IDEAS_KEY, ideas);
 
             if (countEl) countEl.textContent = String(ideas.length);
             if (!container) return;
+
             if (!ideas.length) {
-                container.innerHTML = `<p class="text-gray-500 text-center py-4">Ідей поки немає.</p>`;
+                if (!anyRemoteOk && remoteErrorStatus) {
+                    container.innerHTML = `<p class="text-amber-300 text-center py-4">Не вдалося прочитати хмарну базу Firebase (HTTP ${remoteErrorStatus}). Перевірте правила доступу Realtime Database (read/write: true).</p>`;
+                } else {
+                    container.innerHTML = `<p class="text-gray-500 text-center py-4">Ідей поки немає.</p>`;
+                }
                 return;
             }
+
             container.innerHTML = ideas.map((idea) => `
                 <div class="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1">
-                    <div class="flex items-center justify-between text-[10px] text-gray-400">
-                        <span class="font-semibold text-blue-300">${idea.name || "Підписник"}</span>
-                        <span>${idea.createdAt ? new Date(idea.createdAt).toLocaleString("uk-UA") : ""}</span>
+                    <div class="flex items-center justify-between gap-2 text-[10px] text-gray-400">
+                        <span class="font-semibold text-blue-300">${escapeHtml(idea.name || "Підписник")}</span>
+                        <div class="flex items-center gap-2">
+                            <span>${idea.createdAt ? new Date(Number(idea.createdAt)).toLocaleString("uk-UA") : ""}</span>
+                            <button type="button" onclick="deleteIdeaFromFirebase('${escapeHtml(idea.id)}')" title="Видалити" class="text-red-400 hover:text-red-300 font-bold">✕</button>
+                        </div>
                     </div>
-                    <p class="text-xs text-gray-200">${idea.message || ""}</p>
+                    <p class="text-xs text-gray-200 break-words">${escapeHtml(idea.message || "")}</p>
                 </div>
             `).join("");
         };
@@ -2007,15 +2091,9 @@
 
             const item = { id: `idea_${Date.now()}`, name, message, createdAt: Date.now() };
             const existing = safeLocalGet(LOCAL_IDEAS_KEY, []);
-            safeLocalSet(LOCAL_IDEAS_KEY, [item, ...existing]);
+            safeLocalSet(LOCAL_IDEAS_KEY, [item, ...(Array.isArray(existing) ? existing : [])]);
 
-            try {
-                await fetch(`${FIREBASE_DB_URL}/ideas/${encodeURIComponent(item.id)}.json`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(item)
-                });
-            } catch (e) {}
+            await writeFirebaseAll(`/ideas/${encodeURIComponent(item.id)}.json`, "PUT", item);
 
             try {
                 await sendMailViaFormSubmit(getRecipientEmail(), {
@@ -2026,7 +2104,7 @@
                 });
             } catch (e) {
                 if (errEl) {
-                    errEl.textContent = "Ідею збережено, але лист на пошту не вдалося надіслати. Перевірте поштову скриньку та підтвердження FormSubmit.";
+                    errEl.textContent = "Ідею збережено у базі сайту, але лист на пошту не вдалося надіслати.";
                     errEl.classList.remove("hidden");
                 }
             } finally {
@@ -2069,18 +2147,14 @@
             currentConfigState.announcementUrl = (document.getElementById("quickAnnUrl")?.value || "https://t.me/FoXNEWofficial").trim();
             currentConfigState.announcementActive = Boolean(document.getElementById("quickAnnActive")?.checked);
             applyConfigToDOM(currentConfigState);
-            try {
-                await fetch(`${FIREBASE_DB_URL}/config.json`, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        announcementText: currentConfigState.announcementText,
-                        announcementBtnLabel: currentConfigState.announcementBtnLabel,
-                        announcementUrl: currentConfigState.announcementUrl,
-                        announcementActive: currentConfigState.announcementActive
-                    })
-                });
-            } catch (e) {}
+            const patch = {
+                announcementText: currentConfigState.announcementText,
+                announcementBtnLabel: currentConfigState.announcementBtnLabel,
+                announcementUrl: currentConfigState.announcementUrl,
+                announcementActive: currentConfigState.announcementActive
+            };
+            await writeFirebaseAll("/config.json", "PATCH", patch);
+            await writeFirebaseAll("/settings.json", "PATCH", patch);
             closeQuickAnnouncementModal();
             setAdminNotice("Оголошення опубліковано на сайті!", false);
         };
@@ -2130,14 +2204,15 @@
                 ttUrl: (document.getElementById("adminTtUrl")?.value || "").trim()
             };
             applyConfigToDOM(nextCfg);
-            try {
-                await fetch(`${FIREBASE_DB_URL}/config.json`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(nextCfg)
-                });
+            const saveRes = await writeFirebaseAll("/config.json", "PUT", nextCfg);
+            await writeFirebaseAll("/settings.json", "PUT", {
+                ...nextCfg,
+                email: nextCfg.emailTarget,
+                logo: nextCfg.logoUrl
+            });
+            if (saveRes.ok) {
                 setAdminNotice("Налаштування збережено локально та у Firebase!", false);
-            } catch (e) {
+            } else {
                 setAdminNotice("Збережено локально на пристрої.", false);
             }
         };
@@ -2179,13 +2254,7 @@
             if (option === "a") pollState.votesA = Number(pollState.votesA || 0) + 1;
             if (option === "b") pollState.votesB = Number(pollState.votesB || 0) + 1;
             renderPollUI();
-            try {
-                await fetch(`${FIREBASE_DB_URL}/poll.json`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(pollState)
-                });
-            } catch (e) {}
+            await writeFirebaseAll("/poll.json", "PUT", pollState);
             const hint = document.getElementById("pollStatusHint");
             if (hint) hint.textContent = "Дякуємо! Ваш голос враховано.";
         };
@@ -2193,13 +2262,7 @@
         window.resetPollVotesInFirebase = async function resetPollVotesInFirebase() {
             pollState = { votesA: 0, votesB: 0 };
             renderPollUI();
-            try {
-                await fetch(`${FIREBASE_DB_URL}/poll.json`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(pollState)
-                });
-            } catch (e) {}
+            await writeFirebaseAll("/poll.json", "PUT", pollState);
             setAdminNotice("Голоси опитування скинуто.", false);
         };
 
@@ -2456,28 +2519,34 @@
                 applyConfigToDOM(currentConfigState);
             }
 
-            try {
-                const cfgRes = await fetch(`${FIREBASE_DB_URL}/config.json`);
-                if (cfgRes.ok) {
-                    const remoteCfg = await cfgRes.json();
-                    if (remoteCfg && typeof remoteCfg === "object") {
-                        applyConfigToDOM({ ...currentConfigState, ...remoteCfg });
-                    }
-                }
-            } catch (e) {}
+            const [cfgResponses, settingsResponses] = await Promise.all([
+                fetchFirebaseAll("/config.json"),
+                fetchFirebaseAll("/settings.json")
+            ]);
 
-            try {
-                const pollRes = await fetch(`${FIREBASE_DB_URL}/poll.json`);
-                if (pollRes.ok) {
-                    const remotePoll = await pollRes.json();
-                    if (remotePoll && typeof remotePoll === "object") {
-                        pollState = {
-                            votesA: Number(remotePoll.votesA || 0),
-                            votesB: Number(remotePoll.votesB || 0)
-                        };
-                    }
+            let mergedRemoteCfg = null;
+            for (const resp of [...settingsResponses, ...cfgResponses]) {
+                if (resp.ok && resp.data && typeof resp.data === "object") {
+                    const normalized = { ...resp.data };
+                    if (normalized.email && !normalized.emailTarget) normalized.emailTarget = normalized.email;
+                    if (normalized.logo && !normalized.logoUrl) normalized.logoUrl = normalized.logo;
+                    mergedRemoteCfg = { ...(mergedRemoteCfg || {}), ...normalized };
                 }
-            } catch (e) {}
+            }
+            if (mergedRemoteCfg) {
+                applyConfigToDOM({ ...currentConfigState, ...mergedRemoteCfg });
+            }
+
+            const pollResponses = await fetchFirebaseAll("/poll.json");
+            for (const resp of pollResponses) {
+                if (resp.ok && resp.data && typeof resp.data === "object") {
+                    pollState = {
+                        votesA: Number(resp.data.votesA || 0),
+                        votesB: Number(resp.data.votesB || 0)
+                    };
+                    break;
+                }
+            }
             renderPollUI();
 
             await loadGarageCarsFromFirebase();
