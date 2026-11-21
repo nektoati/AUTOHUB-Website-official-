@@ -1057,15 +1057,28 @@
                 localStorage.setItem(WELCOME_SEEN_KEY, "1");
             } catch (e) {}
             if (withMusic && typeof toggleAudio === "function") {
-                toggleAudio();
+                try {
+                    toggleAudio();
+                } catch (e) {}
             }
         }
 
-        initWelcomeModal();
-
-        // ПІДКЛЮЧЕННЯ ДО FIREBASE REALTIME DATABASE ("ПАМ'ЯТЬ" САЙТУ)
-// ... existing code ... -->
-        updateTrackUI();
-
-        // ЗАВАНТАЖЕННЯ НАЛАШТУВАНЬ (СПОЧАТКУ З ЛОКАЛЬНОГО КЕШУ, ПОТІМ З FIREBASE)
-// ... existing code ... -->
+        // Безпечний запуск після завантаження DOM, щоб жодна помилка не блокувала сторінку
+        document.addEventListener("DOMContentLoaded", function () {
+            initWelcomeModal();
+            if (typeof lucide !== "undefined" && typeof lucide.createIcons === "function") {
+                try {
+                    lucide.createIcons();
+                } catch (e) {}
+            }
+            if (typeof updateTrackUI === "function") {
+                try {
+                    updateTrackUI();
+                } catch (e) {}
+            }
+            if (typeof loadSavedConfig === "function") {
+                try {
+                    loadSavedConfig();
+                } catch (e) {}
+            }
+        });
