@@ -280,16 +280,36 @@
             </p>
 
             <div class="space-y-2.5">
-                <button onclick="closeWelcomeModal(true)" class="w-full py-3 rounded-xl accent-bg text-white text-sm font-semibold transition shadow-lg flex items-center justify-center gap-2">
+                <button type="button" onclick="window.closeWelcomeModal(true)" class="w-full py-3 rounded-xl accent-bg text-white text-sm font-semibold transition shadow-lg flex items-center justify-center gap-2">
                     <i data-lucide="music" class="w-4 h-4"></i>
                     <span>Погнали з музикою! 🎵</span>
                 </button>
-                <button onclick="closeWelcomeModal(false)" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white text-xs font-medium transition">
+                <button type="button" onclick="window.closeWelcomeModal(false)" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white text-xs font-medium transition">
                     Продовжити без музики
                 </button>
             </div>
         </div>
     </div>
+
+    <script>
+        (function () {
+            const WELCOME_SEEN_KEY = "autohub_welcome_seen_v1";
+            window.closeWelcomeModal = function closeWelcomeModal(withMusic = false) {
+                const modal = document.getElementById("welcomeModal");
+                if (modal) {
+                    modal.classList.add("hidden");
+                }
+                try {
+                    localStorage.setItem(WELCOME_SEEN_KEY, "1");
+                } catch (e) {}
+                if (withMusic && typeof window.toggleAudio === "function") {
+                    try {
+                        window.toggleAudio();
+                    } catch (e) {}
+                }
+            };
+        })();
+    </script>
 
     <!-- Admin Indicator Banner (Hidden by default) -->
     <div id="adminBanner" class="hidden fixed top-0 left-0 right-0 z-40 bg-amber-500/20 border-b border-amber-500/30 text-amber-300 text-xs text-center py-1.5 px-4 flex items-center justify-center gap-2">
@@ -1131,6 +1151,33 @@
         let aiHistory = [];
         let adminGarageEntries = [];
         let adminGarageFilter = "all";
+        let currentConfigState = {
+            theme: "orange",
+            announcementActive: true,
+            garageActive: true,
+            pollActive: true,
+            subGarageActive: true,
+            announcementText: "Свіжий розбір авто та новини спільноти вже доступні!",
+            announcementBtnLabel: "Перейти",
+            announcementUrl: "https://t.me/FoXNEWofficial",
+            garageTitle: "ГАРАЖ ДНЯ • АВТО-ЛАЙФХАК",
+            garageTip: "Перед поїздкою в холодну погоду перевіряйте тиск у шинах: на морозі він падає, що погіршує зчеплення та збільшує витрату пального.",
+            pollQuestion: "Який формат відео знімати наступним?",
+            pollOptA: "Історія та еволюція легендарних авто",
+            pollOptB: "Практичні поради та розбір поломок",
+            emailTarget: "",
+            logoUrl: "https://cdn.phototourl.com/anon/2026-11-19-7f8a5074-71b4-4ab7-bebb-dae62bd23fc4.jpg",
+            ytStat: "Тест",
+            tgStat: "Тест",
+            ttStat: "Тест",
+            latestVideoUrl: "https://youtu.be/GGmVsoxtA6g?si=0RFJ8gT4dJh8WSci",
+            latestVideoTitle: "Еволюція ПАЗ",
+            ytUrl: "https://youtube.com/@aut0hub-ua-f3q",
+            tgUrl: "https://t.me/FoXNEWofficial",
+            igUrl: "https://www.instagram.com/art_3mmash?igsh=MTZ1Y3hyZmVzaGRmMw==",
+            ttUrl: "https://www.tiktok.com/@automhub?_r=1&_t=ZS-97ocjEaQUVN"
+        };
+        const AI_CHIPS = [
             "Які останні відео на каналі?",
             "Дай пораду щодо тиску в шинах",
             "Як додати своє авто в гараж?",
@@ -1262,6 +1309,9 @@
             }
             updatePlayButtonsUI();
         }
+        window.toggleAudio = toggleAudio;
+        window.prevTrack = prevTrack;
+        window.nextTrack = nextTrack;
 
         function togglePlayerExpand(event, forceToggle = false) {
             if (event && !forceToggle && event.target.closest("button")) return;
@@ -1394,155 +1444,155 @@
             const m = document.getElementById("garageSubmitModal");
             const form = document.getElementById("garageSubmitForm");
             const ok = document.getElementById("garageSubmitSuccess");
+            const err = document.getElementById("garageSubmitError");
             if (form) form.classList.remove("hidden");
             if (ok) ok.classList.add("hidden");
+            if (err) err.classList.add("hidden");
             if (m) m.classList.remove("hidden");
+            safeRefreshIcons();
         }
 
         function closeGarageSubmitModal() {
             const m = document.getElementById("garageSubmitModal");
             if (m) m.classList.add("hidden");
         }
+        window.openGarageSubmitModal = openGarageSubmitModal;
+        window.closeGarageSubmitModal = closeGarageSubmitModal;
 
-        async function submitCarToGarage(event) {
+        function openFeedbackModal() {
+            const m = document.getElementById("feedbackModal");
+            const form = document.getElementById("feedbackForm");
+            const ok = document.getElementById("feedbackSuccess");
+            const err = document.getElementById("feedbackError");
+            if (form) form.classList.remove("hidden");
+            if (ok) ok.classList.add("hidden");
+            if (err) err.classList.add("hidden");
+            if (m) m.classList.remove("hidden");
+            safeRefreshIcons();
+        }
+
+        function closeFeedbackModal() {
+            const m = document.getElementById("feedbackModal");
+            if (m) m.classList.add("hidden");
+        }
+        window.openFeedbackModal = openFeedbackModal;
+        window.closeFeedbackModal = closeFeedbackModal;
+
+        async function submitFeedback(event) {
             event.preventDefault();
-            const owner = (document.getElementById("garageOwnerInput")?.value || "").trim();
-            const model = (document.getElementById("garageCarModelInput")?.value || "").trim();
-            const photo = (document.getElementById("garagePhotoUrlInput")?.value || "").trim();
-            const desc = (document.getElementById("garageDescInput")?.value || "").trim();
-            const errEl = document.getElementById("garageSubmitError");
-            if (!owner || !model || !photo || !desc) return;
+            const name = (document.getElementById("feedbackName")?.value || "").trim();
+            const message = (document.getElementById("feedbackMessage")?.value || "").trim();
+            const errEl = document.getElementById("feedbackError");
+            const btn = document.getElementById("feedbackSubmitBtn");
+            if (!name || !message) return;
+
+            if (btn) btn.disabled = true;
             try {
-                const res = await fetch(`${FIREBASE_DB_URL}/garageCars.json`, {
+                const res = await fetch(`${FIREBASE_DB_URL}/ideas.json`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ owner, model, photo, desc, approved: false, createdAt: Date.now() })
+                    body: JSON.stringify({
+                        name,
+                        message,
+                        targetEmail: currentConfigState.emailTarget || "",
+                        createdAt: Date.now()
+                    })
                 });
-                if (!res.ok) throw new Error("Network error");
+                if (!res.ok) throw new Error("Failed to save idea");
                 if (errEl) errEl.classList.add("hidden");
-                document.getElementById("garageSubmitForm")?.classList.add("hidden");
-                document.getElementById("garageSubmitSuccess")?.classList.remove("hidden");
+                document.getElementById("feedbackForm")?.classList.add("hidden");
+                document.getElementById("feedbackSuccess")?.classList.remove("hidden");
                 event.target.reset();
+                safeRefreshIcons();
             } catch (e) {
                 if (errEl) {
-                    errEl.textContent = "Не вдалося надіслати заявку. Спробуйте пізніше.";
+                    errEl.textContent = "Не вдалося надіслати ідею. Спробуйте пізніше.";
                     errEl.classList.remove("hidden");
                 }
+            } finally {
+                if (btn) btn.disabled = false;
             }
         }
+        window.submitFeedback = submitFeedback;
 
-        async function loadGarageCarsFromFirebase() {
-            const publicList = document.getElementById("approvedCarsList");
-            const pendingCountEl = document.getElementById("adminPendingCarsCount");
-            try {
-                const res = await fetch(`${FIREBASE_DB_URL}/garageCars.json`);
-                const data = await res.json();
-                const entries = data ? Object.entries(data).sort((a, b) => (b[1]?.createdAt || 0) - (a[1]?.createdAt || 0)) : [];
-                adminGarageEntries = entries;
-                const approved = entries.filter(([, v]) => v && v.approved);
-                const pendingCount = entries.filter(([, v]) => v && !v.approved).length;
-                if (pendingCountEl) pendingCountEl.textContent = String(pendingCount);
-
-                if (publicList) {
-                    if (!approved.length) {
-                        publicList.innerHTML = `<div class="p-4 rounded-xl bg-white/5 border border-white/5 text-center text-xs text-gray-400 col-span-full">Поки що немає схвалених авто. Будьте першим!</div>`;
-                    } else {
-                        publicList.innerHTML = approved.map(([, car]) => `
-                            <div class="rounded-xl bg-white/5 border border-white/10 overflow-hidden">
-                                <img src="${car.photo}" onerror="this.onerror=null;this.src='https://placehold.co/600x340/161920/f97316?text=AUTOHUB+GARAGE';" alt="${car.model}" class="w-full h-32 object-cover">
-                                <div class="p-3 space-y-1">
-                                    <div class="text-xs font-bold text-white">${car.model}</div>
-                                    <div class="text-[11px] text-gray-300">${car.desc}</div>
-                                    <div class="text-[10px] accent-text font-medium">Власник: ${car.owner}</div>
-                                </div>
-                            </div>
-                        `).join("");
-                    }
-                }
-
-                renderAdminGarageList();
-            } catch (e) {
-                if (publicList) publicList.innerHTML = `<div class="p-3 rounded-xl bg-white/5 text-center text-xs text-gray-400 col-span-full">Не вдалося завантажити авто.</div>`;
-            }
-        }
-
-        function setGarageFilter(filterName) {
-            adminGarageFilter = filterName;
-            const map = {
-                all: "garageFilterAll",
-                pending: "garageFilterPending",
-                approved: "garageFilterApproved"
-            };
-            Object.entries(map).forEach(([key, id]) => {
-                const btn = document.getElementById(id);
-                if (!btn) return;
-                const active = key === filterName;
-                btn.className = active
-                    ? "px-2.5 py-1 rounded-lg bg-amber-500 text-black font-semibold text-[11px]"
-                    : "px-2.5 py-1 rounded-lg bg-white/10 text-gray-300 font-semibold text-[11px]";
-            });
-            renderAdminGarageList();
-        }
-
-        function renderAdminGarageList() {
-            const adminList = document.getElementById("adminGarageCarsList");
-            if (!adminList) return;
-
-            const filtered = adminGarageEntries.filter(([, car]) => {
-                if (!car) return false;
-                if (adminGarageFilter === "pending") return !car.approved;
-                if (adminGarageFilter === "approved") return Boolean(car.approved);
-                return true;
-            });
-
-            if (!filtered.length) {
-                adminList.innerHTML = `<p class="text-gray-500 col-span-full text-center py-4">Заявок у цій категорії немає.</p>`;
-                return;
-            }
-
-            adminList.innerHTML = filtered.map(([id, car]) => {
-                const badgeClass = car.approved
-                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-                    : "bg-amber-500/20 text-amber-300 border-amber-500/30";
-                const badgeText = car.approved ? "Опубліковано" : "Очікує перевірки";
-                return `
-                    <div class="rounded-xl bg-black/35 border border-white/10 overflow-hidden flex flex-col justify-between">
-                        <div>
-                            <div class="relative h-36 bg-black/50 cursor-pointer" onclick="openAdminCarInspectModal('${id}')">
-                                <img src="${car.photo}" onerror="this.onerror=null;this.src='https://placehold.co/600x340/161920/f97316?text=AUTOHUB+GARAGE';" alt="${car.model}" class="w-full h-36 object-cover">
-                                <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${badgeClass}">${badgeText}</span>
-                                <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-lg bg-black/75 text-white text-[10px]">🔍 Детальніше</span>
-                            </div>
-                            <div class="p-3 space-y-1">
-                                <div class="font-bold text-white text-xs">${car.model}</div>
-                                <div class="text-[11px] accent-text font-medium">Підписник: ${car.owner}</div>
-                                <p class="text-[11px] text-gray-300 line-clamp-2">${car.desc}</p>
-                            </div>
-                        </div>
-                        <div class="px-3 pb-3 pt-1 flex items-center gap-1.5">
-                            <button type="button" onclick="openAdminCarInspectModal('${id}')" class="flex-1 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white font-semibold text-[11px]">Переглянути</button>
-                            <button type="button" onclick="setGarageCarApproval('${id}', ${!car.approved})" class="flex-1 py-1.5 rounded-lg ${car.approved ? "bg-amber-500/20 text-amber-300 hover:bg-amber-500/30" : "bg-emerald-500/25 text-emerald-300 hover:bg-emerald-500/35"} font-semibold text-[11px]">${car.approved ? "Зняти" : "Схвалити"}</button>
-                            <button type="button" onclick="deleteGarageCar('${id}')" class="px-2.5 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 font-semibold text-[11px]" title="Видалити">✕</button>
-                        </div>
-                    </div>
-                `;
-            }).join("");
-        }
-
-        function openAdminCarInspectModal(id) {
-            const entry = adminGarageEntries.find(([key]) => key === id);
-            if (!entry) return;
-            const [, car] = entry;
-            const modal = document.getElementById("adminCarInspectModal");
+        function openQuickAnnouncementModal() {
+            const modal = document.getElementById("quickAnnouncementModal");
             if (!modal) return;
+            const textEl = document.getElementById("quickAnnText");
+            const btnLabelEl = document.getElementById("quickAnnBtnLabel");
+            const urlEl = document.getElementById("quickAnnUrl");
+            const activeEl = document.getElementById("quickAnnActive");
 
-            document.getElementById("inspectCarPhoto").src = car.photo || "";
-            document.getElementById("inspectCarPhotoLink").href = car.photo || "#";
-            document.getElementById("inspectCarModel").textContent = car.model || "Авто без назви";
-            document.getElementById("inspectCarOwner").textContent = `Підписник: ${car.owner || "Анонім"}`;
-            document.getElementById("inspectCarDesc").textContent = car.desc || "Опис відсутній.";
-            document.getElementById("inspectCarDate").textContent = car.createdAt
-                ? new Date(car.createdAt).toLocaleString("uk-UA", { dateStyle: "short", timeStyle: "short" })
+            if (textEl) textEl.value = currentConfigState.announcementText || "";
+            if (btnLabelEl) btnLabelEl.value = currentConfigState.announcementBtnLabel || "Перейти";
+            if (urlEl) urlEl.value = currentConfigState.announcementUrl || "";
+            if (activeEl) activeEl.checked = Boolean(currentConfigState.announcementActive);
+
+            modal.classList.remove("hidden");
+            safeRefreshIcons();
+        }
+
+        function closeQuickAnnouncementModal() {
+            document.getElementById("quickAnnouncementModal")?.classList.add("hidden");
+        }
+        window.openQuickAnnouncementModal = openQuickAnnouncementModal;
+        window.closeQuickAnnouncementModal = closeQuickAnnouncementModal;
+
+        async function publishQuickAnnouncement(event) {
+            event.preventDefault();
+            const text = (document.getElementById("quickAnnText")?.value || "").trim();
+            const btnLabel = (document.getElementById("quickAnnBtnLabel")?.value || "").trim() || "Перейти";
+            const url = (document.getElementById("quickAnnUrl")?.value || "").trim() || currentConfigState.announcementUrl || "https://t.me/FoXNEWofficial";
+            const active = Boolean(document.getElementById("quickAnnActive")?.checked);
+            if (!text) return;
+
+            currentConfigState = {
+                ...currentConfigState,
+                announcementText: text,
+                announcementBtnLabel: btnLabel,
+                announcementUrl: url,
+                announcementActive: active
+            };
+            applyConfigToDOM(currentConfigState);
+
+            try {
+                await fetch(`${FIREBASE_DB_URL}/config.json`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        announcementText: text,
+                        announcementBtnLabel: btnLabel,
+                        announcementUrl: url,
+                        announcementActive: active
+                    })
+                });
+            } catch (e) {}
+
+            closeQuickAnnouncementModal();
+        }
+        window.publishQuickAnnouncement = publishQuickAnnouncement;
+
+        async function setGarageCarApproval(id, approved) {
+            try {
+                await fetch(`${FIREBASE_DB_URL}/garageCars/${encodeURIComponent(id)}.json`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ approved: Boolean(approved) })
+                });
+                await loadGarageCarsFromFirebase();
+            } catch (e) {}
+        }
+
+        async function deleteGarageCar(id) {
+            try {
+                await fetch(`${FIREBASE_DB_URL}/garageCars/${encodeURIComponent(id)}.json`, {
+                    method: "DELETE"
+                });
+                await loadGarageCarsFromFirebase();
+            } catch (e) {}
+        }
+        window.setGarageCarApproval = setGarageCarApproval;
+        window.deleteGarageCar = deleteGarageCar;
                 : "";
 
             const badge = document.getElementById("inspectCarStatusBadge");
@@ -1568,6 +1618,11 @@
         function closeAdminCarInspectModal() {
             document.getElementById("adminCarInspectModal")?.classList.add("hidden");
         }
+        window.openAdminCarInspectModal = openAdminCarInspectModal;
+        window.closeAdminCarInspectModal = closeAdminCarInspectModal;
+        window.setGarageFilter = setGarageFilter;
+        window.loadGarageCarsFromFirebase = loadGarageCarsFromFirebase;
+        window.resetPollVotesInFirebase = resetPollVotesInFirebase;
 
         function switchAdminTab(tabName) {
             const panels = {
@@ -1602,6 +1657,8 @@
         function closeAdminModal() {
             document.getElementById("adminModal")?.classList.add("hidden");
         }
+        window.switchAdminTab = switchAdminTab;
+        window.closeAdminModal = closeAdminModal;
 
         function handleLogoFileUpload(event) {
             const file = event.target.files?.[0];
@@ -1640,48 +1697,48 @@
                 pollQuestion: document.getElementById("adminPollQuestion")?.value || "",
                 pollOptA: document.getElementById("adminPollOptA")?.value || "",
                 pollOptB: document.getElementById("adminPollOptB")?.value || "",
-                emailTarget: document.getElementById("adminEmailTarget")?.value || "",
-                logoUrl: document.getElementById("adminLogoUrl")?.value || "",
-                ytStat: document.getElementById("adminYtStat")?.value || "Тест",
-                tgStat: document.getElementById("adminTgStat")?.value || "Тест",
-                ttStat: document.getElementById("adminTtStat")?.value || "Тест",
-                latestVideoUrl: document.getElementById("adminLatestVideoUrl")?.value || "",
-                latestVideoTitle: document.getElementById("adminLatestVideoTitle")?.value || "",
-        async function loadIdeasFromFirebase() {
-            const box = document.getElementById("adminIdeasList");
-            const countEl = document.getElementById("adminIdeasCount");
-            if (!box) return;
+                ytUrl: document.getElementById("adminYtUrl")?.value || "",
+                tgUrl: document.getElementById("adminTgUrl")?.value || "",
+                igUrl: document.getElementById("adminIgUrl")?.value || "",
+                ttUrl: document.getElementById("adminTtUrl")?.value || ""
+            };
+
+            currentConfigState = { ...currentConfigState, ...payload };
+            applyConfigToDOM(payload);
+            applyTheme(payload.theme);
+
             try {
-                const res = await fetch(`${FIREBASE_DB_URL}/ideas.json`);
-                const data = await res.json();
-                const items = data ? Object.values(data).reverse() : [];
-                if (countEl) countEl.textContent = String(items.length);
-                if (!items.length) {
-                    box.innerHTML = `<p class="text-gray-500 text-center py-4">Ідей поки немає.</p>`;
-                    return;
+                const res = await fetch(`${FIREBASE_DB_URL}/config.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(currentConfigState)
+                });
+                if (!res.ok) throw new Error("Save failed");
+                if (statusEl) {
+                    statusEl.textContent = "✅ Зміни збережено у Firebase та застосовано на сайті.";
+                    statusEl.className = "p-2.5 rounded-xl text-xs font-medium mb-3 shrink-0 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                    statusEl.classList.remove("hidden");
                 }
-                box.innerHTML = items.map(item => `
-                    <div class="p-3 rounded-xl bg-black/35 border border-white/10 space-y-1">
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="font-semibold text-white text-xs">${item.name || "Анонім"}</span>
-                            <span class="text-[10px] text-gray-500">${item.createdAt ? new Date(item.createdAt).toLocaleDateString("uk-UA") : ""}</span>
-                        </div>
-                        <div class="text-gray-300 leading-relaxed">${item.message || ""}</div>
-                    </div>
-                `).join("");
             } catch (e) {
-                box.innerHTML = `<p class="text-gray-500 text-center py-4">Не вдалося завантажити ідеї.</p>`;
+                if (statusEl) {
+                    statusEl.textContent = "⚠️ Зміни застосовано локально, але не вдалося записати у Firebase.";
+                    statusEl.className = "p-2.5 rounded-xl text-xs font-medium mb-3 shrink-0 bg-amber-500/20 text-amber-300 border border-amber-500/30";
+                    statusEl.classList.remove("hidden");
+                }
             }
         }
-        function openAdminModal() {
-            isAdminMode = true;
-            document.getElementById("adminBanner")?.classList.remove("hidden");
-            document.getElementById("adminModal")?.classList.remove("hidden");
-            switchAdminTab("content");
-            loadIdeasFromFirebase();
-            loadGarageCarsFromFirebase();
-            safeRefreshIcons();
-        }
+        window.applyAdminChanges = applyAdminChanges;
+
+        function applyConfigToDOM(cfg) {
+            if (!cfg || typeof cfg !== "object") return;
+            currentConfigState = { ...currentConfigState, ...cfg };
+
+            if (cfg.theme) {
+                applyTheme(cfg.theme);
+            }
+            if (typeof cfg.announcementActive === "boolean") {
+                document.getElementById("announcementBanner")?.classList.toggle("hidden", !cfg.announcementActive);
+            }
             if (typeof cfg.garageActive === "boolean") {
                 document.getElementById("garageCard")?.classList.toggle("hidden", !cfg.garageActive);
             }
@@ -1771,7 +1828,7 @@
             a.click();
             URL.revokeObjectURL(a.href);
         }
-
+        window.exportUpdatedFile = exportUpdatedFile;
         async function loadSavedConfig() {
             try {
                 const savedTheme = localStorage.getItem("autohub_theme");
