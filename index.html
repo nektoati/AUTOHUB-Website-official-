@@ -1593,7 +1593,227 @@
         }
         window.setGarageCarApproval = setGarageCarApproval;
         window.deleteGarageCar = deleteGarageCar;
-                : "";
+
+        function openAdminModal() {
+            const modal = document.getElementById("adminModal");
+            if (!modal) return;
+            isAdminMode = true;
+            document.getElementById("adminBanner")?.classList.remove("hidden");
+            applyConfigToDOM(currentConfigState);
+            modal.classList.remove("hidden");
+            switchAdminTab("content");
+            loadGarageCarsFromFirebase();
+            loadIdeasFromFirebase();
+            safeRefreshIcons();
+        }
+
+        function setGarageFilter(filter) {
+            adminGarageFilter = ["all", "pending", "approved"].includes(filter) ? filter : "all";
+            const map = {
+                all: "garageFilterAll",
+                pending: "garageFilterPending",
+                approved: "garageFilterApproved"
+            };
+            Object.entries(map).forEach(([key, btnId]) => {
+                const btn = document.getElementById(btnId);
+                if (!btn) return;
+                btn.className = key === adminGarageFilter
+                    ? "px-2.5 py-1 rounded-lg bg-amber-500 text-black font-semibold text-[11px]"
+                    : "px-2.5 py-1 rounded-lg bg-white/10 text-gray-300 font-semibold text-[11px]";
+            });
+            renderAdminGarageCars();
+        }
+
+        function renderApprovedGarageCars() {
+            const container = document.getElementById("approvedCarsList");
+            if (!container) return;
+
+            const approvedList = adminGarageEntries.filter(item => Boolean(item.approved));
+            if (approvedList.length === 0) {
+                container.innerHTML = `<div class="p-4 rounded-xl bg-white/5 border border-white/5 text-center text-xs text-gray-400 col-span-full">Поки немає схвалених авто підписників. Будьте першим — натисніть «Додати своє авто»!</div>`;
+                return;
+            }
+
+            container.innerHTML = approvedList.slice(0, 6).map(item => {
+                const safePhoto = item.photoUrl || "https://placehold.co/600x360/161920/f97316?text=AUTOHUB+CAR";
+                return `
+                    <div class="rounded-xl bg-white/5 border border-white/10 overflow-hidden flex flex-col">
+                        <img src="${safePhoto}" onerror="this.onerror=null;this.src='https://placehold.co/600x360/161920/f97316?text=AUTOHUB+CAR';" alt="${item.carModel || "Авто підписника"}" class="w-full h-36 object-cover bg-black/40">
+                        <div class="p-3 space-y-1 flex-grow flex flex-col justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-white">${item.carModel || "Авто підписника"}</div>
+                                <div class="text-[11px] accent-text font-medium">${item.owner || "Підписник"}</div>
+                                <p class="text-[11px] text-gray-300 mt-1 line-clamp-2">${item.description || ""}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderAdminGarageCars() {
+            const container = document.getElementById("adminGarageCarsList");
+            const pendingCountEl = document.getElementById("adminPendingCarsCount");
+            if (!container) return;
+
+            const pendingCount = adminGarageEntries.filter(x => !x.approved).length;
+            if (pendingCountEl) pendingCountEl.textContent = String(pendingCount);
+
+            const filtered = adminGarageEntries.filter(item => {
+                if (adminGarageFilter === "pending") return !item.approved;
+                if (adminGarageFilter === "approved") return Boolean(item.approved);
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 col-span-full text-center py-4">Заявок за обраним фільтром немає.</p>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(item => {
+                const safePhoto = item.photoUrl || "https://placehold.co/600x360/161920/f97316?text=AUTOHUB+CAR";
+                const statusText = item.approved ? "Опубліковано" : "На модерації";
+                const statusClass = item.approved
+                    ? "bg-emerald-500/20 text-emerald-300"
+                    : "bg-amber-500/20 text-amber-300";
+
+                return `
+                    <div class="rounded-xl bg-white/5 border border-white/10 overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="relative cursor-pointer" onclick="openAdminCarInspectModal('${item.id}')">
+                                <img src="${safePhoto}" onerror="this.onerror=null;this.src='https://placehold.co/600x360/161920/f97316?text=AUTOHUB+CAR';" alt="${item.carModel || "Авто"}" class="w-full h-32 object-cover bg-black/40">
+                                <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-semibold ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="p-3 space-y-1">
+                                <div class="font-bold text-white text-xs truncate">${item.carModel || "Без назви"}</div>
+                                <div class="text-[11px] accent-text font-medium truncate">Власник: ${item.owner || "Анонім"}</div>
+                                <p class="text-[11px] text-gray-300 line-clamp-2">${item.description || ""}</p>
+                            </div>
+                        </div>
+                        <div class="px-3 pb-3 flex items-center gap-1.5 pt-1">
+                            <button type="button" onclick="openAdminCarInspectModal('${item.id}')" class="flex-1 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white font-semibold text-[11px]">Переглянути</button>
+                            <button type="button" onclick="setGarageCarApproval('${item.id}', ${!item.approved})" class="flex-1 py-1.5 rounded-lg ${item.approved ? "bg-amber-500/20 text-amber-300" : "bg-emerald-500 text-black"} font-semibold text-[11px]">${item.approved ? "Приховати" : "Схвалити"}</button>
+                            <button type="button" onclick="deleteGarageCar('${item.id}')" class="py-1.5 px-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 font-semibold text-[11px]">✕</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        async function loadGarageCarsFromFirebase() {
+            try {
+                const res = await fetch(`${FIREBASE_DB_URL}/garageCars.json`);
+                const data = await res.json();
+                adminGarageEntries = data && typeof data === "object"
+                    ? Object.entries(data).map(([id, val]) => ({ id, ...(val || {}) })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+                    : [];
+            } catch (e) {
+                adminGarageEntries = [];
+            }
+            renderApprovedGarageCars();
+            renderAdminGarageCars();
+        }
+
+        async function submitCarToGarage(event) {
+            event.preventDefault();
+            const owner = (document.getElementById("garageOwnerInput")?.value || "").trim();
+            const carModel = (document.getElementById("garageCarModelInput")?.value || "").trim();
+            const photoUrl = (document.getElementById("garagePhotoUrlInput")?.value || "").trim();
+            const description = (document.getElementById("garageDescInput")?.value || "").trim();
+            const errEl = document.getElementById("garageSubmitError");
+            const btn = document.getElementById("garageSubmitBtn");
+            if (!owner || !carModel || !photoUrl || !description) return;
+
+            if (btn) btn.disabled = true;
+            try {
+                const res = await fetch(`${FIREBASE_DB_URL}/garageCars.json`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        owner,
+                        carModel,
+                        photoUrl,
+                        description,
+                        approved: false,
+                        createdAt: Date.now()
+                    })
+                });
+                if (!res.ok) throw new Error("Failed to submit car");
+                if (errEl) errEl.classList.add("hidden");
+                document.getElementById("garageSubmitForm")?.classList.add("hidden");
+                document.getElementById("garageSubmitSuccess")?.classList.remove("hidden");
+                event.target.reset();
+                await loadGarageCarsFromFirebase();
+                safeRefreshIcons();
+            } catch (e) {
+                if (errEl) {
+                    errEl.textContent = "Не вдалося надіслати заявку. Перевірте посилання або спробуйте пізніше.";
+                    errEl.classList.remove("hidden");
+                }
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+        window.submitCarToGarage = submitCarToGarage;
+
+        async function loadIdeasFromFirebase() {
+            const listEl = document.getElementById("adminIdeasList");
+            const countEl = document.getElementById("adminIdeasCount");
+            try {
+                const res = await fetch(`${FIREBASE_DB_URL}/ideas.json`);
+                const data = await res.json();
+                const items = data && typeof data === "object"
+                    ? Object.values(data).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+                    : [];
+                if (countEl) countEl.textContent = String(items.length);
+                if (!listEl) return;
+
+                if (items.length === 0) {
+                    listEl.innerHTML = `<p class="text-gray-500 text-center py-4">Ідей поки немає.</p>`;
+                    return;
+                }
+
+                listEl.innerHTML = items.map(idea => {
+                    const dateStr = idea.createdAt ? new Date(idea.createdAt).toLocaleString("uk-UA") : "";
+                    return `
+                        <div class="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="font-semibold text-white">${idea.name || "Глядач"}</span>
+                                <span class="text-[10px] text-gray-500">${dateStr}</span>
+                            </div>
+                            <p class="text-gray-300 leading-relaxed">${idea.message || ""}</p>
+                        </div>
+                    `;
+                }).join("");
+            } catch (e) {
+                if (listEl) listEl.innerHTML = `<p class="text-red-400 text-center py-4">Помилка завантаження ідей.</p>`;
+            }
+        }
+        window.loadIdeasFromFirebase = loadIdeasFromFirebase;
+
+        function openAdminCarInspectModal(id) {
+            const modal = document.getElementById("adminCarInspectModal");
+            const car = adminGarageEntries.find(item => item.id === id);
+            if (!modal || !car) return;
+
+            const photoEl = document.getElementById("inspectCarPhoto");
+            const linkEl = document.getElementById("inspectCarPhotoLink");
+            const modelEl = document.getElementById("inspectCarModel");
+            const ownerEl = document.getElementById("inspectCarOwner");
+            const descEl = document.getElementById("inspectCarDesc");
+            const dateEl = document.getElementById("inspectCarDate");
+
+            const photoSrc = car.photoUrl || "https://placehold.co/800x450/161920/f97316?text=AUTOHUB+GARAGE";
+            if (photoEl) photoEl.src = photoSrc;
+            if (linkEl) linkEl.href = car.photoUrl || "#";
+            if (modelEl) modelEl.textContent = car.carModel || "Авто підписника";
+            if (ownerEl) ownerEl.textContent = `Підписник: ${car.owner || "Не вказано"}`;
+            if (descEl) descEl.textContent = car.description || "Опис відсутній.";
+            if (dateEl) {
+                dateEl.textContent = car.createdAt
+                    ? new Date(car.createdAt).toLocaleString("uk-UA")
+                    : "";
+            }
 
             const badge = document.getElementById("inspectCarStatusBadge");
             if (badge) {
