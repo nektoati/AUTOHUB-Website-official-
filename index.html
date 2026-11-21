@@ -187,12 +187,37 @@
             color: #ffffff;
         }
         #ah-ai-messages {
-            height: 240px;
+            height: 220px;
             overflow-y: auto;
             padding: 12px;
             font-size: 12.5px;
             line-height: 1.5;
             background-color: #111318;
+        }
+        #ah-ai-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 8px 10px;
+            background-color: #13161d;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .ah-ai-chip {
+            padding: 5px 9px;
+            border-radius: 9999px;
+            border: 1px solid var(--accent-border);
+            background-color: var(--accent-soft);
+            color: #f3f4f6;
+            font-size: 11px;
+            line-height: 1.2;
+            cursor: pointer;
+            text-align: left;
+            transition: background-color 0.2s ease, transform 0.15s ease;
+        }
+        .ah-ai-chip:hover {
+            background-color: var(--accent);
+            color: #ffffff;
+            transform: translateY(-1px);
         }
         #ah-ai-form {
             display: flex;
@@ -427,6 +452,26 @@
                 <p id="pollStatusHint" class="text-[11px] text-gray-400">Натисніть на варіант, щоб проголосувати.</p>
             </div>
 
+            <!-- SUBSCRIBERS GARAGE / CAR OF THE WEEK -->
+            <div id="subscribersGarageCard" class="card rounded-2xl p-4 md:p-5 space-y-3.5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 text-xs font-semibold accent-text">
+                        <i data-lucide="trophy" class="w-4 h-4"></i>
+                        <span>ГАРАЖ ПІДПИСНИКІВ • АВТО ТИЖНЯ</span>
+                    </div>
+                    <button type="button" onclick="openGarageSubmitModal()" class="px-3 py-1.5 rounded-xl accent-soft-bg hover:opacity-90 border border-white/10 text-xs font-semibold text-white transition flex items-center gap-1.5">
+                        <i data-lucide="plus" class="w-3.5 h-3.5 accent-text"></i>
+                        <span>Додати своє авто</span>
+                    </button>
+                </div>
+
+                <div id="approvedCarsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="p-4 rounded-xl bg-white/5 border border-white/5 text-center text-xs text-gray-400 col-span-full">
+                        Завантаження авто підписників...
+                    </div>
+                </div>
+            </div>
+
             <!-- YOUTUBE CHANNEL -->
             <a id="linkYoutube" href="https://youtube.com/@aut0hub-ua-f3q" target="_blank" rel="noopener noreferrer" class="card rounded-2xl p-4 flex items-center justify-between group">
                 <div class="flex items-center gap-3.5">
@@ -526,11 +571,17 @@
                 <i data-lucide="bot" class="w-4 h-4 accent-text"></i>
                 <span>Помічник AUTOHUB</span>
             </div>
-            <button id="ah-ai-close" type="button" title="Закрити">✕</button>
+            <div class="flex items-center gap-1.5">
+                <button id="ah-ai-refresh-chips" type="button" title="Інші підказки" class="text-gray-400 hover:text-white p-1 transition">
+                    <i data-lucide="shuffle" class="w-3.5 h-3.5"></i>
+                </button>
+                <button id="ah-ai-close" type="button" title="Закрити">✕</button>
+            </div>
         </div>
         <div id="ah-ai-messages">
             <p style="margin:0 0 8px 0;color:#9ca3af;">Привіт! Запитай щось про легкові авто, вантажівки, авто-поради або навігацію по сайту 🚗</p>
         </div>
+        <div id="ah-ai-chips"></div>
         <div id="ah-ai-form">
             <input id="ah-ai-input" type="text" maxlength="600" placeholder="Напиши запитання...">
             <button id="ah-ai-send" type="button">➤</button>
@@ -602,6 +653,56 @@
 
     <!-- AUDIO ELEMENT -->
     <audio id="bgAudio" preload="none"></audio>
+
+    <!-- MODAL: SUBMIT CAR TO GARAGE -->
+    <div id="garageSubmitModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-bg">
+        <div class="card w-full max-w-md rounded-2xl p-6 relative shadow-2xl">
+            <button onclick="closeGarageSubmitModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-2 rounded-xl accent-soft-bg accent-text">
+                    <i data-lucide="car" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white text-base">Додати авто в Гараж</h3>
+                    <p class="text-xs text-gray-400">Після перевірки адміном авто з'явиться на сайті</p>
+                </div>
+            </div>
+
+            <form id="garageSubmitForm" onsubmit="submitCarToGarage(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Ваш нікнейм / ім'я</label>
+                    <input type="text" id="garageOwnerInput" required maxlength="40" placeholder="Наприклад: Андрій (Київ)" class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-white/30">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Марка, модель та рік авто</label>
+                    <input type="text" id="garageCarModelInput" required maxlength="60" placeholder="Наприклад: BMW E34 525i (1994)" class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-white/30">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Посилання на фото авто (URL)</label>
+                    <input type="url" id="garagePhotoUrlInput" required placeholder="https://i.ibb.co/..." class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-white/30">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-400 mb-1">Коротко про авто / спеки</label>
+                    <textarea id="garageDescInput" required rows="2" maxlength="140" placeholder="Двигун, тюнінг або цікава історія..." class="w-full px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 resize-none"></textarea>
+                </div>
+                <p id="garageSubmitError" class="hidden text-xs text-red-400"></p>
+                <button type="submit" id="garageSubmitBtn" class="w-full py-2.5 rounded-xl accent-bg text-white font-semibold transition">
+                    Надіслати на модерацію
+                </button>
+            </form>
+
+            <div id="garageSubmitSuccess" class="hidden text-center py-6 space-y-2">
+                <div class="w-10 h-10 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto">
+                    <i data-lucide="check" class="w-5 h-5"></i>
+                </div>
+                <h4 class="text-sm font-bold text-white">Заявку надіслано!</h4>
+                <p class="text-xs text-gray-400">Після схвалення ваше авто з'явиться в «Гаражі підписників».</p>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL: FEEDBACK -->
     <div id="feedbackModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-bg">
@@ -723,7 +824,7 @@
                 <!-- VISIBILITY OF BLOCKS -->
                 <div class="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
                     <span class="font-semibold text-amber-400 block">👁️ Відображення блоків на сайті</span>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-0.5">
+                    <div class="grid grid-cols-2 gap-2 pt-0.5">
                         <label class="inline-flex items-center gap-1.5 text-gray-200 cursor-pointer">
                             <input type="checkbox" id="adminAnnouncementActive" checked class="rounded">
                             <span>Оголошення</span>
@@ -735,6 +836,10 @@
                         <label class="inline-flex items-center gap-1.5 text-gray-200 cursor-pointer">
                             <input type="checkbox" id="adminPollActive" checked class="rounded">
                             <span>Опитування</span>
+                        </label>
+                        <label class="inline-flex items-center gap-1.5 text-gray-200 cursor-pointer">
+                            <input type="checkbox" id="adminSubGarageActive" checked class="rounded">
+                            <span>Авто тижня</span>
                         </label>
                     </div>
                 </div>
@@ -886,6 +991,17 @@
                     </div>
                     <div id="adminIdeasList" class="space-y-1.5 max-h-40 overflow-y-auto text-[11px] text-gray-300">
                         <p class="text-gray-500">Завантаження ідей...</p>
+                    </div>
+                </div>
+
+                <!-- SUBSCRIBERS GARAGE MODERATION -->
+                <div class="p-3 bg-white/5 rounded-xl border border-amber-500/20 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold text-amber-400 block">🚘 Модерація «Гаражу підписників»</span>
+                        <button type="button" onclick="loadGarageCarsFromFirebase()" class="text-[10px] text-amber-300 hover:text-white underline">Оновити</button>
+                    </div>
+                    <div id="adminGarageCarsList" class="space-y-2 max-h-52 overflow-y-auto text-[11px] text-gray-300">
+                        <p class="text-gray-500">Завантаження заявок...</p>
                     </div>
                 </div>
 
@@ -1343,7 +1459,36 @@
                 pollCard.classList.toggle('hidden', cfg.pollActive === false);
             }
 
+            const subGarageCard = document.getElementById('subscribersGarageCard');
+            if (subGarageCard) {
+                subGarageCard.classList.toggle('hidden', cfg.subGarageActive === false);
+            }
+
             applyAnnouncementToDom(cfg);
+        }
+
+        function loadSavedConfig() {
+            try {
+                const localSaved = JSON.parse(localStorage.getItem('autohub_config'));
+                if (localSaved) applyConfigObject(localSaved);
+            } catch (e) {
+                console.warn("Помилка читання localStorage:", e);
+            }
+
+            fetch(`${FIREBASE_DB_URL}/settings.json`)
+                .then(res => res.ok ? res.json() : null)
+                .then(cloudData => {
+                    if (cloudData) {
+                        applyConfigObject(cloudData);
+                        try {
+                            localStorage.setItem('autohub_config', JSON.stringify(cloudData));
+                        } catch (e) {}
+                    }
+                })
+                .catch(err => console.warn("Firebase недоступний або ще порожній:", err));
+
+            loadPollFromFirebase();
+            loadGarageCarsFromFirebase();
         }
 
         function loadSavedConfig() {
@@ -1485,6 +1630,7 @@
                     document.getElementById('adminAnnouncementActive').checked = !document.getElementById('announcementBanner').classList.contains('hidden');
                     document.getElementById('adminGarageActive').checked = !document.getElementById('garageCard').classList.contains('hidden');
                     document.getElementById('adminPollActive').checked = !document.getElementById('pollCard').classList.contains('hidden');
+                    document.getElementById('adminSubGarageActive').checked = !document.getElementById('subscribersGarageCard').classList.contains('hidden');
                     document.getElementById('adminAnnouncementText').value = document.getElementById('announcementText').innerText;
                     const btnEl = document.getElementById('announcementBtn');
                     document.getElementById('adminAnnouncementBtnLabel').value = btnEl.classList.contains('hidden') ? '' : document.getElementById('announcementBtnLabel').innerText;
@@ -1510,6 +1656,7 @@
                     document.getElementById('adminModal').classList.remove('hidden');
                     document.getElementById('adminBanner').classList.remove('hidden');
                     loadIdeasFromFirebase();
+                    loadGarageCarsFromFirebase();
                     lucide.createIcons();
                 } else {
                     logoClickTimer = setTimeout(() => {
@@ -1550,6 +1697,7 @@
             const announcementActive = document.getElementById('adminAnnouncementActive').checked;
             const garageActive = document.getElementById('adminGarageActive').checked;
             const pollActive = document.getElementById('adminPollActive').checked;
+            const subGarageActive = document.getElementById('adminSubGarageActive').checked;
             const announcementText = document.getElementById('adminAnnouncementText').value.trim();
             const announcementBtnLabel = document.getElementById('adminAnnouncementBtnLabel').value.trim();
             const announcementUrl = document.getElementById('adminAnnouncementUrl').value.trim();
@@ -1577,6 +1725,7 @@
                 announcementActive,
                 garageActive,
                 pollActive,
+                subGarageActive,
                 announcementText,
                 announcementBtnLabel,
                 announcementUrl,
@@ -1690,6 +1839,218 @@
                 .replace(/"/g, "&quot;");
         }
 
+        // ГАРАЖ ПІДПИСНИКІВ / АВТО ТИЖНЯ (FIREBASE)
+        let garageCarsCache = {};
+
+        function openGarageSubmitModal() {
+            document.getElementById('garageSubmitModal').classList.remove('hidden');
+            document.getElementById('garageSubmitForm').reset();
+            document.getElementById('garageSubmitForm').classList.remove('hidden');
+            document.getElementById('garageSubmitSuccess').classList.add('hidden');
+            document.getElementById('garageSubmitError').classList.add('hidden');
+        }
+
+        function closeGarageSubmitModal() {
+            document.getElementById('garageSubmitModal').classList.add('hidden');
+        }
+
+        async function submitCarToGarage(e) {
+            e.preventDefault();
+            const btn = document.getElementById('garageSubmitBtn');
+            const errEl = document.getElementById('garageSubmitError');
+            const owner = document.getElementById('garageOwnerInput').value.trim();
+            const model = document.getElementById('garageCarModelInput').value.trim();
+            const photoUrl = document.getElementById('garagePhotoUrlInput').value.trim();
+            const desc = document.getElementById('garageDescInput').value.trim();
+
+            errEl.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerText = "Надсилання...";
+
+            try {
+                const resp = await fetch(`${FIREBASE_DB_URL}/garageCars.json`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        owner,
+                        model,
+                        photoUrl,
+                        desc,
+                        likes: 0,
+                        approved: false,
+                        createdAt: Date.now()
+                    })
+                });
+                if (!resp.ok) throw new Error("Firebase error");
+
+                document.getElementById('garageSubmitForm').classList.add('hidden');
+                document.getElementById('garageSubmitSuccess').classList.remove('hidden');
+                loadGarageCarsFromFirebase();
+            } catch (err) {
+                errEl.innerText = "Не вдалося надіслати заявку. Спробуйте пізніше.";
+                errEl.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Надіслати на модерацію";
+            }
+        }
+
+        function renderApprovedGarageCars() {
+            const container = document.getElementById('approvedCarsList');
+            if (!container) return;
+
+            const approvedEntries = Object.entries(garageCarsCache || {})
+                .filter(([, car]) => car && car.approved === true)
+                .sort((a, b) => (Number(b[1].likes) || 0) - (Number(a[1].likes) || 0));
+
+            if (approvedEntries.length === 0) {
+                container.innerHTML = `
+                    <div class="p-4 rounded-xl bg-white/5 border border-white/5 text-center text-xs text-gray-400 col-span-full">
+                        Поки що тут порожньо. Будь першим — додай своє авто в гараж AUTOHUB! 🚗
+                    </div>
+                `;
+                return;
+            }
+
+            const topLikes = Number(approvedEntries[0][1].likes) || 0;
+
+            container.innerHTML = approvedEntries.map(([id, car], index) => {
+                const likes = Number(car.likes) || 0;
+                const isLeader = index === 0 && topLikes > 0;
+                const likedKey = `autohub_car_liked_${id}`;
+                const isLiked = !!localStorage.getItem(likedKey);
+
+                return `
+                    <div class="rounded-xl bg-black/35 border ${isLeader ? 'border-amber-400/50' : 'border-white/10'} overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="relative aspect-video bg-slate-900 overflow-hidden">
+                                <img src="${escapeHtml(car.photoUrl || '')}"
+                                     onerror="this.onerror=null; this.src='https://placehold.co/600x340/161920/f97316?text=AUTOHUB+GARAGE';"
+                                     alt="${escapeHtml(car.model || 'Авто')}"
+                                     class="w-full h-full object-cover">
+                                ${isLeader ? '<span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-amber-500 text-black text-[10px] font-bold shadow">🏆 Лідер тижня</span>' : ''}
+                            </div>
+                            <div class="p-3 space-y-1">
+                                <h4 class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(car.model || 'Авто підписника')}</h4>
+                                <p class="text-[11px] text-gray-300 line-clamp-2">${escapeHtml(car.desc || '')}</p>
+                            </div>
+                        </div>
+                        <div class="px-3 pb-3 pt-1 flex items-center justify-between gap-2 text-[11px]">
+                            <span class="text-gray-400 truncate">👤 ${escapeHtml(car.owner || 'Підписник')}</span>
+                            <button type="button" onclick="likeGarageCar('${id}')" class="px-2.5 py-1 rounded-lg ${isLiked ? 'accent-bg text-white' : 'bg-white/10 hover:bg-white/15 text-gray-200'} font-semibold transition flex items-center gap-1 shrink-0">
+                                <span>❤️</span>
+                                <span>${likes}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderAdminGarageCars() {
+            const listEl = document.getElementById('adminGarageCarsList');
+            if (!listEl) return;
+
+            const entries = Object.entries(garageCarsCache || {}).reverse();
+            if (entries.length === 0) {
+                listEl.innerHTML = '<p class="text-gray-500">Заявок до гаражу поки немає.</p>';
+                return;
+            }
+
+            listEl.innerHTML = entries.map(([id, car]) => {
+                const isApproved = car && car.approved === true;
+                return `
+                    <div class="p-2.5 rounded-lg bg-black/40 border ${isApproved ? 'border-emerald-500/30' : 'border-amber-500/30'} space-y-1.5">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="min-w-0">
+                                <div class="font-semibold text-white truncate">${escapeHtml(car.model || 'Без назви')}</div>
+                                <div class="text-[10px] text-gray-400">Власник: ${escapeHtml(car.owner || 'Анонім')} • ❤️ ${Number(car.likes) || 0}</div>
+                            </div>
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold shrink-0 ${isApproved ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">
+                                ${isApproved ? 'На сайті' : 'Очікує'}
+                            </span>
+                        </div>
+                        <p class="text-gray-300 break-words">${escapeHtml(car.desc || '')}</p>
+                        <div class="flex items-center justify-between gap-2 pt-1">
+                            <a href="${escapeHtml(car.photoUrl || '#')}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-sky-400 hover:underline">Відкрити фото ↗</a>
+                            <div class="flex items-center gap-1.5">
+                                <button type="button" onclick="toggleApproveGarageCar('${id}', ${!isApproved})" class="px-2 py-1 rounded ${isApproved ? 'bg-white/10 text-gray-200' : 'bg-emerald-600 text-white'} text-[10px] font-semibold">
+                                    ${isApproved ? 'Сховати' : 'Схвалити'}
+                                </button>
+                                <button type="button" onclick="deleteGarageCar('${id}')" class="px-2 py-1 rounded bg-red-500/20 text-red-300 hover:bg-red-500/30 text-[10px] font-semibold">
+                                    Видалити
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function loadGarageCarsFromFirebase() {
+            try {
+                const resp = await fetch(`${FIREBASE_DB_URL}/garageCars.json`);
+                const data = resp.ok ? await resp.json() : null;
+                garageCarsCache = data || {};
+            } catch (e) {
+                console.warn("Помилка завантаження гаражу підписників:", e);
+            }
+            renderApprovedGarageCars();
+            renderAdminGarageCars();
+        }
+
+        async function likeGarageCar(id) {
+            const likedKey = `autohub_car_liked_${id}`;
+            if (localStorage.getItem(likedKey) || !garageCarsCache[id]) return;
+
+            localStorage.setItem(likedKey, "1");
+            garageCarsCache[id].likes = (Number(garageCarsCache[id].likes) || 0) + 1;
+            renderApprovedGarageCars();
+
+            try {
+                const resp = await fetch(`${FIREBASE_DB_URL}/garageCars/${id}/likes.json`);
+                const currentLikes = resp.ok ? Number(await resp.json()) || 0 : 0;
+                const nextLikes = currentLikes + 1;
+                await fetch(`${FIREBASE_DB_URL}/garageCars/${id}/likes.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(nextLikes)
+                });
+                garageCarsCache[id].likes = nextLikes;
+                renderApprovedGarageCars();
+            } catch (e) {
+                console.warn("Помилка збереження лайку:", e);
+            }
+        }
+
+        async function toggleApproveGarageCar(id, approveState) {
+            if (!garageCarsCache[id]) return;
+            try {
+                await fetch(`${FIREBASE_DB_URL}/garageCars/${id}/approved.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(approveState)
+                });
+                garageCarsCache[id].approved = approveState;
+                renderApprovedGarageCars();
+                renderAdminGarageCars();
+                showAdminStatus(approveState ? "✅ Авто опубліковано в Гаражі підписників!" : "Авто приховано з головної сторінки.", true);
+            } catch (e) {
+                showAdminStatus("Не вдалося оновити статус авто.", false);
+            }
+        }
+
+        async function deleteGarageCar(id) {
+            try {
+                await fetch(`${FIREBASE_DB_URL}/garageCars/${id}.json`, { method: "DELETE" });
+                delete garageCarsCache[id];
+                renderApprovedGarageCars();
+                renderAdminGarageCars();
+            } catch (e) {
+                console.warn("Помилка видалення авто:", e);
+            }
+        }
+
         function exportUpdatedFile() {
             applyAdminChanges();
             
@@ -1776,17 +2137,68 @@
             const toggleBtn = document.getElementById("ah-ai-toggle");
             const chatBox = document.getElementById("ah-ai-box");
             const closeBtn = document.getElementById("ah-ai-close");
+            const refreshChipsBtn = document.getElementById("ah-ai-refresh-chips");
+            const chipsContainer = document.getElementById("ah-ai-chips");
             const messagesEl = document.getElementById("ah-ai-messages");
             const inputEl = document.getElementById("ah-ai-input");
             const sendBtn = document.getElementById("ah-ai-send");
 
+            const PROMPT_POOL = [
+                "Як підготувати авто до зими?",
+                "Що перевірити перед купівлею б/в авто?",
+                "Яке авто додати в Гараж підписників?",
+                "Порадь надійний дизельний двигун",
+                "Як зменшити витрату пального в місті?",
+                "Який останній випуск на каналі AUTOHUB?",
+                "Чому взимку падає тиск у шинах?",
+                "Надійні авто до 7000$ в Україні",
+                "Як правильно обслуговувати турбіну?",
+                "Цікаві факти про автобуси ПАЗ",
+                "Як працює голосування в Опитуванні тижня?",
+                "Топ-5 речей, які мають бути в багажнику"
+            ];
+
+            let lastShownPrompts = [];
             let lastSendTime = 0;
+
+            function renderRandomChips() {
+                if (!chipsContainer) return;
+                const candidates = PROMPT_POOL.filter(q => !lastShownPrompts.includes(q));
+                const source = candidates.length >= 3 ? candidates : PROMPT_POOL;
+                const shuffled = [...source].sort(() => Math.random() - 0.5);
+                const selected = shuffled.slice(0, 3);
+                lastShownPrompts = selected;
+
+                chipsContainer.innerHTML = "";
+                selected.forEach(promptText => {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "ah-ai-chip";
+                    btn.textContent = promptText;
+                    btn.addEventListener("click", () => {
+                        inputEl.value = promptText;
+                        askAI();
+                    });
+                    chipsContainer.appendChild(btn);
+                });
+            }
+
+            renderRandomChips();
 
             toggleBtn.addEventListener("click", () => {
                 const isOpen = chatBox.style.display === "block";
                 chatBox.style.display = isOpen ? "none" : "block";
-                if (!isOpen) inputEl.focus();
+                if (!isOpen) {
+                    renderRandomChips();
+                    inputEl.focus();
+                }
             });
+
+            if (refreshChipsBtn) {
+                refreshChipsBtn.addEventListener("click", () => {
+                    renderRandomChips();
+                });
+            }
 
             closeBtn.addEventListener("click", () => {
                 chatBox.style.display = "none";
@@ -1818,13 +2230,14 @@
                 lastSendTime = now;
                 inputEl.value = "";
                 appendMsg("Ви", text);
+                renderRandomChips();
 
                 sendBtn.disabled = true;
 
                 try {
                     const siteContext = `Контекст сайту AUTOHUB:
 - Це хаб-сторінка з оглядами, авто-порадами, трендами та посиланнями на YouTube, Telegram, Instagram і TikTok.
-- На сайті є такі віджети й блоки: банер оголошень, картка «Останній випуск на YouTube» (зараз: «${document.getElementById("latestVideoTitle")?.innerText || "Еволюція ПАЗ"}»), блок «Гараж дня / Авто-лайфхак», «Опитування тижня» у Firebase, форма «Ваші Ідеї», кнопка «Поділитися», перемикач тем (Orange, Neon Drift, Classic Garage), розгортаємий музичний плеєр «Авто-вайб» (SoundCloud/аудіотреки) та цей чат-віджет «Помічник AUTOHUB».
+- На сайті є такі віджети й блоки: банер оголошень, картка «Останній випуск на YouTube» (зараз: «${document.getElementById("latestVideoTitle")?.innerText || "Еволюція ПАЗ"}»), блок «Гараж дня / Авто-лайфхак», «Опитування тижня» у Firebase, «Гараж підписників • Авто тижня» (де можна додати своє авто і голосувати лайками), форма «Ваші Ідеї», кнопка «Поділитися», перемикач тем (Orange, Neon Drift, Classic Garage), розгортаємий музичний плеєр «Авто-вайб» (SoundCloud/аудіотреки) та цей чат-віджет «Помічник AUTOHUB».
 - Запит користувача: ${text}`;
 
                     const res = await fetch(WORKER_URL, {
