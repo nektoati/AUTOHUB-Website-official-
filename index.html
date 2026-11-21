@@ -1161,4 +1161,1047 @@
         let pollState = { votesA: 0, votesB: 0 };
         let logoClicks = 0;
         let logoClickTimer = null;
-// ... existing code ... -->
+
+        function safeLocalGet(key, fallback = null) {
+            try {
+                const raw = localStorage.getItem(key);
+                return raw !== null ? JSON.parse(raw) : fallback;
+            } catch (e) {
+                return fallback;
+            }
+        }
+
+        function safeLocalSet(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (e) {}
+        }
+
+        function renderIconsSafely() {
+            try {
+                if (window.lucide && typeof window.lucide.createIcons === "function") {
+                    window.lucide.createIcons();
+                }
+            } catch (e) {}
+        }
+
+        function applyTheme(themeName) {
+            const validTheme = THEMES.includes(themeName) ? themeName : "orange";
+            currentConfigState.theme = validTheme;
+            document.body.setAttribute("data-theme", validTheme);
+            const labelEl = document.getElementById("themeBadgeLabel");
+            const selectEl = document.getElementById("adminThemeSelect");
+            const names = {
+                orange: "Тема: Orange",
+                neon: "Тема: Neon",
+                garage: "Тема: Garage"
+            };
+            if (labelEl) labelEl.textContent = names[validTheme] || "Тема: Orange";
+            if (selectEl) selectEl.value = validTheme;
+            safeLocalSet(LOCAL_CONFIG_KEY, currentConfigState);
+        }
+
+        function cycleTheme() {
+            const idx = THEMES.indexOf(currentConfigState.theme);
+            const next = THEMES[(idx + 1) % THEMES.length] || "orange";
+            applyTheme(next);
+        }
+
+        function extractYouTubeId(url) {
+            if (!url) return "";
+            const match = String(url).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([A-Za-z0-9_-]{6,})/);
+            return match ? match[1] : "";
+        }
+
+        function applyConfigToDOM(cfg = currentConfigState) {
+            currentConfigState = { ...currentConfigState, ...(cfg || {}) };
+            safeLocalSet(LOCAL_CONFIG_KEY, currentConfigState);
+            applyTheme(currentConfigState.theme);
+
+            const setText = (id, val) => {
+                const el = document.getElementById(id);
+                if (el && typeof val === "string") el.textContent = val;
+            };
+            const setHref = (id, val) => {
+                const el = document.getElementById(id);
+                if (el && val) el.href = val;
+            };
+            const setVisible = (id, visible) => {
+                const el = document.getElementById(id);
+                if (el) el.classList.toggle("hidden", !visible);
+            };
+
+            setVisible("announcementBanner", currentConfigState.announcementActive !== false);
+            setText("announcementText", currentConfigState.announcementText);
+            setText("announcementBtnLabel", currentConfigState.announcementBtnLabel || "Перейти");
+            setHref("announcementBtn", currentConfigState.announcementUrl || "https://t.me/FoXNEWofficial");
+
+            setVisible("garageCard", currentConfigState.garageActive !== false);
+            setText("garageTitle", currentConfigState.garageTitle);
+            setText("garageTipText", currentConfigState.garageTip);
+
+            setVisible("pollCard", currentConfigState.pollActive !== false);
+            setText("pollQuestionText", currentConfigState.pollQuestion);
+            setText("pollOptALabel", currentConfigState.pollOptA);
+            setText("pollOptBLabel", currentConfigState.pollOptB);
+
+            setVisible("subscribersGarageCard", currentConfigState.subGarageActive !== false);
+
+            setText("statYoutube", currentConfigState.ytStat);
+            setText("statTelegram", currentConfigState.tgStat);
+            setText("statTiktok", currentConfigState.ttStat);
+
+            setText("latestVideoTitle", currentConfigState.latestVideoTitle);
+            setHref("youtubePreviewCard", currentConfigState.latestVideoUrl);
+            setHref("mainYoutubeLinkBtn", currentConfigState.latestVideoUrl);
+
+            const ytId = extractYouTubeId(currentConfigState.latestVideoUrl);
+            const thumbEl = document.getElementById("latestVideoThumb");
+            if (thumbEl && ytId) {
+                thumbEl.src = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+            }
+
+            setHref("linkYoutube", currentConfigState.ytUrl);
+            setHref("mainYoutubeLinkHeader", currentConfigState.ytUrl);
+            setHref("linkTelegram", currentConfigState.tgUrl);
+            setHref("linkInstagram", currentConfigState.igUrl);
+            setHref("linkTiktok", currentConfigState.ttUrl);
+
+            if (currentConfigState.logoUrl) {
+                const mainLogo = document.getElementById("mainLogoImg");
+                const adminLogo = document.getElementById("adminLogoImg");
+                const favicon = document.getElementById("faviconLink");
+                if (mainLogo) mainLogo.src = currentConfigState.logoUrl;
+                if (adminLogo) adminLogo.src = currentConfigState.logoUrl;
+                if (favicon) favicon.href = currentConfigState.logoUrl;
+            }
+
+            const fillInput = (id, val) => {
+                const el = document.getElementById(id);
+                if (el && document.activeElement !== el && typeof val === "string") {
+                    el.value = val;
+                }
+            };
+            const fillCheck = (id, checked) => {
+                const el = document.getElementById(id);
+                if (el && document.activeElement !== el) {
+                    el.checked = checked !== false;
+                }
+            };
+
+            fillCheck("adminAnnouncementActive", currentConfigState.announcementActive);
+            fillCheck("adminGarageActive", currentConfigState.garageActive);
+            fillCheck("adminPollActive", currentConfigState.pollActive);
+            fillCheck("adminSubGarageActive", currentConfigState.subGarageActive);
+            fillInput("adminAnnouncementText", currentConfigState.announcementText);
+            fillInput("adminAnnouncementBtnLabel", currentConfigState.announcementBtnLabel);
+            fillInput("adminAnnouncementUrl", currentConfigState.announcementUrl);
+            fillInput("adminGarageTitle", currentConfigState.garageTitle);
+            fillInput("adminGarageTip", currentConfigState.garageTip);
+            fillInput("adminPollQuestion", currentConfigState.pollQuestion);
+            fillInput("adminPollOptA", currentConfigState.pollOptA);
+            fillInput("adminPollOptB", currentConfigState.pollOptB);
+            fillInput("adminEmailTarget", currentConfigState.emailTarget);
+            fillInput("adminLogoUrl", currentConfigState.logoUrl);
+            fillInput("adminYtStat", currentConfigState.ytStat);
+            fillInput("adminTgStat", currentConfigState.tgStat);
+            fillInput("adminTtStat", currentConfigState.ttStat);
+            fillInput("adminLatestVideoUrl", currentConfigState.latestVideoUrl);
+            fillInput("adminLatestVideoTitle", currentConfigState.latestVideoTitle);
+            fillInput("adminYtUrl", currentConfigState.ytUrl);
+            fillInput("adminTgUrl", currentConfigState.tgUrl);
+            fillInput("adminIgUrl", currentConfigState.igUrl);
+            fillInput("adminTtUrl", currentConfigState.ttUrl);
+        }
+
+        function setAdminNotice(msg, isError = false) {
+            const box = document.getElementById("adminStatusMsg");
+            if (!box) return;
+            if (!msg) {
+                box.classList.add("hidden");
+                box.textContent = "";
+                return;
+            }
+            box.classList.remove("hidden");
+            box.className = isError
+                ? "p-2.5 rounded-xl text-xs font-medium mb-3 shrink-0 bg-red-500/15 border border-red-500/30 text-red-300"
+                : "p-2.5 rounded-xl text-xs font-medium mb-3 shrink-0 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300";
+            box.textContent = msg;
+        }
+
+        function isAuthorizedAdminEmail(email) {
+            const normalized = String(email || "").trim().toLowerCase();
+            if (!normalized) return false;
+            const allowed = new Set(ADMIN_EMAILS.map((e) => e.toLowerCase()));
+            if (currentConfigState.emailTarget) {
+                allowed.add(String(currentConfigState.emailTarget).trim().toLowerCase());
+            }
+            return allowed.has(normalized);
+        }
+
+        window.openAdminModal = function openAdminModal() {
+            const enteredEmail = window.prompt("Введіть електронну пошту адміністратора для входу в адмін-панель:");
+            if (enteredEmail === null) return;
+            if (!isAuthorizedAdminEmail(enteredEmail)) {
+                setAdminNotice("Доступ заборонено: цей email не в списку адміністраторів.", true);
+                return;
+            }
+            const modal = document.getElementById("adminModal");
+            const banner = document.getElementById("adminBanner");
+            if (modal) modal.classList.remove("hidden");
+            if (banner) banner.classList.remove("hidden");
+            setAdminNotice(`Вхід виконано через email: ${enteredEmail.trim().toLowerCase()}`, false);
+            loadGarageCarsFromFirebase();
+            loadIdeasFromFirebase();
+            renderIconsSafely();
+        };
+
+        window.closeAdminModal = function closeAdminModal() {
+            const modal = document.getElementById("adminModal");
+            const banner = document.getElementById("adminBanner");
+            if (modal) modal.classList.add("hidden");
+            if (banner) banner.classList.add("hidden");
+            setAdminNotice("");
+        };
+
+        window.switchAdminTab = function switchAdminTab(tabName) {
+            const tabs = {
+                content: { btn: "adminTabContent", panel: "adminPanelContent" },
+                garage: { btn: "adminTabGarage", panel: "adminPanelGarage" },
+                ideas: { btn: "adminTabIdeas", panel: "adminPanelIdeas" }
+            };
+            Object.entries(tabs).forEach(([key, cfg]) => {
+                const btn = document.getElementById(cfg.btn);
+                const panel = document.getElementById(cfg.panel);
+                const active = key === tabName;
+                if (panel) panel.classList.toggle("hidden", !active);
+                if (btn) {
+                    btn.className = active
+                        ? "admin-tab-btn px-3.5 py-2 rounded-xl bg-amber-500 text-black font-semibold text-xs transition flex items-center gap-1.5 shrink-0"
+                        : "admin-tab-btn px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 font-semibold text-xs transition flex items-center gap-1.5 shrink-0";
+                }
+            });
+            if (tabName === "garage") loadGarageCarsFromFirebase();
+            if (tabName === "ideas") loadIdeasFromFirebase();
+            renderIconsSafely();
+        };
+
+        let currentGarageFilter = "all";
+        window.setGarageFilter = function setGarageFilter(filter) {
+            currentGarageFilter = filter;
+            ["all", "pending", "approved"].forEach((f) => {
+                const btn = document.getElementById(`garageFilter${f.charAt(0).toUpperCase() + f.slice(1)}`);
+                if (btn) {
+                    btn.className = f === filter
+                        ? "px-2.5 py-1 rounded-lg bg-amber-500 text-black font-semibold text-[11px]"
+                        : "px-2.5 py-1 rounded-lg bg-white/10 text-gray-300 font-semibold text-[11px]";
+                }
+            });
+            renderAdminGarageCars();
+        };
+
+        function normalizeGarageList(rawObj) {
+            const localList = safeLocalGet(LOCAL_GARAGE_KEY, []);
+            const map = new Map();
+            if (Array.isArray(localList)) {
+                localList.forEach((item) => {
+                    if (item && item.id) map.set(item.id, item);
+                });
+            }
+            if (rawObj && typeof rawObj === "object") {
+                Object.entries(rawObj).forEach(([id, val]) => {
+                    if (val && typeof val === "object") {
+                        map.set(id, { id, ...val });
+                    }
+                });
+            }
+            const list = Array.from(map.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            safeLocalSet(LOCAL_GARAGE_KEY, list);
+            return list;
+        }
+
+        function renderApprovedGarageCars() {
+            const container = document.getElementById("approvedCarsList");
+            if (!container) return;
+            const approved = adminGarageEntries.filter((c) => c.status === "approved");
+            if (!approved.length) {
+                container.innerHTML = `
+                    <div class="p-4 rounded-xl bg-white/5 border border-white/5 text-center text-xs text-gray-400 col-span-full">
+                        Поки немає схвалених авто. Натисніть «Додати своє авто», щоб запропонувати свій автомобіль!
+                    </div>
+                `;
+                return;
+            }
+            container.innerHTML = approved.map((car) => `
+                <div class="rounded-xl bg-white/5 border border-white/10 overflow-hidden flex flex-col">
+                    <img src="${car.photoUrl || ""}" onerror="this.onerror=null;this.src='https://placehold.co/600x340/161920/f97316?text=AUTOHUB+CAR';" alt="${car.model || "Авто"}" class="w-full h-36 object-cover bg-black/40">
+                    <div class="p-3 space-y-1 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="text-xs font-bold text-white">${car.model || "Авто підписника"}</div>
+                            <div class="text-[11px] accent-text font-medium">Власник: ${car.owner || "Підписник"}</div>
+                            <p class="text-[11px] text-gray-300 mt-1 line-clamp-2">${car.description || ""}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function renderAdminGarageCars() {
+            const container = document.getElementById("adminGarageCarsList");
+            const pendingCountEl = document.getElementById("adminPendingCarsCount");
+            const pendingList = adminGarageEntries.filter((c) => c.status !== "approved");
+            if (pendingCountEl) pendingCountEl.textContent = String(pendingList.length);
+            if (!container) return;
+
+            const filtered = adminGarageEntries.filter((c) => {
+                if (currentGarageFilter === "pending") return c.status !== "approved";
+                if (currentGarageFilter === "approved") return c.status === "approved";
+                return true;
+            });
+
+            if (!filtered.length) {
+                container.innerHTML = `<p class="text-gray-500 col-span-full text-center py-4">Заявок у цій категорії немає.</p>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map((car) => {
+                const isApproved = car.status === "approved";
+                return `
+                    <div class="rounded-xl bg-white/5 border border-white/10 overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <img src="${car.photoUrl || ""}" onerror="this.onerror=null;this.src='https://placehold.co/600x340/161920/f97316?text=AUTOHUB+CAR';" alt="${car.model || "Авто"}" class="w-full h-32 object-cover bg-black/40">
+                            <div class="p-3 space-y-1">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${isApproved ? "bg-emerald-500/20 text-emerald-300" : "bg-amber-500/20 text-amber-300"}">
+                                        ${isApproved ? "Опубліковано" : "На модерації"}
+                                    </span>
+                                    <button type="button" onclick="openAdminCarInspectModal('${car.id}')" class="text-[11px] text-sky-400 hover:underline font-semibold">Деталі</button>
+                                </div>
+                                <div class="font-bold text-white text-xs">${car.model || "Без назви"}</div>
+                                <div class="text-[11px] text-amber-300">Підписник: ${car.owner || "Анонім"}</div>
+                                <p class="text-[11px] text-gray-300 line-clamp-2">${car.description || ""}</p>
+                            </div>
+                        </div>
+                        <div class="px-3 pb-3 flex items-center gap-1.5">
+                            ${!isApproved ? `<button type="button" onclick="setGarageCarApproval('${car.id}', 'approved')" class="flex-1 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px]">Схвалити</button>` : `<button type="button" onclick="setGarageCarApproval('${car.id}', 'pending')" class="flex-1 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-semibold text-[11px]">Приховати</button>`}
+                            <button type="button" onclick="deleteGarageCar('${car.id}')" class="px-2.5 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 font-semibold text-[11px]">Видалити</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        window.loadGarageCarsFromFirebase = async function loadGarageCarsFromFirebase() {
+            adminGarageEntries = normalizeGarageList(null);
+            renderApprovedGarageCars();
+            renderAdminGarageCars();
+            try {
+                const res = await fetch(`${FIREBASE_DB_URL}/garageCars.json`);
+                if (res.ok) {
+                    const data = await res.json();
+                    adminGarageEntries = normalizeGarageList(data);
+                    renderApprovedGarageCars();
+                    renderAdminGarageCars();
+                }
+            } catch (e) {}
+        };
+
+        window.openGarageSubmitModal = function openGarageSubmitModal() {
+            const modal = document.getElementById("garageSubmitModal");
+            const form = document.getElementById("garageSubmitForm");
+            const success = document.getElementById("garageSubmitSuccess");
+            const err = document.getElementById("garageSubmitError");
+            if (form) {
+                form.reset();
+                form.classList.remove("hidden");
+            }
+            if (success) success.classList.add("hidden");
+            if (err) {
+                err.classList.add("hidden");
+                err.textContent = "";
+            }
+            if (modal) modal.classList.remove("hidden");
+            renderIconsSafely();
+        };
+
+        window.closeGarageSubmitModal = function closeGarageSubmitModal() {
+            const modal = document.getElementById("garageSubmitModal");
+            if (modal) modal.classList.add("hidden");
+        };
+
+        window.submitCarToGarage = async function submitCarToGarage(event) {
+            event.preventDefault();
+            const owner = (document.getElementById("garageOwnerInput")?.value || "").trim();
+            const model = (document.getElementById("garageCarModelInput")?.value || "").trim();
+            const photoUrl = (document.getElementById("garagePhotoUrlInput")?.value || "").trim();
+            const description = (document.getElementById("garageDescInput")?.value || "").trim();
+            const errEl = document.getElementById("garageSubmitError");
+            const btn = document.getElementById("garageSubmitBtn");
+
+            if (!owner || !model || !photoUrl || !description) {
+                if (errEl) {
+                    errEl.textContent = "Будь ласка, заповніть усі поля.";
+                    errEl.classList.remove("hidden");
+                }
+                return;
+            }
+
+            const newCar = {
+                id: `car_${Date.now()}`,
+                owner,
+                model,
+                photoUrl,
+                description,
+                status: "pending",
+                createdAt: Date.now()
+            };
+
+            if (btn) btn.disabled = true;
+            try {
+                adminGarageEntries = [newCar, ...adminGarageEntries.filter((c) => c.id !== newCar.id)];
+                safeLocalSet(LOCAL_GARAGE_KEY, adminGarageEntries);
+                renderApprovedGarageCars();
+                renderAdminGarageCars();
+
+                fetch(`${FIREBASE_DB_URL}/garageCars/${encodeURIComponent(newCar.id)}.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newCar)
+                }).catch(() => {});
+
+                const form = document.getElementById("garageSubmitForm");
+                const success = document.getElementById("garageSubmitSuccess");
+                if (form) form.classList.add("hidden");
+                if (success) success.classList.remove("hidden");
+                renderIconsSafely();
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        };
+
+        window.setGarageCarApproval = async function setGarageCarApproval(carId, status) {
+            adminGarageEntries = adminGarageEntries.map((c) => c.id === carId ? { ...c, status } : c);
+            safeLocalSet(LOCAL_GARAGE_KEY, adminGarageEntries);
+            renderApprovedGarageCars();
+            renderAdminGarageCars();
+            try {
+                await fetch(`${FIREBASE_DB_URL}/garageCars/${encodeURIComponent(carId)}.json`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status })
+                });
+            } catch (e) {}
+            setAdminNotice(status === "approved" ? "Авто схвалено та додано на головну сторінку!" : "Авто переведено на модерацію.", false);
+        };
+
+        window.deleteGarageCar = async function deleteGarageCar(carId) {
+            adminGarageEntries = adminGarageEntries.filter((c) => c.id !== carId);
+            safeLocalSet(LOCAL_GARAGE_KEY, adminGarageEntries);
+            renderApprovedGarageCars();
+            renderAdminGarageCars();
+            try {
+                await fetch(`${FIREBASE_DB_URL}/garageCars/${encodeURIComponent(carId)}.json`, {
+                    method: "DELETE"
+                });
+            } catch (e) {}
+            setAdminNotice("Заявку авто видалено.", false);
+        };
+
+        window.openAdminCarInspectModal = function openAdminCarInspectModal(carId) {
+            const car = adminGarageEntries.find((c) => c.id === carId);
+            if (!car) return;
+            const modal = document.getElementById("adminCarInspectModal");
+            const photo = document.getElementById("inspectCarPhoto");
+            const badge = document.getElementById("inspectCarStatusBadge");
+            const model = document.getElementById("inspectCarModel");
+            const owner = document.getElementById("inspectCarOwner");
+            const date = document.getElementById("inspectCarDate");
+            const desc = document.getElementById("inspectCarDesc");
+            const link = document.getElementById("inspectCarPhotoLink");
+            const actions = document.getElementById("inspectCarActions");
+
+            const isApproved = car.status === "approved";
+            if (photo) photo.src = car.photoUrl || "";
+            if (badge) {
+                badge.textContent = isApproved ? "Опубліковано" : "На модерації";
+                badge.className = isApproved
+                    ? "inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold mb-1 bg-emerald-500/20 text-emerald-300"
+                    : "inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold mb-1 bg-amber-500/20 text-amber-300";
+            }
+            if (model) model.textContent = car.model || "Авто підписника";
+            if (owner) owner.textContent = `Підписник: ${car.owner || "Анонім"}`;
+            if (date) date.textContent = car.createdAt ? new Date(car.createdAt).toLocaleDateString("uk-UA") : "";
+            if (desc) desc.textContent = car.description || "";
+            if (link) link.href = car.photoUrl || "#";
+            if (actions) {
+                actions.innerHTML = `
+                    <button type="button" onclick="setGarageCarApproval('${car.id}', '${isApproved ? "pending" : "approved"}'); closeAdminCarInspectModal();" class="py-2 rounded-xl ${isApproved ? "bg-amber-500/20 text-amber-300" : "bg-emerald-600 text-white"} font-semibold text-xs">
+                        ${isApproved ? "Приховати" : "Схвалити"}
+                    </button>
+                    <button type="button" onclick="deleteGarageCar('${car.id}'); closeAdminCarInspectModal();" class="py-2 rounded-xl bg-red-500/20 text-red-300 font-semibold text-xs">
+                        Видалити
+                    </button>
+                `;
+            }
+            if (modal) modal.classList.remove("hidden");
+            renderIconsSafely();
+        };
+
+        window.closeAdminCarInspectModal = function closeAdminCarInspectModal() {
+            const modal = document.getElementById("adminCarInspectModal");
+            if (modal) modal.classList.add("hidden");
+        };
+
+        window.loadIdeasFromFirebase = async function loadIdeasFromFirebase() {
+            const container = document.getElementById("adminIdeasList");
+            const countEl = document.getElementById("adminIdeasCount");
+            let ideas = safeLocalGet(LOCAL_IDEAS_KEY, []);
+            try {
+                const res = await fetch(`${FIREBASE_DB_URL}/ideas.json`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && typeof data === "object") {
+                        const remote = Object.entries(data).map(([id, val]) => ({ id, ...(val || {}) }));
+                        const map = new Map();
+                        [...ideas, ...remote].forEach((item) => {
+                            if (item && item.id) map.set(item.id, item);
+                        });
+                        ideas = Array.from(map.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                        safeLocalSet(LOCAL_IDEAS_KEY, ideas);
+                    }
+                }
+            } catch (e) {}
+
+            if (countEl) countEl.textContent = String(ideas.length);
+            if (!container) return;
+            if (!ideas.length) {
+                container.innerHTML = `<p class="text-gray-500 text-center py-4">Ідей поки немає.</p>`;
+                return;
+            }
+            container.innerHTML = ideas.map((idea) => `
+                <div class="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1">
+                    <div class="flex items-center justify-between text-[10px] text-gray-400">
+                        <span class="font-semibold text-blue-300">${idea.name || "Підписник"}</span>
+                        <span>${idea.createdAt ? new Date(idea.createdAt).toLocaleString("uk-UA") : ""}</span>
+                    </div>
+                    <p class="text-xs text-gray-200">${idea.message || ""}</p>
+                </div>
+            `).join("");
+        };
+
+        window.openFeedbackModal = function openFeedbackModal() {
+            const modal = document.getElementById("feedbackModal");
+            const form = document.getElementById("feedbackForm");
+            const success = document.getElementById("feedbackSuccess");
+            const err = document.getElementById("feedbackError");
+            if (form) {
+                form.reset();
+                form.classList.remove("hidden");
+            }
+            if (success) success.classList.add("hidden");
+            if (err) {
+                err.classList.add("hidden");
+                err.textContent = "";
+            }
+            if (modal) modal.classList.remove("hidden");
+            renderIconsSafely();
+        };
+
+        window.closeFeedbackModal = function closeFeedbackModal() {
+            const modal = document.getElementById("feedbackModal");
+            if (modal) modal.classList.add("hidden");
+        };
+
+        window.submitFeedback = async function submitFeedback(event) {
+            event.preventDefault();
+            const name = (document.getElementById("feedbackName")?.value || "").trim();
+            const message = (document.getElementById("feedbackMessage")?.value || "").trim();
+            const errEl = document.getElementById("feedbackError");
+            if (!name || !message) {
+                if (errEl) {
+                    errEl.textContent = "Вкажіть ім'я та текст ідеї.";
+                    errEl.classList.remove("hidden");
+                }
+                return;
+            }
+            const item = { id: `idea_${Date.now()}`, name, message, createdAt: Date.now() };
+            const existing = safeLocalGet(LOCAL_IDEAS_KEY, []);
+            safeLocalSet(LOCAL_IDEAS_KEY, [item, ...existing]);
+
+            fetch(`${FIREBASE_DB_URL}/ideas/${encodeURIComponent(item.id)}.json`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(item)
+            }).catch(() => {});
+
+            const form = document.getElementById("feedbackForm");
+            const success = document.getElementById("feedbackSuccess");
+            if (form) form.classList.add("hidden");
+            if (success) success.classList.remove("hidden");
+            renderIconsSafely();
+        };
+
+        window.openQuickAnnouncementModal = function openQuickAnnouncementModal() {
+            const modal = document.getElementById("quickAnnouncementModal");
+            const txt = document.getElementById("quickAnnText");
+            const lbl = document.getElementById("quickAnnBtnLabel");
+            const url = document.getElementById("quickAnnUrl");
+            const act = document.getElementById("quickAnnActive");
+            if (txt) txt.value = currentConfigState.announcementText || "";
+            if (lbl) lbl.value = currentConfigState.announcementBtnLabel || "Перейти";
+            if (url) url.value = currentConfigState.announcementUrl || "";
+            if (act) act.checked = currentConfigState.announcementActive !== false;
+            if (modal) modal.classList.remove("hidden");
+            renderIconsSafely();
+        };
+
+        window.closeQuickAnnouncementModal = function closeQuickAnnouncementModal() {
+            const modal = document.getElementById("quickAnnouncementModal");
+            if (modal) modal.classList.add("hidden");
+        };
+
+        window.publishQuickAnnouncement = async function publishQuickAnnouncement(event) {
+            event.preventDefault();
+            currentConfigState.announcementText = (document.getElementById("quickAnnText")?.value || "").trim();
+            currentConfigState.announcementBtnLabel = (document.getElementById("quickAnnBtnLabel")?.value || "Перейти").trim();
+            currentConfigState.announcementUrl = (document.getElementById("quickAnnUrl")?.value || "https://t.me/FoXNEWofficial").trim();
+            currentConfigState.announcementActive = Boolean(document.getElementById("quickAnnActive")?.checked);
+            applyConfigToDOM(currentConfigState);
+            try {
+                await fetch(`${FIREBASE_DB_URL}/config.json`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        announcementText: currentConfigState.announcementText,
+                        announcementBtnLabel: currentConfigState.announcementBtnLabel,
+                        announcementUrl: currentConfigState.announcementUrl,
+                        announcementActive: currentConfigState.announcementActive
+                    })
+                });
+            } catch (e) {}
+            closeQuickAnnouncementModal();
+            setAdminNotice("Оголошення опубліковано на сайті!", false);
+        };
+
+        window.handleLogoFileUpload = function handleLogoFileUpload(event) {
+            const file = event.target?.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const dataUrl = e.target?.result;
+                if (typeof dataUrl === "string") {
+                    currentConfigState.logoUrl = dataUrl;
+                    const input = document.getElementById("adminLogoUrl");
+                    if (input) input.value = dataUrl;
+                    applyConfigToDOM(currentConfigState);
+                }
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.applyAdminChanges = async function applyAdminChanges() {
+            const nextCfg = {
+                ...currentConfigState,
+                theme: document.getElementById("adminThemeSelect")?.value || currentConfigState.theme,
+                announcementActive: Boolean(document.getElementById("adminAnnouncementActive")?.checked),
+                garageActive: Boolean(document.getElementById("adminGarageActive")?.checked),
+                pollActive: Boolean(document.getElementById("adminPollActive")?.checked),
+                subGarageActive: Boolean(document.getElementById("adminSubGarageActive")?.checked),
+                announcementText: (document.getElementById("adminAnnouncementText")?.value || "").trim(),
+                announcementBtnLabel: (document.getElementById("adminAnnouncementBtnLabel")?.value || "").trim(),
+                announcementUrl: (document.getElementById("adminAnnouncementUrl")?.value || "").trim(),
+                garageTitle: (document.getElementById("adminGarageTitle")?.value || "").trim(),
+                garageTip: (document.getElementById("adminGarageTip")?.value || "").trim(),
+                pollQuestion: (document.getElementById("adminPollQuestion")?.value || "").trim(),
+                pollOptA: (document.getElementById("adminPollOptA")?.value || "").trim(),
+                pollOptB: (document.getElementById("adminPollOptB")?.value || "").trim(),
+                emailTarget: (document.getElementById("adminEmailTarget")?.value || "").trim(),
+                logoUrl: (document.getElementById("adminLogoUrl")?.value || "").trim() || currentConfigState.logoUrl,
+                ytStat: (document.getElementById("adminYtStat")?.value || "").trim(),
+                tgStat: (document.getElementById("adminTgStat")?.value || "").trim(),
+                ttStat: (document.getElementById("adminTtStat")?.value || "").trim(),
+                latestVideoUrl: (document.getElementById("adminLatestVideoUrl")?.value || "").trim(),
+                latestVideoTitle: (document.getElementById("adminLatestVideoTitle")?.value || "").trim(),
+                ytUrl: (document.getElementById("adminYtUrl")?.value || "").trim(),
+                tgUrl: (document.getElementById("adminTgUrl")?.value || "").trim(),
+                igUrl: (document.getElementById("adminIgUrl")?.value || "").trim(),
+                ttUrl: (document.getElementById("adminTtUrl")?.value || "").trim()
+            };
+            applyConfigToDOM(nextCfg);
+            try {
+                await fetch(`${FIREBASE_DB_URL}/config.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(nextCfg)
+                });
+                setAdminNotice("Налаштування збережено локально та у Firebase!", false);
+            } catch (e) {
+                setAdminNotice("Збережено локально на пристрої.", false);
+            }
+        };
+
+        window.exportUpdatedFile = function exportUpdatedFile() {
+            const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "index.html";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        };
+
+        function renderPollUI() {
+            const a = Number(pollState.votesA || 0);
+            const b = Number(pollState.votesB || 0);
+            const total = a + b;
+            const pctA = total > 0 ? Math.round((a / total) * 100) : 0;
+            const pctB = total > 0 ? 100 - pctA : 0;
+
+            const totalEl = document.getElementById("pollTotalVotes");
+            const barA = document.getElementById("pollBarA");
+            const barB = document.getElementById("pollBarB");
+            const lblA = document.getElementById("pollPercentA");
+            const lblB = document.getElementById("pollPercentB");
+
+            if (totalEl) totalEl.textContent = `Голосів: ${total}`;
+            if (barA) barA.style.width = `${pctA}%`;
+            if (barB) barB.style.width = `${pctB}%`;
+            if (lblA) lblA.textContent = `${pctA}%`;
+            if (lblB) lblB.textContent = `${pctB}%`;
+        }
+
+        window.voteInPoll = async function voteInPoll(option) {
+            if (option === "a") pollState.votesA = Number(pollState.votesA || 0) + 1;
+            if (option === "b") pollState.votesB = Number(pollState.votesB || 0) + 1;
+            renderPollUI();
+            try {
+                await fetch(`${FIREBASE_DB_URL}/poll.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(pollState)
+                });
+            } catch (e) {}
+            const hint = document.getElementById("pollStatusHint");
+            if (hint) hint.textContent = "Дякуємо! Ваш голос враховано.";
+        };
+
+        window.resetPollVotesInFirebase = async function resetPollVotesInFirebase() {
+            pollState = { votesA: 0, votesB: 0 };
+            renderPollUI();
+            try {
+                await fetch(`${FIREBASE_DB_URL}/poll.json`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(pollState)
+                });
+            } catch (e) {}
+            setAdminNotice("Голоси опитування скинуто.", false);
+        };
+
+        // Аудіоплеєр
+        const TRACKS = [
+            { title: "AUTOHUB — Night Drive Synth", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", sc: "https://soundcloud.com" },
+            { title: "AUTOHUB — Garage Bassline", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", sc: "https://soundcloud.com" }
+        ];
+        let currentTrackIdx = 0;
+        let isPlayingAudio = false;
+
+        function syncAudioTrackUI() {
+            const track = TRACKS[currentTrackIdx] || TRACKS[0];
+            const audio = document.getElementById("bgAudio");
+            const titleEl = document.getElementById("trackTitle");
+            const scEl = document.getElementById("soundcloudLink");
+            if (titleEl && track) titleEl.textContent = track.title;
+            if (scEl && track) scEl.href = track.sc;
+            if (audio && track && audio.src !== track.url) {
+                audio.src = track.url;
+            }
+        }
+
+        function syncPlayButtons() {
+            const txt = document.getElementById("headerAudioText");
+            const pBtn = document.getElementById("playPauseBtn");
+            const eBtn = document.getElementById("expandedPlayBtn");
+            if (txt) txt.textContent = isPlayingAudio ? "Авто-вайб: ON" : "Авто-вайб: OFF";
+            if (pBtn) pBtn.innerHTML = `<i data-lucide="${isPlayingAudio ? "pause" : "play"}" class="w-4 h-4"></i>`;
+            if (eBtn) eBtn.innerHTML = `<i data-lucide="${isPlayingAudio ? "pause" : "play"}" class="w-5 h-5"></i>`;
+            renderIconsSafely();
+        }
+
+        window.toggleAudio = function toggleAudio(event) {
+            if (event) event.stopPropagation();
+            syncAudioTrackUI();
+            const audio = document.getElementById("bgAudio");
+            if (!audio) return;
+            if (isPlayingAudio) {
+                audio.pause();
+                isPlayingAudio = false;
+                syncPlayButtons();
+            } else {
+                audio.play().then(() => {
+                    isPlayingAudio = true;
+                    syncPlayButtons();
+                }).catch(() => {
+                    isPlayingAudio = false;
+                    syncPlayButtons();
+                });
+            }
+        };
+
+        window.prevTrack = function prevTrack() {
+            currentTrackIdx = (currentTrackIdx - 1 + TRACKS.length) % TRACKS.length;
+            syncAudioTrackUI();
+            if (isPlayingAudio) {
+                document.getElementById("bgAudio")?.play().catch(() => {});
+            }
+        };
+
+        window.nextTrack = function nextTrack() {
+            currentTrackIdx = (currentTrackIdx + 1) % TRACKS.length;
+            syncAudioTrackUI();
+            if (isPlayingAudio) {
+                document.getElementById("bgAudio")?.play().catch(() => {});
+            }
+        };
+
+        window.togglePlayerExpand = function togglePlayerExpand(event, forceToggle = false) {
+            if (event && !forceToggle && event.target.closest("button")) return;
+            const box = document.getElementById("playerExpandedContent");
+            const icon = document.getElementById("expandIcon");
+            if (!box) return;
+            const willOpen = box.classList.contains("hidden");
+            box.classList.toggle("hidden", !willOpen);
+            if (icon) icon.setAttribute("data-lucide", willOpen ? "chevron-down" : "chevron-up");
+            renderIconsSafely();
+        };
+
+        window.shareSite = function shareSite() {
+            const shareUrl = window.location.href;
+            const btnText = document.getElementById("shareBtnText");
+            if (navigator.share) {
+                navigator.share({ title: document.title, url: shareUrl }).catch(() => {});
+            }
+            try {
+                const temp = document.createElement("input");
+                temp.value = shareUrl;
+                document.body.appendChild(temp);
+                temp.select();
+                document.execCommand("copy");
+                document.body.removeChild(temp);
+            } catch (e) {}
+            if (btnText) {
+                const prev = btnText.textContent;
+                btnText.textContent = "Скопійовано!";
+                setTimeout(() => { btnText.textContent = prev; }, 1800);
+            }
+        };
+
+        // ШІ-помічник
+        const AI_CHIPS = [
+            "Які авто краще для першого водія?",
+            "Як підготувати авто до зими?",
+            "Що є на каналі AUTOHUB?",
+            "Як додати своє авто в гараж?"
+        ];
+        const aiHistory = [];
+
+        function renderAiChips() {
+            const chipsEl = document.getElementById("ah-ai-chips");
+            if (!chipsEl) return;
+            chipsEl.innerHTML = AI_CHIPS.map((q) => `<button type="button" class="ah-ai-chip">${q}</button>`).join("");
+            chipsEl.querySelectorAll(".ah-ai-chip").forEach((btn) => {
+                btn.addEventListener("click", () => sendAiMessage(btn.textContent));
+            });
+        }
+
+        function appendAiMessage(text, isUser = false) {
+            const box = document.getElementById("ah-ai-messages");
+            if (!box) return;
+            const p = document.createElement("p");
+            p.style.margin = "0 0 8px 0";
+            p.style.color = isUser ? "#ffffff" : "#d1d5db";
+            p.style.background = isUser ? "rgba(255,255,255,0.06)" : "transparent";
+            p.style.padding = isUser ? "6px 8px" : "2px 0";
+            p.style.borderRadius = "8px";
+            p.textContent = (isUser ? "Ви: " : "AUTOHUB ШІ: ") + text;
+            box.appendChild(p);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function sendAiMessage(overrideText = "") {
+            const input = document.getElementById("ah-ai-input");
+            const sendBtn = document.getElementById("ah-ai-send");
+            const raw = (overrideText || input?.value || "").trim();
+            if (!raw) return;
+            if (!overrideText && input) input.value = "";
+            appendAiMessage(raw, true);
+            if (sendBtn) sendBtn.disabled = true;
+
+            const recent = aiHistory.slice(-4).map((m) => `${m.role === "user" ? "Користувач" : "Помічник"}: ${m.text}`).join("\n");
+            const composedMessage = `${raw}\n\nКонтекст сайту AUTOHUB: огляди авто, поради, гараж підписників та опитування.${recent ? `\nОстанні репліки:\n${recent}` : ""}`;
+
+            try {
+                const res = await fetch(WORKER_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: composedMessage })
+                });
+                const data = await res.json();
+                const reply = data.reply || data.answer || data.message || "Вибачте, зараз не вдалося отримати відповідь. Спробуйте ще раз.";
+                aiHistory.push({ role: "user", text: raw }, { role: "assistant", text: reply });
+                appendAiMessage(reply, false);
+            } catch (e) {
+                appendAiMessage("Помилка з'єднання з сервісом помічника.", false);
+            } finally {
+                if (sendBtn) sendBtn.disabled = false;
+            }
+        }
+
+        function initAiWidget() {
+            const toggle = document.getElementById("ah-ai-toggle");
+            const box = document.getElementById("ah-ai-box");
+            const closeBtn = document.getElementById("ah-ai-close");
+            const sendBtn = document.getElementById("ah-ai-send");
+            const input = document.getElementById("ah-ai-input");
+
+            renderAiChips();
+
+            if (toggle && box) {
+                toggle.addEventListener("click", () => {
+                    const isOpen = box.style.display === "block";
+                    box.style.display = isOpen ? "none" : "block";
+                    renderIconsSafely();
+                });
+            }
+            if (closeBtn && box) {
+                closeBtn.addEventListener("click", () => {
+                    box.style.display = "none";
+                });
+            }
+            if (sendBtn) {
+                sendBtn.addEventListener("click", () => sendAiMessage());
+            }
+            if (input) {
+                input.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        sendAiMessage();
+                    }
+                });
+            }
+        }
+
+        function initLogoAdminTrigger() {
+            const logoContainer = document.getElementById("logoContainer");
+            if (!logoContainer) return;
+            logoContainer.addEventListener("click", () => {
+                logoClicks += 1;
+                clearTimeout(logoClickTimer);
+                logoClickTimer = setTimeout(() => { logoClicks = 0; }, 1200);
+                if (logoClicks >= 3) {
+                    logoClicks = 0;
+                    window.openAdminModal();
+                }
+            });
+        }
+
+        function initAudioListeners() {
+            const audio = document.getElementById("bgAudio");
+            const progressBar = document.getElementById("progressBar");
+            const volumeSlider = document.getElementById("volumeSlider");
+            const curEl = document.getElementById("currentTime");
+            const durEl = document.getElementById("duration");
+
+            const fmt = (sec) => {
+                if (!isFinite(sec) || sec < 0) return "0:00";
+                const m = Math.floor(sec / 60);
+                const s = Math.floor(sec % 60);
+                return `${m}:${s < 10 ? "0" : ""}${s}`;
+            };
+
+            if (audio) {
+                audio.volume = volumeSlider ? Number(volumeSlider.value || 0.8) : 0.8;
+                audio.addEventListener("timeupdate", () => {
+                    if (!audio.duration) return;
+                    if (progressBar) progressBar.value = String((audio.currentTime / audio.duration) * 100);
+                    if (curEl) curEl.textContent = fmt(audio.currentTime);
+                    if (durEl) durEl.textContent = fmt(audio.duration);
+                });
+                audio.addEventListener("ended", () => window.nextTrack());
+            }
+            if (progressBar && audio) {
+                progressBar.addEventListener("input", () => {
+                    if (audio.duration) {
+                        audio.currentTime = (Number(progressBar.value) / 100) * audio.duration;
+                    }
+                });
+            }
+            if (volumeSlider && audio) {
+                volumeSlider.addEventListener("input", () => {
+                    audio.volume = Number(volumeSlider.value);
+                });
+            }
+        }
+
+        async function loadRemoteData() {
+            const savedLocalConfig = safeLocalGet(LOCAL_CONFIG_KEY, null);
+            if (savedLocalConfig && typeof savedLocalConfig === "object") {
+                applyConfigToDOM(savedLocalConfig);
+            } else {
+                applyConfigToDOM(currentConfigState);
+            }
+
+            try {
+                const cfgRes = await fetch(`${FIREBASE_DB_URL}/config.json`);
+                if (cfgRes.ok) {
+                    const remoteCfg = await cfgRes.json();
+                    if (remoteCfg && typeof remoteCfg === "object") {
+                        applyConfigToDOM({ ...currentConfigState, ...remoteCfg });
+                    }
+                }
+            } catch (e) {}
+
+            try {
+                const pollRes = await fetch(`${FIREBASE_DB_URL}/poll.json`);
+                if (pollRes.ok) {
+                    const remotePoll = await pollRes.json();
+                    if (remotePoll && typeof remotePoll === "object") {
+                        pollState = {
+                            votesA: Number(remotePoll.votesA || 0),
+                            votesB: Number(remotePoll.votesB || 0)
+                        };
+                    }
+                }
+            } catch (e) {}
+            renderPollUI();
+
+            await loadGarageCarsFromFirebase();
+            await loadIdeasFromFirebase();
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                let seenWelcome = false;
+                try {
+                    seenWelcome = localStorage.getItem(WELCOME_SEEN_KEY) === "1";
+                } catch (e) {}
+                const welcomeModal = document.getElementById("welcomeModal");
+                if (welcomeModal && seenWelcome) {
+                    welcomeModal.classList.add("hidden");
+                }
+            } catch (e) {}
+
+            syncAudioTrackUI();
+            initAudioListeners();
+            initAiWidget();
+            initLogoAdminTrigger();
+            renderIconsSafely();
+            await loadRemoteData();
+            renderIconsSafely();
+        });
+    </script>
+</body>
+</html>
