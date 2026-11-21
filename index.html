@@ -1030,55 +1030,803 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        lucide.createIcons();
-
         const WELCOME_SEEN_KEY = "autohub_welcome_seen_v1";
+        const WORKER_URL = "https://shiny-moon-c021.sandreklam.workers.dev";
+        const FIREBASE_DB_URL = "https://autohub-official-default-rtdb.europe-west1.firebasedatabase.app";
+        const ADMIN_PASSCODE = "autohub2026";
+        const THEMES = ["orange", "neon", "garage"];
+        const THEME_LABELS = {
+            orange: "Тема: Orange",
+            neon: "Тема: Neon",
+            garage: "Тема: Garage"
+        };
+
+        const TRACKS = [
+            {
+                title: "AUTOHUB — Night Drive Vibe",
+                url: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3",
+                sc: "https://soundcloud.com"
+            },
+            {
+                title: "AUTOHUB — Midnight Garage",
+                url: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=chill-abstract-intention-12099.mp3",
+                sc: "https://soundcloud.com"
+            }
+        ];
+
+        let currentTrackIndex = 0;
+        let isPlaying = false;
+        let isPlayerExpanded = false;
+        let isAdminMode = false;
+        let logoClicks = 0;
+        let logoClickTimer = null;
+        let pollState = { votesA: 0, votesB: 0 };
+        let aiHistory = [];
+
+        const AI_CHIPS = [
+            "Які останні відео на каналі?",
+            "Дай пораду щодо тиску в шинах",
+            "Як додати своє авто в гараж?",
+            "Що є в Telegram спільноті?",
+            "Як підібрати перше авто?",
+            "Як запропонувати ідею для відео?"
+        ];
+
+        function safeRefreshIcons() {
+            try {
+                if (typeof lucide !== "undefined" && typeof lucide.createIcons === "function") {
+                    lucide.createIcons();
+                }
+            } catch (e) {}
+        }
 
         function initWelcomeModal() {
-            const modal = document.getElementById('welcomeModal');
+            const modal = document.getElementById("welcomeModal");
             if (!modal) return;
             try {
                 if (localStorage.getItem(WELCOME_SEEN_KEY) === "1") {
-                    modal.classList.add('hidden');
+                    modal.classList.add("hidden");
                 } else {
-                    modal.classList.remove('hidden');
+                    modal.classList.remove("hidden");
                 }
             } catch (e) {
-                modal.classList.remove('hidden');
+                modal.classList.remove("hidden");
             }
         }
 
-        function closeWelcomeModal(withMusic = false) {
-            const modal = document.getElementById('welcomeModal');
+        window.closeWelcomeModal = function closeWelcomeModal(withMusic = false) {
+            const modal = document.getElementById("welcomeModal");
             if (modal) {
-                modal.classList.add('hidden');
+                modal.classList.add("hidden");
             }
             try {
                 localStorage.setItem(WELCOME_SEEN_KEY, "1");
             } catch (e) {}
-            if (withMusic && typeof toggleAudio === "function") {
+            if (withMusic) {
                 try {
                     toggleAudio();
                 } catch (e) {}
             }
+        };
+
+        function applyTheme(themeName) {
+            const validTheme = THEMES.includes(themeName) ? themeName : "orange";
+            document.body.setAttribute("data-theme", validTheme);
+            const label = document.getElementById("themeBadgeLabel");
+            if (label) label.textContent = THEME_LABELS[validTheme] || "Тема: Orange";
+            const select = document.getElementById("adminThemeSelect");
+            if (select) select.value = validTheme;
+            try {
+                localStorage.setItem("autohub_theme", validTheme);
+            } catch (e) {}
         }
 
-        // Безпечний запуск після завантаження DOM, щоб жодна помилка не блокувала сторінку
+        function cycleTheme() {
+            const current = document.body.getAttribute("data-theme") || "orange";
+            const nextIndex = (THEMES.indexOf(current) + 1) % THEMES.length;
+            applyTheme(THEMES[nextIndex]);
+        }
+
+        function updateTrackUI() {
+            const track = TRACKS[currentTrackIndex] || TRACKS[0];
+            const titleEl = document.getElementById("trackTitle");
+            const scLink = document.getElementById("soundcloudLink");
+            const audio = document.getElementById("bgAudio");
+            if (titleEl) titleEl.textContent = track.title;
+            if (scLink) scLink.href = track.sc;
+            if (audio && track.url && audio.src !== track.url) {
+                audio.src = track.url;
+            }
+        }
+
+        function updatePlayButtonsUI() {
+            const playIconName = isPlaying ? "pause" : "play";
+            const playPauseBtn = document.getElementById("playPauseBtn");
+            const expandedPlayBtn = document.getElementById("expandedPlayBtn");
+            const headerAudioText = document.getElementById("headerAudioText");
+            if (playPauseBtn) {
+                playPauseBtn.innerHTML = `<i data-lucide="${playIconName}" class="w-4 h-4"></i>`;
+            }
+            if (expandedPlayBtn) {
+                expandedPlayBtn.innerHTML = `<i data-lucide="${playIconName}" class="w-5 h-5"></i>`;
+            }
+            if (headerAudioText) {
+                headerAudioText.textContent = isPlaying ? "Авто-вайб: ON" : "Авто-вайб: OFF";
+            }
+            safeRefreshIcons();
+        }
+
+        function toggleAudio(event) {
+            if (event) event.stopPropagation();
+            const audio = document.getElementById("bgAudio");
+            if (!audio) return;
+            updateTrackUI();
+            if (!isPlaying) {
+                audio.play().then(() => {
+                    isPlaying = true;
+                    updatePlayButtonsUI();
+                }).catch(() => {
+                    isPlaying = false;
+                    updatePlayButtonsUI();
+                });
+            } else {
+                audio.pause();
+                isPlaying = false;
+                updatePlayButtonsUI();
+            }
+        }
+
+        function prevTrack() {
+            currentTrackIndex = (currentTrackIndex - 1 + TRACKS.length) % TRACKS.length;
+            updateTrackUI();
+            if (isPlaying) {
+                const audio = document.getElementById("bgAudio");
+                if (audio) audio.play().catch(() => {});
+            }
+            updatePlayButtonsUI();
+        }
+
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % TRACKS.length;
+            updateTrackUI();
+            if (isPlaying) {
+                const audio = document.getElementById("bgAudio");
+                if (audio) audio.play().catch(() => {});
+            }
+            updatePlayButtonsUI();
+        }
+
+        function togglePlayerExpand(event, forceToggle = false) {
+            if (event && !forceToggle && event.target.closest("button")) return;
+            if (event) event.stopPropagation();
+            isPlayerExpanded = !isPlayerExpanded;
+            const content = document.getElementById("playerExpandedContent");
+            const icon = document.getElementById("expandIcon");
+            if (content) content.classList.toggle("hidden", !isPlayerExpanded);
+            if (icon) icon.setAttribute("data-lucide", isPlayerExpanded ? "chevron-down" : "chevron-up");
+            safeRefreshIcons();
+        }
+
+        function formatTime(sec) {
+            if (!Number.isFinite(sec) || sec < 0) return "0:00";
+            const mins = Math.floor(sec / 60);
+            const rem = Math.floor(sec % 60);
+            return `${mins}:${rem < 10 ? "0" : ""}${rem}`;
+        }
+
+        function bindAudioEvents() {
+            const audio = document.getElementById("bgAudio");
+            const progressBar = document.getElementById("progressBar");
+            const volumeSlider = document.getElementById("volumeSlider");
+            if (!audio) return;
+
+            if (volumeSlider) {
+                audio.volume = parseFloat(volumeSlider.value || "0.8");
+                volumeSlider.addEventListener("input", () => {
+                    audio.volume = parseFloat(volumeSlider.value);
+                });
+            }
+
+            audio.addEventListener("timeupdate", () => {
+                const curEl = document.getElementById("currentTime");
+                const durEl = document.getElementById("duration");
+                if (curEl) curEl.textContent = formatTime(audio.currentTime);
+                if (durEl) durEl.textContent = formatTime(audio.duration);
+                if (progressBar && audio.duration) {
+                    progressBar.value = Math.round((audio.currentTime / audio.duration) * 100);
+                }
+            });
+
+            if (progressBar) {
+                progressBar.addEventListener("input", () => {
+                    if (audio.duration) {
+                        audio.currentTime = (parseFloat(progressBar.value) / 100) * audio.duration;
+                    }
+                });
+            }
+
+            audio.addEventListener("ended", () => {
+                nextTrack();
+            });
+        }
+
+        function shareSite() {
+            const url = window.location.href;
+            const label = document.getElementById("shareBtnText");
+            if (navigator.share) {
+                navigator.share({ title: document.title, url }).catch(() => {});
+            } else {
+                const temp = document.createElement("input");
+                temp.value = url;
+                document.body.appendChild(temp);
+                temp.select();
+                try { document.execCommand("copy"); } catch (e) {}
+                document.body.removeChild(temp);
+            }
+            if (label) {
+                const prev = label.textContent;
+                label.textContent = "Скопійовано!";
+                setTimeout(() => { label.textContent = prev; }, 1800);
+            }
+        }
+
+        function renderPollUI() {
+            const total = (pollState.votesA || 0) + (pollState.votesB || 0);
+            const pctA = total > 0 ? Math.round(((pollState.votesA || 0) / total) * 100) : 0;
+            const pctB = total > 0 ? 100 - pctA : 0;
+            const totalEl = document.getElementById("pollTotalVotes");
+            const barA = document.getElementById("pollBarA");
+            const barB = document.getElementById("pollBarB");
+            const pctAEl = document.getElementById("pollPercentA");
+            const pctBEl = document.getElementById("pollPercentB");
+            if (totalEl) totalEl.textContent = `Голосів: ${total}`;
+            if (barA) barA.style.width = `${pctA}%`;
+            if (barB) barB.style.width = `${pctB}%`;
+            if (pctAEl) pctAEl.textContent = `${pctA}%`;
+            if (pctBEl) pctBEl.textContent = `${pctB}%`;
+        }
+
+        async function voteInPoll(option) {
+            const hint = document.getElementById("pollStatusHint");
+            try {
+                if (localStorage.getItem("autohub_poll_voted") === "1") {
+                    if (hint) hint.textContent = "Ви вже проголосували в цьому опитуванні.";
+                    return;
+                }
+            } catch (e) {}
+
+            if (option === "a") pollState.votesA = (pollState.votesA || 0) + 1;
+            if (option === "b") pollState.votesB = (pollState.votesB || 0) + 1;
+            renderPollUI();
+
+            try {
+                localStorage.setItem("autohub_poll_voted", "1");
+                await fetch(`${FIREBASE_DB_URL}/poll.json`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ votesA: pollState.votesA, votesB: pollState.votesB })
+                });
+            } catch (e) {}
+
+            if (hint) hint.textContent = "Дякуємо! Ваш голос враховано.";
+        }
+
+        async function resetPollVotesInFirebase() {
+            pollState = { votesA: 0, votesB: 0 };
+            renderPollUI();
+            try {
+                await fetch(`${FIREBASE_DB_URL}/poll.json`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ votesA: 0, votesB: 0 })
+                });
+            } catch (e) {}
+        }
+
+        function openGarageSubmitModal() {
+            const m = document.getElementById("garageSubmitModal");
+            const form = document.getElementById("garageSubmitForm");
+            const ok = document.getElementById("garageSubmitSuccess");
+            if (form) form.classList.remove("hidden");
+            if (ok) ok.classList.add("hidden");
+            if (m) m.classList.remove("hidden");
+        }
+
+        function closeGarageSubmitModal() {
+            const m = document.getElementById("garageSubmitModal");
+            if (m) m.classList.add("hidden");
+        }
+
+        async function submitCarToGarage(event) {
+            event.preventDefault();
+            const owner = (document.getElementById("garageOwnerInput")?.value || "").trim();
+            const model = (document.getElementById("garageCarModelInput")?.value || "").trim();
+            const photo = (document.getElementById("garagePhotoUrlInput")?.value || "").trim();
+            const desc = (document.getElementById("garageDescInput")?.value || "").trim();
+            const errEl = document.getElementById("garageSubmitError");
+            if (!owner || !model || !photo || !desc) return;
+            try {
+                const res = await fetch(`${FIREBASE_DB_URL}/garageCars.json`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ owner, model, photo, desc, approved: false, createdAt: Date.now() })
+                });
+                if (!res.ok) throw new Error("Network error");
+                if (errEl) errEl.classList.add("hidden");
+                document.getElementById("garageSubmitForm")?.classList.add("hidden");
+                document.getElementById("garageSubmitSuccess")?.classList.remove("hidden");
+                event.target.reset();
+            } catch (e) {
+                if (errEl) {
+                    errEl.textContent = "Не вдалося надіслати заявку. Спробуйте пізніше.";
+                    errEl.classList.remove("hidden");
+                }
+            }
+        }
+
+        async function loadGarageCarsFromFirebase() {
+            const publicList = document.getElementById("approvedCarsList");
+            const adminList = document.getElementById("adminGarageCarsList");
+            try {
+                const res = await fetch(`${FIREBASE_DB_URL}/garageCars.json`);
+                const data = await res.json();
+                const entries = data ? Object.entries(data) : [];
+                const approved = entries.filter(([, v]) => v && v.approved);
+
+                if (publicList) {
+                    if (!approved.length) {
+                        publicList.innerHTML = `<div class="p-4 rounded-xl bg-white/5 border border-white/5 text-center text-xs text-gray-400 col-span-full">Поки що немає схвалених авто. Будьте першим!</div>`;
+                    } else {
+                        publicList.innerHTML = approved.map(([, car]) => `
+                            <div class="rounded-xl bg-white/5 border border-white/10 overflow-hidden">
+                                <img src="${car.photo}" onerror="this.onerror=null;this.src='https://placehold.co/600x340/161920/f97316?text=AUTOHUB+GARAGE';" alt="${car.model}" class="w-full h-32 object-cover">
+                                <div class="p-3 space-y-1">
+                                    <div class="text-xs font-bold text-white">${car.model}</div>
+                                    <div class="text-[11px] text-gray-300">${car.desc}</div>
+                                    <div class="text-[10px] accent-text font-medium">Власник: ${car.owner}</div>
+                                </div>
+                            </div>
+                        `).join("");
+                    }
+                }
+
+                if (adminList) {
+                    if (!entries.length) {
+                        adminList.innerHTML = `<p class="text-gray-500">Заявок поки немає.</p>`;
+                    } else {
+                        adminList.innerHTML = entries.map(([id, car]) => `
+                            <div class="p-2 rounded-lg bg-black/30 border border-white/10 flex items-center justify-between gap-2">
+                                <div class="min-w-0">
+                                    <div class="font-semibold text-white truncate">${car.model} (${car.owner})</div>
+                                    <div class="text-[10px] text-gray-400 truncate">${car.desc}</div>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <button type="button" onclick="setGarageCarApproval('${id}', ${!car.approved})" class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 text-[10px]">${car.approved ? "Сховати" : "Схвалити"}</button>
+                                    <button type="button" onclick="deleteGarageCar('${id}')" class="px-2 py-1 rounded bg-red-500/20 text-red-300 text-[10px]">✕</button>
+                                </div>
+                            </div>
+                        `).join("");
+                    }
+                }
+            } catch (e) {
+                if (publicList) publicList.innerHTML = `<div class="p-3 rounded-xl bg-white/5 text-center text-xs text-gray-400 col-span-full">Не вдалося завантажити авто.</div>`;
+            }
+        }
+
+        async function setGarageCarApproval(id, approved) {
+            await fetch(`${FIREBASE_DB_URL}/garageCars/${id}.json`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ approved })
+            });
+            loadGarageCarsFromFirebase();
+        }
+
+        async function deleteGarageCar(id) {
+            await fetch(`${FIREBASE_DB_URL}/garageCars/${id}.json`, { method: "DELETE" });
+            loadGarageCarsFromFirebase();
+        }
+
+        function openFeedbackModal() {
+            document.getElementById("feedbackForm")?.classList.remove("hidden");
+            document.getElementById("feedbackSuccess")?.classList.add("hidden");
+            document.getElementById("feedbackModal")?.classList.remove("hidden");
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById("feedbackModal")?.classList.add("hidden");
+        }
+
+        async function submitFeedback(event) {
+            event.preventDefault();
+            const name = (document.getElementById("feedbackName")?.value || "").trim();
+            const message = (document.getElementById("feedbackMessage")?.value || "").trim();
+            const errEl = document.getElementById("feedbackError");
+            if (!name || !message) return;
+            try {
+                await fetch(`${FIREBASE_DB_URL}/ideas.json`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, message, createdAt: Date.now() })
+                });
+                if (errEl) errEl.classList.add("hidden");
+                document.getElementById("feedbackForm")?.classList.add("hidden");
+                document.getElementById("feedbackSuccess")?.classList.remove("hidden");
+                event.target.reset();
+            } catch (e) {
+                if (errEl) {
+                    errEl.textContent = "Помилка збереження ідеї.";
+                    errEl.classList.remove("hidden");
+                }
+            }
+        }
+
+        async function loadIdeasFromFirebase() {
+            const box = document.getElementById("adminIdeasList");
+            if (!box) return;
+            try {
+                const res = await fetch(`${FIREBASE_DB_URL}/ideas.json`);
+                const data = await res.json();
+                const items = data ? Object.values(data).reverse() : [];
+                if (!items.length) {
+                    box.innerHTML = `<p class="text-gray-500">Ідей поки немає.</p>`;
+                    return;
+                }
+                box.innerHTML = items.map(item => `
+                    <div class="p-2 rounded-lg bg-black/30 border border-white/5">
+                        <div class="font-semibold text-white">${item.name || "Анонім"}</div>
+                        <div class="text-gray-300">${item.message || ""}</div>
+                    </div>
+                `).join("");
+            } catch (e) {
+                box.innerHTML = `<p class="text-gray-500">Не вдалося завантажити ідеї.</p>`;
+            }
+        }
+
+        function openQuickAnnouncementModal() {
+            document.getElementById("quickAnnouncementModal")?.classList.remove("hidden");
+        }
+
+        function closeQuickAnnouncementModal() {
+            document.getElementById("quickAnnouncementModal")?.classList.add("hidden");
+        }
+
+        async function publishQuickAnnouncement(event) {
+            event.preventDefault();
+            const text = (document.getElementById("quickAnnText")?.value || "").trim();
+            const btnLabel = (document.getElementById("quickAnnBtnLabel")?.value || "Перейти").trim() || "Перейти";
+            const url = (document.getElementById("quickAnnUrl")?.value || "https://t.me/FoXNEWofficial").trim() || "https://t.me/FoXNEWofficial";
+            const active = Boolean(document.getElementById("quickAnnActive")?.checked);
+            if (!text) return;
+
+            document.getElementById("announcementText").textContent = text;
+            document.getElementById("announcementBtnLabel").textContent = btnLabel;
+            document.getElementById("announcementBtn").href = url;
+            document.getElementById("announcementBanner")?.classList.toggle("hidden", !active);
+
+            try {
+                await fetch(`${FIREBASE_DB_URL}/config.json`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        announcementText: text,
+                        announcementBtnLabel: btnLabel,
+                        announcementUrl: url,
+                        announcementActive: active
+                    })
+                });
+            } catch (e) {}
+
+            closeQuickAnnouncementModal();
+        }
+
+        function openAdminModal() {
+            isAdminMode = true;
+            document.getElementById("adminBanner")?.classList.remove("hidden");
+            document.getElementById("adminModal")?.classList.remove("hidden");
+            loadIdeasFromFirebase();
+            loadGarageCarsFromFirebase();
+            safeRefreshIcons();
+        }
+
+        function closeAdminModal() {
+            document.getElementById("adminModal")?.classList.add("hidden");
+        }
+
+        function handleLogoFileUpload(event) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                const urlInput = document.getElementById("adminLogoUrl");
+                if (urlInput && typeof reader.result === "string") {
+                    urlInput.value = reader.result;
+                    document.getElementById("mainLogoImg").src = reader.result;
+                    document.getElementById("adminLogoImg").src = reader.result;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function extractYouTubeId(url) {
+            if (!url) return "GGmVsoxtA6g";
+            const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/);
+            return match ? match[1] : "GGmVsoxtA6g";
+        }
+
+        async function applyAdminChanges() {
+            const statusEl = document.getElementById("adminStatusMsg");
+            const payload = {
+                theme: document.getElementById("adminThemeSelect")?.value || "orange",
+                announcementActive: Boolean(document.getElementById("adminAnnouncementActive")?.checked),
+                garageActive: Boolean(document.getElementById("adminGarageActive")?.checked),
+                pollActive: Boolean(document.getElementById("adminPollActive")?.checked),
+                subGarageActive: Boolean(document.getElementById("adminSubGarageActive")?.checked),
+                announcementText: document.getElementById("adminAnnouncementText")?.value || "",
+                announcementBtnLabel: document.getElementById("adminAnnouncementBtnLabel")?.value || "Перейти",
+                announcementUrl: document.getElementById("adminAnnouncementUrl")?.value || "https://t.me/FoXNEWofficial",
+                garageTitle: document.getElementById("adminGarageTitle")?.value || "",
+                garageTip: document.getElementById("adminGarageTip")?.value || "",
+                pollQuestion: document.getElementById("adminPollQuestion")?.value || "",
+                pollOptA: document.getElementById("adminPollOptA")?.value || "",
+                pollOptB: document.getElementById("adminPollOptB")?.value || "",
+                emailTarget: document.getElementById("adminEmailTarget")?.value || "",
+                logoUrl: document.getElementById("adminLogoUrl")?.value || "",
+                ytStat: document.getElementById("adminYtStat")?.value || "Тест",
+                tgStat: document.getElementById("adminTgStat")?.value || "Тест",
+                ttStat: document.getElementById("adminTtStat")?.value || "Тест",
+                latestVideoUrl: document.getElementById("adminLatestVideoUrl")?.value || "",
+                latestVideoTitle: document.getElementById("adminLatestVideoTitle")?.value || "",
+                ytUrl: document.getElementById("adminYtUrl")?.value || "",
+                tgUrl: document.getElementById("adminTgUrl")?.value || "",
+                igUrl: document.getElementById("adminIgUrl")?.value || "",
+                ttUrl: document.getElementById("adminTtUrl")?.value || ""
+            };
+
+            applyConfigToDOM(payload);
+            try {
+                await fetch(`${FIREBASE_DB_URL}/config.json`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                if (statusEl) {
+                    statusEl.textContent = "Зміни збережено у хмарі!";
+                    statusEl.className = "p-2.5 rounded-xl text-xs font-medium bg-emerald-500/20 text-emerald-300";
+                    statusEl.classList.remove("hidden");
+                }
+            } catch (e) {
+                if (statusEl) {
+                    statusEl.textContent = "Помилка збереження у Firebase.";
+                    statusEl.className = "p-2.5 rounded-xl text-xs font-medium bg-red-500/20 text-red-300";
+                    statusEl.classList.remove("hidden");
+                }
+            }
+        }
+
+        function applyConfigToDOM(cfg = {}) {
+            if (cfg.theme) applyTheme(cfg.theme);
+            if (typeof cfg.announcementActive === "boolean") {
+                document.getElementById("announcementBanner")?.classList.toggle("hidden", !cfg.announcementActive);
+            }
+            if (typeof cfg.garageActive === "boolean") {
+                document.getElementById("garageCard")?.classList.toggle("hidden", !cfg.garageActive);
+            }
+            if (typeof cfg.pollActive === "boolean") {
+                document.getElementById("pollCard")?.classList.toggle("hidden", !cfg.pollActive);
+            }
+            if (typeof cfg.subGarageActive === "boolean") {
+                document.getElementById("subscribersGarageCard")?.classList.toggle("hidden", !cfg.subGarageActive);
+            }
+
+            if (cfg.announcementText) document.getElementById("announcementText").textContent = cfg.announcementText;
+            if (cfg.announcementBtnLabel) document.getElementById("announcementBtnLabel").textContent = cfg.announcementBtnLabel;
+            if (cfg.announcementUrl) document.getElementById("announcementBtn").href = cfg.announcementUrl;
+            if (cfg.garageTitle) document.getElementById("garageTitle").textContent = cfg.garageTitle;
+            if (cfg.garageTip) document.getElementById("garageTipText").textContent = cfg.garageTip;
+            if (cfg.pollQuestion) document.getElementById("pollQuestionText").textContent = cfg.pollQuestion;
+            if (cfg.pollOptA) document.getElementById("pollOptALabel").textContent = cfg.pollOptA;
+            if (cfg.pollOptB) document.getElementById("pollOptBLabel").textContent = cfg.pollOptB;
+            if (cfg.ytStat) document.getElementById("statYoutube").textContent = cfg.ytStat;
+            if (cfg.tgStat) document.getElementById("statTelegram").textContent = cfg.tgStat;
+            if (cfg.ttStat) document.getElementById("statTiktok").textContent = cfg.ttStat;
+
+            if (cfg.logoUrl) {
+                document.getElementById("mainLogoImg").src = cfg.logoUrl;
+                document.getElementById("adminLogoImg").src = cfg.logoUrl;
+                document.getElementById("faviconLink").href = cfg.logoUrl;
+            }
+
+            if (cfg.latestVideoTitle) {
+                document.getElementById("latestVideoTitle").textContent = cfg.latestVideoTitle;
+            }
+            if (cfg.latestVideoUrl) {
+                const vidId = extractYouTubeId(cfg.latestVideoUrl);
+                document.getElementById("youtubePreviewCard").href = cfg.latestVideoUrl;
+                document.getElementById("mainYoutubeLinkBtn").href = cfg.latestVideoUrl;
+                document.getElementById("latestVideoThumb").src = `https://img.youtube.com/vi/${vidId}/maxresdefault.jpg`;
+            }
+
+            if (cfg.ytUrl) {
+                document.getElementById("linkYoutube").href = cfg.ytUrl;
+                document.getElementById("mainYoutubeLinkHeader").href = cfg.ytUrl;
+            }
+            if (cfg.tgUrl) document.getElementById("linkTelegram").href = cfg.tgUrl;
+            if (cfg.igUrl) document.getElementById("linkInstagram").href = cfg.igUrl;
+            if (cfg.ttUrl) document.getElementById("linkTiktok").href = cfg.ttUrl;
+
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el && typeof val === "string") el.value = val;
+            };
+            const setChk = (id, val) => {
+                const el = document.getElementById(id);
+                if (el && typeof val === "boolean") el.checked = val;
+            };
+
+            setChk("adminAnnouncementActive", cfg.announcementActive);
+            setChk("adminGarageActive", cfg.garageActive);
+            setChk("adminPollActive", cfg.pollActive);
+            setChk("adminSubGarageActive", cfg.subGarageActive);
+            setVal("adminAnnouncementText", cfg.announcementText);
+            setVal("adminAnnouncementBtnLabel", cfg.announcementBtnLabel);
+            setVal("adminAnnouncementUrl", cfg.announcementUrl);
+            setVal("adminGarageTitle", cfg.garageTitle);
+            setVal("adminGarageTip", cfg.garageTip);
+            setVal("adminPollQuestion", cfg.pollQuestion);
+            setVal("adminPollOptA", cfg.pollOptA);
+            setVal("adminPollOptB", cfg.pollOptB);
+            setVal("adminEmailTarget", cfg.emailTarget);
+            setVal("adminLogoUrl", cfg.logoUrl);
+            setVal("adminYtStat", cfg.ytStat);
+            setVal("adminTgStat", cfg.tgStat);
+            setVal("adminTtStat", cfg.ttStat);
+            setVal("adminLatestVideoUrl", cfg.latestVideoUrl);
+            setVal("adminLatestVideoTitle", cfg.latestVideoTitle);
+            setVal("adminYtUrl", cfg.ytUrl);
+            setVal("adminTgUrl", cfg.tgUrl);
+            setVal("adminIgUrl", cfg.igUrl);
+            setVal("adminTtUrl", cfg.ttUrl);
+        }
+
+        function exportUpdatedFile() {
+            const html = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+            const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "index.html";
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        async function loadSavedConfig() {
+            try {
+                const savedTheme = localStorage.getItem("autohub_theme");
+                if (savedTheme) applyTheme(savedTheme);
+            } catch (e) {}
+
+            try {
+                const res = await fetch(`${FIREBASE_DB_URL}/.json`);
+                const data = await res.json();
+                if (data && data.config) applyConfigToDOM(data.config);
+                if (data && data.poll) {
+                    pollState.votesA = Number(data.poll.votesA || 0);
+                    pollState.votesB = Number(data.poll.votesB || 0);
+                }
+            } catch (e) {}
+            renderPollUI();
+            loadGarageCarsFromFirebase();
+        }
+
+        function initAiWidget() {
+            const toggleBtn = document.getElementById("ah-ai-toggle");
+            const box = document.getElementById("ah-ai-box");
+            const closeBtn = document.getElementById("ah-ai-close");
+            const sendBtn = document.getElementById("ah-ai-send");
+            const input = document.getElementById("ah-ai-input");
+            const messages = document.getElementById("ah-ai-messages");
+            const chipsBox = document.getElementById("ah-ai-chips");
+            const refreshChipsBtn = document.getElementById("ah-ai-refresh-chips");
+
+            function renderChips() {
+                if (!chipsBox) return;
+                const shuffled = [...AI_CHIPS].sort(() => Math.random() - 0.5).slice(0, 3);
+                chipsBox.innerHTML = shuffled.map(text => `<button type="button" class="ah-ai-chip">${text}</button>`).join("");
+                chipsBox.querySelectorAll(".ah-ai-chip").forEach(chip => {
+                    chip.addEventListener("click", () => {
+                        if (input) input.value = chip.textContent || "";
+                        sendAiMessage();
+                    });
+                });
+            }
+
+            function appendBubble(role, text) {
+                if (!messages) return;
+                const wrap = document.createElement("div");
+                wrap.style.marginBottom = "8px";
+                wrap.style.padding = "8px 10px";
+                wrap.style.borderRadius = "10px";
+                wrap.style.backgroundColor = role === "user" ? "rgba(255,255,255,0.08)" : "rgba(249,115,22,0.12)";
+                wrap.textContent = text;
+                messages.appendChild(wrap);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            async function sendAiMessage() {
+                if (!input || !sendBtn) return;
+                const text = input.value.trim();
+                if (!text) return;
+
+                input.value = "";
+                sendBtn.disabled = true;
+                appendBubble("user", text);
+
+                const historySnippet = aiHistory.slice(-4).map(m => `${m.role}: ${m.text}`).join(" | ");
+                const promptText = historySnippet ? `${text}\nКонтекст: ${historySnippet}` : text;
+                aiHistory.push({ role: "Користувач", text });
+
+                try {
+                    const res = await fetch(WORKER_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ message: promptText })
+                    });
+                    const data = await res.json();
+                    const reply = data.reply || data.response || data.message || "Вибачте, не вдалося отримати відповідь.";
+                    appendBubble("assistant", reply);
+                    aiHistory.push({ role: "Асистент", text: reply });
+                } catch (e) {
+                    appendBubble("assistant", "Сталася помилка з'єднання з помічником.");
+                } finally {
+                    sendBtn.disabled = false;
+                }
+            }
+
+            toggleBtn?.addEventListener("click", () => {
+                if (!box) return;
+                box.style.display = box.style.display === "block" ? "none" : "block";
+            });
+            closeBtn?.addEventListener("click", () => {
+                if (box) box.style.display = "none";
+            });
+            refreshChipsBtn?.addEventListener("click", renderChips);
+            sendBtn?.addEventListener("click", sendAiMessage);
+            input?.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    sendAiMessage();
+                }
+            });
+
+            renderChips();
+        }
+
+        function initAdminTrigger() {
+            const logoContainer = document.getElementById("logoContainer");
+            logoContainer?.addEventListener("click", () => {
+                logoClicks += 1;
+                clearTimeout(logoClickTimer);
+                logoClickTimer = setTimeout(() => { logoClicks = 0; }, 1200);
+                if (logoClicks >= 3) {
+                    logoClicks = 0;
+                    const pass = window.prompt("Введіть пароль адміністратора:");
+                    if (pass === ADMIN_PASSCODE) {
+                        openAdminModal();
+                    }
+                }
+            });
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
             initWelcomeModal();
-            if (typeof lucide !== "undefined" && typeof lucide.createIcons === "function") {
-                try {
-                    lucide.createIcons();
-                } catch (e) {}
-            }
-            if (typeof updateTrackUI === "function") {
-                try {
-                    updateTrackUI();
-                } catch (e) {}
-            }
-            if (typeof loadSavedConfig === "function") {
-                try {
-                    loadSavedConfig();
-                } catch (e) {}
-            }
+            bindAudioEvents();
+            updateTrackUI();
+            updatePlayButtonsUI();
+            initAiWidget();
+            initAdminTrigger();
+            safeRefreshIcons();
+            loadSavedConfig();
         });
+    </script>
+</body>
+</html>
